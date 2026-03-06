@@ -1968,6 +1968,11 @@ PlaySFX:
 		or	(ix+zVar.FadeOutCounter)
 		or	(ix+zVar.FadeInFlag)
 		jp	nz,sub_978
+	if FixDriverBugs
+		; In the August 21 prototype of Sonic 2, the spindash flag doesn't get reset to zero when playing a new SFX
+		xor	a
+		ld	(zSpindashActiveFlag),a
+	endif
 		ld	a,c
 		cp	SndID_RingRight
 		jr	nz,loc_8B6
@@ -2004,8 +2009,12 @@ zPlaySound_CheckSpindash:
 		ld	a,c
 	endif
 		cp	SndID_SpindashRev	; is this the spindash rev sound playing?
+	if OptimiseDriver
+		jr	nz,zPlaySound		; if not, jump
+	else
 		ld	a,0
 		jr	nz,.setflag		; if not, jump
+	endif
 
 		ld	a,(zSpindashPlayingCounter)
 		or	a

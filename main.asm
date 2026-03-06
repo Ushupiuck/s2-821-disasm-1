@@ -27184,6 +27184,7 @@ Previous_Build_NGHz_Rng_Act2:				   ; Offset_0x0E9740
 ; Leiaute dos anéis nas fases
 ; <<<-
 ;===============================================================================
+PBDACSamples_Start:
 Previous_Build_DAC_Sample_01_Overwrite:				   ; Offset_0x0E978C
 		binclude	"data\sounds\PB_DAC01.bin"
 Previous_Build_DAC_Sample_02:				   ; Offset_0x0E99B7
@@ -27194,6 +27195,7 @@ Previous_Build_DAC_Sample_03: ; Sonic 2 Beta		   ; Offset_0x0EAA6B
 		binclude	"data\sounds\PB_DAC03.bin"
 Previous_Build_DAC_Sample_04: ; Sonic 2 Beta		   ; Offset_0x0EACD3
 		binclude	"data\sounds\PB_DAC04.bin"
+PBDACSamples_End:
 ;-------------------------------------------------------------------------------
 		cnop	$00000000, $000EC000, $00000000
 ; ===========================================================================
