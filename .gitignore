@@ -1,0 +1,9 @@
+# Compiler Crap
+s2built.bin
+s2built.prev.bin
+main.log
+main.lst
+main.p
+main.h
+SonLVL INI Files/dllcache/
+SonLVL INI Files/SonLVL.log
