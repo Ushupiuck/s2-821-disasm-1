@@ -19,7 +19,7 @@ Offset_0x01712A:
                 addq.b  #$02, Obj_Routine(A0)                            ; $0024
                 move.l  #CPz_Speed_Booster_Mappings, Obj_Map(A0) ; Offset_0x017244, $0004
                 move.w  #$E39C, Obj_Art_VRAM(A0)                         ; $0002
-                bsr     Jmp_04_To_ModifySpriteAttr_2P          ; Offset_0x017266
+                bsr.w   Jmp_04_To_ModifySpriteAttr_2P          ; Offset_0x017266
                 ori.b   #$04, Obj_Flags(A0)                              ; $0001
                 move.b  #$20, Obj_Width(A0)                              ; $0019
                 move.b  #$01, Obj_Priority(A0)                           ; $0018

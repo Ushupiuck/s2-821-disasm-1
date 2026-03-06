@@ -17,7 +17,7 @@ Offset_0x01A826:
                 addq.b  #$02, Obj_Routine(A0)                            ; $0024
                 move.l  #Raising_Pillar_Mappings, Obj_Map(A0) ; Offset_0x01AA24, $0004
                 move.w  #$2000, Obj_Art_VRAM(A0)                         ; $0002
-                bsr     Jmp_0D_To_ModifySpriteAttr_2P          ; Offset_0x01AEA4
+                bsr.w   Jmp_0D_To_ModifySpriteAttr_2P          ; Offset_0x01AEA4
                 ori.b   #$04, Obj_Flags(A0)                              ; $0001
                 move.b  #$10, Obj_Width(A0)                              ; $0019
                 move.b  #$18, Obj_Height_2(A0)                           ; $0016
@@ -25,7 +25,7 @@ Offset_0x01A826:
 ;-------------------------------------------------------------------------------
 Offset_0x01A854:
                 move.w  Obj_X(A0), -(A7)                                 ; $0008
-                bsr     Offset_0x01A8DE
+                bsr.w   Offset_0x01A8DE
                 moveq   #$00, D1
                 move.b  Obj_Width(A0), D1                                ; $0019
                 addi.w  #$000B, D1
@@ -34,22 +34,22 @@ Offset_0x01A854:
                 move.w  D2, D3
                 addq.w  #$01, D3
                 move.w  (A7)+, D4
-                bsr     Jmp_05_To_SolidObject                  ; Offset_0x01AEAA
+                bsr.w   Jmp_05_To_SolidObject                  ; Offset_0x01AEAA
                 move.b  Obj_Status(A0), D0                               ; $0022
                 andi.b  #$18, D0
                 bne.w   Offset_0x01A886
-                bra     Jmp_0D_To_MarkObjGone                  ; Offset_0x01AE98
+                bra.w   Jmp_0D_To_MarkObjGone                  ; Offset_0x01AE98
 Offset_0x01A886:
                 lea     (Offset_0x01A974), A4
                 lea     (Offset_0x01A966), A2
                 addq.b  #$07, Obj_Map_Id(A0)                             ; $001A
-                bsr     Offset_0x01A9AC
+                bsr.w   Offset_0x01A9AC
                 lea     (Player_One).w, A1                           ; $FFFFB000
                 moveq   #$03, D6
                 bsr.s   Offset_0x01A8AC
                 lea     (Player_Two).w, A1                           ; $FFFFB040
                 addq.b  #$01, D6
-                bra     Offset_0x01A944
+                bra.w   Offset_0x01A944
 Offset_0x01A8AC:
                 bclr    D6, Obj_Status(A0)                               ; $0022
                 beq.s   Offset_0x01A8DC
@@ -111,12 +111,12 @@ Offset_0x01A944:
                 subq.b  #$01, Obj_Control_Var_13(A0)                     ; $003F
                 bra.s   Offset_0x01A95A
 Offset_0x01A950:
-                bsr     Jmp_08_To_SpeedToPos                   ; Offset_0x01AEB0
+                bsr.w   Jmp_08_To_SpeedToPos                   ; Offset_0x01AEB0
                 addi.w  #$0018, Obj_Speed_Y(A0)                          ; $0012
 Offset_0x01A95A:
                 tst.b   Obj_Flags(A0)                                    ; $0001
-                bpl     Jmp_0B_To_DeleteObject                 ; Offset_0x01AE92
-                bra     Jmp_07_To_DisplaySprite                ; Offset_0x01AE8C       
+                bpl.w   Jmp_0B_To_DeleteObject                 ; Offset_0x01AE92
+                bra.w   Jmp_07_To_DisplaySprite                ; Offset_0x01AE8C       
 ;------------------------------------------------------------------------------- 
 Offset_0x01A966:
                 dc.b    $00, $00, $00, $00, $04, $04, $08, $08
@@ -143,7 +143,7 @@ Offset_0x01A9AC:
                 bra.s   Offset_0x01A9DA          
 ;-------------------------------------------------------------------------------
 Offset_0x01A9D2:
-                bsr     Jmp_07_To_SingleObjectLoad_2           ; Offset_0x01AE9E
+                bsr.w   Jmp_07_To_SingleObjectLoad_2           ; Offset_0x01AE9E
                 bne.s   Offset_0x01AA1A
                 addq.w  #$08, A3   
 ;-------------------------------------------------------------------------------

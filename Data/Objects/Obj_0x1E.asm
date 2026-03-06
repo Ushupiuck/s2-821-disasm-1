@@ -9,7 +9,7 @@
                 jsr     Offset_0x017400(PC, D1)
                 move.b  Obj_Control_Var_00(A0), D0                       ; $002C
                 add.b   Obj_Control_Var_0A(A0), D0                       ; $0036
-                beq     Jmp_00_To_MarkObjGone_3                ; Offset_0x017E2C
+                beq.w   Jmp_00_To_MarkObjGone_3                ; Offset_0x017E2C
                 rts
 ;------------------------------------------------------------------------------- 
 Offset_0x017400:
@@ -46,16 +46,16 @@ Offset_0x01743C:
 ;-------------------------------------------------------------------------------  
 Offset_0x017444:
                 tst.w   (Debug_Mode_Flag_Index).w                    ; $FFFFFE08
-                bne     Offset_0x017556
+                bne.w   Offset_0x017556
                 move.w  Obj_Timer(A0), D2                                ; $002A
                 move.w  Obj_X(A1), D0                                    ; $0008
                 sub.w   Obj_X(A0), D0                                    ; $0008
                 cmp.w   D2, D0
-                bcc     Offset_0x017556
+                bcc.w   Offset_0x017556
                 move.w  Obj_Y(A1), D1                                    ; $000C
                 sub.w   Obj_Y(A0), D1                                    ; $000C
                 cmpi.w  #$0080, D1
-                bcc     Offset_0x017556
+                bcc.w   Offset_0x017556
                 moveq   #$00, D3
                 cmpi.w  #$00A0, D2
                 beq.s   Offset_0x017486
@@ -120,7 +120,7 @@ Offset_0x0174C6:
                 move.b  #$00, Obj_Control_Var_10(A1)                     ; $003C
                 bclr    #$07, Obj_Art_VRAM(A1)                           ; $0002
                 move.w  #$0800, D2
-                bsr     Offset_0x017740
+                bsr.w   Offset_0x017740
                 move.w  #$00BE, D0
                 jsr     (Play_Sfx).l                             ; Offset_0x001512
 Offset_0x017556:
@@ -148,7 +148,7 @@ Offset_0x01757E:
                 move.w  (A2)+, D5
                 add.w   Obj_Y(A0), D5                                    ; $000C
                 move.w  #$0800, D2
-                bra     Offset_0x017740
+                bra.w   Offset_0x017740
 Offset_0x01759C:
                 move.l  Obj_X(A1), D2                                    ; $0008
                 move.l  Obj_Y(A1), D3                                    ; $000C
@@ -171,7 +171,7 @@ Offset_0x0175C2:
                 add.b   $0001(A4), D0 
                 move.b  #$04, $0001(A4) 
                 move.b  Offset_0x0175FC(PC, D0), D0
-                bne     Offset_0x0176D0
+                bne.w   Offset_0x0176D0
 Offset_0x0175E4:
                 andi.w  #$07FF, Obj_Y(A1)                                ; $000C
                 move.b  #$06, (A4)
@@ -207,7 +207,7 @@ Offset_0x01765A:
                 move.w  (A2)+, D4
                 move.w  (A2)+, D5
                 move.w  #$0800, D2
-                bra     Offset_0x017740
+                bra.w   Offset_0x017740
 Offset_0x017670:
                 move.l  Obj_X(A1), D2                                    ; $0008
                 move.l  Obj_Y(A1), D3                                    ; $000C

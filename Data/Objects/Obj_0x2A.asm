@@ -16,7 +16,7 @@ Offset_0x00A16A:
                 addq.b  #$02, Obj_Routine(A0)                            ; $0024
                 move.l  #Up_Down_Pillar_Mappings, Obj_Map(A0) ; Offset_0x00A1FA, $0004
                 move.w  #$4000, Obj_Art_VRAM(A0)                         ; $0002
-                bsr     ModifySpriteAttr_2P                    ; Offset_0x00DBBE
+                bsr.w   ModifySpriteAttr_2P                    ; Offset_0x00DBBE
                 ori.b   #$04, Obj_Flags(A0)                              ; $0001
                 move.b  #$10, Obj_Width(A0)                              ; $0019
                 move.b  #$04, Obj_Priority(A0)                           ; $0018
@@ -48,8 +48,8 @@ Offset_0x00A1D0:
                 move.w  D2, D3
                 addq.w  #$01, D3
                 move.w  Obj_X(A0), D4                                    ; $0008
-                bsr     SolidObject                            ; Offset_0x00F344
-                bra     MarkObjGone                            ; Offset_0x00D200 
+                bsr.w   SolidObject                            ; Offset_0x00F344
+                bra.w   MarkObjGone                            ; Offset_0x00D200 
 ;-------------------------------------------------------------------------------
 Up_Down_Pillar_Mappings:                                       ; Offset_0x00A1FA
                 dc.w    Offset_0x00A1FC-Up_Down_Pillar_Mappings

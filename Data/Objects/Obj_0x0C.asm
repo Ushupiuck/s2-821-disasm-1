@@ -16,7 +16,7 @@ Offset_0x01532E:
                 addq.b  #$02, Obj_Routine(A0)                            ; $0024
                 move.l  #Unk_Platform_Mappings, Obj_Map(A0) ; Offset_0x015406, $0004
                 move.w  #$E418, Obj_Art_VRAM(A0)                         ; $0002
-                bsr     ModifySpriteAttr_2P                    ; Offset_0x00DBBE
+                bsr.w   ModifySpriteAttr_2P                    ; Offset_0x00DBBE
                 ori.b   #$04, Obj_Flags(A0)                              ; $0001
                 move.b  #$10, Obj_Width(A0)                              ; $0019
                 move.b  #$04, Obj_Priority(A0)                           ; $0018
@@ -76,7 +76,7 @@ Offset_0x0153F2:
                 move.b  Obj_Width(A0), D1                                ; $0019
                 moveq   #$09, D3
                 move.w  Obj_X(A0), D4                                    ; $0008
-                bsr     Platform_Object                        ; Offset_0x00F82C
+                bsr.w   Platform_Object                        ; Offset_0x00F82C
                 bra.w   Jmp_01_To_MarkObjGone                  ; Offset_0x015414
 ;-------------------------------------------------------------------------------
 Unk_Platform_Mappings:                                         ; Offset_0x015406

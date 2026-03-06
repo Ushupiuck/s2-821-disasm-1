@@ -29,13 +29,13 @@ Offset_0x00B676:
                 move.w  #$2200, Obj_Art_VRAM(A0)                         ; $0002   
 ;------------------------------------------------------------------------------- 
 Offset_0x00B6B8:
-                bra     DisplaySprite                          ; Offset_0x00D322  
+                bra.w   DisplaySprite                          ; Offset_0x00D322  
 ;-------------------------------------------------------------------------------  
 ; Offset_0x00B6BC:
                 subq.b  #$01, Obj_Ani_Time_2(A0)                         ; $001F
                 bpl.s   Offset_0x00B6CA
                 addq.b  #$02, Obj_Routine(A0)                            ; $0024
-                bra     DisplaySprite                          ; Offset_0x00D322
+                bra.w   DisplaySprite                          ; Offset_0x00D322
 Offset_0x00B6CA:
                 rts                                                             
 ;-------------------------------------------------------------------------------  
@@ -45,10 +45,10 @@ Offset_0x00B6CC:
                 bne.s   Offset_0x00B6DE
                 addq.b  #$02, Obj_Routine(A0)                            ; $0024
 Offset_0x00B6DE:
-                bra     DisplaySprite                          ; Offset_0x00D322 
+                bra.w   DisplaySprite                          ; Offset_0x00D322 
 ;-------------------------------------------------------------------------------  
 Offset_0x00B6E2:
-                bra     DisplaySprite                          ; Offset_0x00D322
+                bra.w   DisplaySprite                          ; Offset_0x00D322
 ;===============================================================================
 ; Objeto 0x0E - Sonic e Miles na Tela Título
 ; <<<- 

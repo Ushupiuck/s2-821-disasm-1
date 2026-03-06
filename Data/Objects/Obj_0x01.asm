@@ -354,9 +354,9 @@ Offset_0x00FEFA:
 		bra.w	Offset_0x0100E8
 Offset_0x00FF6A:
 		cmpi.w	#$0002, D1
-		blt		Offset_0x0100DA
+		blt.w	Offset_0x0100DA
 		cmp.w	D2, D1
-		bge		Offset_0x0100CA
+		bge.w	Offset_0x0100CA
 		bra.w	Offset_0x0100E8
 Offset_0x00FF7C:
 		btst	#$00, Obj_Status(A0)					 ; $0022
@@ -364,14 +364,14 @@ Offset_0x00FF7C:
 		move.b	#$06, Obj_Ani_Number(A0)				 ; $001C
 		addq.w	#$06, D2
 		cmp.w	D2, D1
-		blt		Offset_0x010106
+		blt.w	Offset_0x010106
 		move.b	#$0C, Obj_Ani_Number(A0)				 ; $001C
 		bra.w	Offset_0x010106
 Offset_0x00FF9C:
 		move.b	#$1D, Obj_Ani_Number(A0)				 ; $001C
 		addq.w	#$06, D2
 		cmp.w	D2, D1
-		blt		Offset_0x010106
+		blt.w	Offset_0x010106
 		move.b	#$1E, Obj_Ani_Number(A0)				 ; $001C
 		bclr	#$00, Obj_Status(A0)					 ; $0022
 		bra.w	Offset_0x010106
@@ -380,20 +380,20 @@ Offset_0x00FFBA:
 		beq.s	Offset_0x00FFDA
 		move.b	#$06, Obj_Ani_Number(A0)				 ; $001C
 		cmpi.w	#$FFFC, D1
-		bge		Offset_0x010106
+		bge.w	Offset_0x010106
 		move.b	#$0C, Obj_Ani_Number(A0)				 ; $001C
 		bra.w	Offset_0x010106
 Offset_0x00FFDA:
 		move.b	#$1D, Obj_Ani_Number(A0)				 ; $001C
 		cmpi.w	#$FFFC, D1
-		bge		Offset_0x010106
+		bge.w	Offset_0x010106
 		move.b	#$1E, Obj_Ani_Number(A0)				 ; $001C
 		bset	#$00, Obj_Status(A0)					 ; $0022
 		bra.w	Offset_0x010106
 Offset_0x00FFF8:
 		jsr		(Player_HitFloor)			   ; Offset_0x014160
 		cmpi.w	#$000C, D1
-		blt		Offset_0x0100E8
+		blt.w	Offset_0x0100E8
 		tst.b	(Super_Sonic_Flag).w				 ; $FFFFFE19
 		bne.w	Offset_0x0100C2
 		cmpi.b	#$03, Obj_Player_Next_Tilt(A0)			 ; $0036
@@ -405,7 +405,7 @@ Offset_0x00FFF8:
 		subq.w	#$06, D3
 		jsr		(Player_HitFloor_D3)		   ; Offset_0x014164
 		cmpi.w	#$000C, D1
-		blt		Offset_0x010106
+		blt.w	Offset_0x010106
 		move.b	#$0C, Obj_Ani_Number(A0)				 ; $001C
 		bra.w	Offset_0x010106
 Offset_0x010042:
@@ -414,7 +414,7 @@ Offset_0x010042:
 		subq.w	#$06, D3
 		jsr		(Player_HitFloor_D3)		   ; Offset_0x014164
 		cmpi.w	#$000C, D1
-		blt		Offset_0x010106
+		blt.w	Offset_0x010106
 		move.b	#$1E, Obj_Ani_Number(A0)				 ; $001C
 		bclr	#$00, Obj_Status(A0)					 ; $0022
 		bra.w	Offset_0x010106
@@ -1316,7 +1316,7 @@ Sonic_HurtStop:						   ; Offset_0x010AE6
 		move.w	(Sonic_Level_Limits_Max_Y).w, D0			 ; $FFFFEECE
 		addi.w	#$00E0, D0
 		cmp.w	Obj_Y(A0), D0					 ; $000C
-		bcs		Kill_Sonic					   ; Offset_0x011128
+		bcs.w	Kill_Sonic					   ; Offset_0x011128
 		bsr.w	Sonic_Floor					   ; Offset_0x01083A
 		btst	#$01, Obj_Status(A0)					 ; $0022
 		bne.s	Offset_0x010B20

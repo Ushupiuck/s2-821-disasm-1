@@ -36,7 +36,7 @@ Offset_0x0172AC:
                 bra.s   Offset_0x0172BC    
 ;-------------------------------------------------------------------------------
 Offset_0x0172B6:
-                bsr     Jmp_02_To_SingleObjectLoad_2           ; Offset_0x0173D2
+                bsr.w   Jmp_02_To_SingleObjectLoad_2           ; Offset_0x0173D2
                 bne.s   Offset_0x017334  
 ;-------------------------------------------------------------------------------
 Offset_0x0172BC:
@@ -46,7 +46,7 @@ Offset_0x0172BC:
                 move.w  Obj_Y(A0), Obj_Y(A1)                      ; $000C, $000C
                 move.l  #Worms_Mappings, Obj_Map(A1)    ; Offset_0x0173BE, $0004
                 move.w  #$643C, Obj_Art_VRAM(A1)                         ; $0002
-                bsr     Jmp_00_To_ModifySpriteAttr_2P_A1       ; Offset_0x0173D8
+                bsr.w   Jmp_00_To_ModifySpriteAttr_2P_A1       ; Offset_0x0173D8
                 move.b  #$04, Obj_Flags(A1)                              ; $0001
                 move.b  #$03, Obj_Priority(A1)                           ; $0018
                 move.b  #$8B, Obj_Col_Flags(A1)                          ; $0020

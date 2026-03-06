@@ -7,7 +7,7 @@
                 move.b  Obj_Routine(A0), D0                              ; $0024
                 move.w  Offset_0x00B6F8(PC, D0), D1
                 jsr     Offset_0x00B6F8(PC, D1)
-                bra     DisplaySprite                          ; Offset_0x00D322  
+                bra.w   DisplaySprite                          ; Offset_0x00D322  
 ;------------------------------------------------------------------------------- 
 Offset_0x00B6F8:
                 dc.w    Offset_0x00B6FE-Offset_0x00B6F8
@@ -20,7 +20,7 @@ Offset_0x00B6FE:
                 move.w  #$0090, Obj_Sub_Y(A0)                            ; $000A
                 move.l  #Obj_0x0F_Mappings, Obj_Map(A0) ; Offset_0x00B742, $0004
                 move.w  #$0680, Obj_Art_VRAM(A0)                         ; $0002
-                bsr     ModifySpriteAttr_2P                    ; Offset_0x00DBBE  
+                bsr.w   ModifySpriteAttr_2P                    ; Offset_0x00DBBE  
 ;-------------------------------------------------------------------------------
 Offset_0x00B720:
                 move.b  (Control_Ports_Buffer_Data+$0001).w, D0      ; $FFFFF605

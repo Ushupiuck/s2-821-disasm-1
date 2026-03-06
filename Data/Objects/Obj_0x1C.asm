@@ -66,13 +66,13 @@ Offset_0x009F6A:
                 move.b  (A1), Obj_Map_Id(A0)                             ; $001A
                 move.l  (A1)+, Obj_Map(A0)                               ; $0004
                 move.w  (A1)+, Obj_Art_VRAM(A0)                          ; $0002
-                bsr     ModifySpriteAttr_2P                    ; Offset_0x00DBBE
+                bsr.w   ModifySpriteAttr_2P                    ; Offset_0x00DBBE
                 ori.b   #$04, Obj_Flags(A0)                              ; $0001
                 move.b  (A1)+, Obj_Width(A0)                             ; $0019
                 move.b  (A1)+, Obj_Priority(A0)                          ; $0018 
 ;-------------------------------------------------------------------------------
 Offset_0x009F9C:
-                bra     MarkObjGone                            ; Offset_0x00D200
+                bra.w   MarkObjGone                            ; Offset_0x00D200
 ;===============================================================================
 ; Objeto 0x1C - Miscelânea de objetos - Suporte das pontes na Emerald Hill,
 ; <<<-          postes na Hill Top, etc...

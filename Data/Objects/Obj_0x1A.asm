@@ -17,7 +17,7 @@ Offset_0x0095F0:
                 addq.b  #$02, Obj_Routine(A0)                            ; $0024
                 move.l  #Collapsing_Platforms_Mappings, Obj_Map(A0) ; Offset_0x00998C, $0004
                 move.w  #$4000, Obj_Art_VRAM(A0)                         ; $0002
-                bsr     ModifySpriteAttr_2P                    ; Offset_0x00DBBE
+                bsr.w   ModifySpriteAttr_2P                    ; Offset_0x00DBBE
                 ori.b   #$04, Obj_Flags(A0)                              ; $0001
                 move.b  #$04, Obj_Priority(A0)                           ; $0018
                 move.b  #$07, Obj_Control_Var_0C(A0)                     ; $0038
@@ -27,7 +27,7 @@ Offset_0x0095F0:
                 bne.s   Offset_0x009658
                 move.l  #HPz_Collapsing_Platforms_Mappings, Obj_Map(A0) ; Offset_0x009D3C, $0004
                 move.w  #$434A, Obj_Art_VRAM(A0)                         ; $0002
-                bsr     ModifySpriteAttr_2P                    ; Offset_0x00DBBE
+                bsr.w   ModifySpriteAttr_2P                    ; Offset_0x00DBBE
                 move.b  #$30, Obj_Width(A0)                              ; $0019
                 move.l  #Offset_0x009D0C, Obj_Control_Var_10(A0)         ; $003C
                 move.l  #HPz_Collapsing_Platforms_Data, Obj_Control_Var_08(A0) ; Offset_0x00992B, $0034
@@ -37,7 +37,7 @@ Offset_0x009658:
                 bne.s   Offset_0x009682
                 move.l  #OOz_Collapsing_Platforms_Mappings, Obj_Map(A0) ; Offset_0x009DE6, $0004
                 move.w  #$639D, Obj_Art_VRAM(A0)                         ; $0002
-                bsr     ModifySpriteAttr_2P                    ; Offset_0x00DBBE
+                bsr.w   ModifySpriteAttr_2P                    ; Offset_0x00DBBE
                 move.b  #$40, Obj_Width(A0)                              ; $0019
                 move.l  #Offset_0x009CFC, Obj_Control_Var_10(A0)         ; $003C
                 bra.s   Offset_0x00969C
@@ -51,7 +51,7 @@ Offset_0x00969C:
                 tst.b   Obj_Control_Var_0E(A0)                           ; $003A
                 beq.s   Offset_0x0096AE
                 tst.b   Obj_Control_Var_0C(A0)                           ; $0038
-                beq     Offset_0x009888
+                beq.w   Offset_0x009888
                 subq.b  #$01, Obj_Control_Var_0C(A0)                     ; $0038
 Offset_0x0096AE:
                 move.b  Obj_Status(A0), D0                               ; $0022
@@ -63,8 +63,8 @@ Offset_0x0096BE:
                 move.b  Obj_Width(A0), D1                                ; $0019
                 move.l  Obj_Control_Var_10(A0), A2                       ; $003C
                 move.w  Obj_X(A0), D4                                    ; $0008
-                bsr     Platform_Object_2                      ; Offset_0x00F87E
-                bra     MarkObjGone                            ; Offset_0x00D200  
+                bsr.w   Platform_Object_2                      ; Offset_0x00F87E
+                bra.w   MarkObjGone                            ; Offset_0x00D200  
 ;-------------------------------------------------------------------------------  
 Offset_0x0096D4:
                 tst.b   Obj_Control_Var_0C(A0)                           ; $0038
@@ -72,7 +72,7 @@ Offset_0x0096D4:
                 tst.b   Obj_Control_Var_0E(A0)                           ; $003A
                 bne.s   Offset_0x0096E8
                 subq.b  #$01, Obj_Control_Var_0C(A0)                     ; $0038
-                bra     DisplaySprite                          ; Offset_0x00D322
+                bra.w   DisplaySprite                          ; Offset_0x00D322
 Offset_0x0096E8:
                 bsr.w   Offset_0x0096BE
                 subq.b  #$01, Obj_Control_Var_0C(A0)                     ; $0038
@@ -89,10 +89,10 @@ Offset_0x0096FC:
 Offset_0x009716:
                 rts
 Offset_0x009718:
-                bsr     ObjectFall                             ; Offset_0x00D1AE
+                bsr.w   ObjectFall                             ; Offset_0x00D1AE
                 tst.b   Obj_Flags(A0)                                    ; $0001
-                bpl     DeleteObject                           ; Offset_0x00D314
-                bra     DisplaySprite                          ; Offset_0x00D322  
+                bpl.w   DeleteObject                           ; Offset_0x00D314
+                bra.w   DisplaySprite                          ; Offset_0x00D322  
 ;===============================================================================
 ; Objeto 0x1A - Plataformas que desmoronam na Hidden Palace / Oil Ocean
 ; <<<- 

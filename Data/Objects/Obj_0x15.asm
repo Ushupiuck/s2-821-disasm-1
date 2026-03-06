@@ -11,7 +11,7 @@
                 jmp     Offset_0x008AA4(PC, D1)
 Offset_0x008A9C:
                 move.w  #$0200, D0
-                bra     DisplaySprite_Param                    ; Offset_0x00D35E  
+                bra.w   DisplaySprite_Param                    ; Offset_0x00D35E  
 ;-------------------------------------------------------------------------------   
 Offset_0x008AA4:                                              
                 dc.w    Offset_0x008AB2-Offset_0x008AA4
@@ -46,7 +46,7 @@ Offset_0x008B0A:
                 move.b  #$20, Obj_Width(A0)                              ; $0019
                 move.b  #$08, Obj_Height_2(A0)                           ; $0016
 Offset_0x008B2C:
-                bsr     ModifySpriteAttr_2P                    ; Offset_0x00DBBE
+                bsr.w   ModifySpriteAttr_2P                    ; Offset_0x00DBBE
                 moveq   #$00, D1
                 move.b  Obj_Subtype(A0), D1                              ; $0028
                 bpl.s   Offset_0x008B3C
@@ -59,7 +59,7 @@ Offset_0x008B3C:
                 move.b  D2, Obj_Control_Var_10(A0)                       ; $003C
                 move.w  Obj_X(A0), D2                                    ; $0008
                 move.w  Obj_Y(A0), D3                                    ; $000C
-                bsr     SingleObjectLoad_2                     ; Offset_0x00E714
+                bsr.w   SingleObjectLoad_2                     ; Offset_0x00E714
                 bne.s   Offset_0x008BD0
                 _move.b 0(A0), 0(A1)                    ; $0000, $0000
                 move.l  Obj_Map(A0), Obj_Map(A1)                  ; $0004, $0004
@@ -107,8 +107,8 @@ Offset_0x008BFC:
                 move.b  Obj_Height_2(A0), D3                             ; $0016
                 addq.b  #$01, D3
                 move.w  (A7)+, D4
-                bsr     Platform_Object_3                      ; Offset_0x00F8D0
-                bra     Offset_0x008DA6
+                bsr.w   Platform_Object_3                      ; Offset_0x00F8D0
+                bra.w   Offset_0x008DA6
 Offset_0x008C1C:
                 moveq   #$00, D0
                 moveq   #$00, D1
@@ -131,7 +131,7 @@ Offset_0x008C4A:
                 cmpi.b  #$20, D1
                 bne.s   Offset_0x008C56
                 moveq   #$40, D0
-                bra     Offset_0x008D06
+                bra.w   Offset_0x008D06
 Offset_0x008C56:
                 cmpi.b  #$30, D1
                 bne.s   Offset_0x008C68
@@ -143,7 +143,7 @@ Offset_0x008C56:
 Offset_0x008C68:
                 cmpi.b  #$40, D1
                 bne.s   Offset_0x008C72
-                bsr     Offset_0x008D08
+                bsr.w   Offset_0x008D08
 Offset_0x008C72:
                 move.w  #$0080, D1
                 btst    #$00, Obj_Status(A0)                             ; $0022
@@ -151,7 +151,7 @@ Offset_0x008C72:
                 neg.w   D0
                 add.w   D1, D0
 Offset_0x008C82:
-                bsr     CalcSine                               ; Offset_0x003282
+                bsr.w   CalcSine                               ; Offset_0x003282
                 move.w  Obj_Control_Var_0C(A0), D2                       ; $0038
                 move.w  Obj_Control_Var_0E(A0), D3                       ; $003A
                 moveq   #$00, D4
@@ -206,7 +206,7 @@ Offset_0x008D08:
                 tst.w   Obj_Control_Var_0A(A0)                           ; $0036
                 beq.s   Offset_0x008D16
                 subq.w  #$01, Obj_Control_Var_0A(A0)                     ; $0036
-                bra     Offset_0x008DA0
+                bra.w   Offset_0x008DA0
 Offset_0x008D16:
                 tst.b   Obj_Control_Var_08(A0)                           ; $0034
                 bne.s   Offset_0x008D3C
@@ -249,38 +249,38 @@ Offset_0x008DA0:
 Offset_0x008DA6:
                 tst.w   (Two_Player_Flag).w                          ; $FFFFFFD8
                 beq.s   Offset_0x008DB0
-                bra     DisplaySprite                          ; Offset_0x00D322
+                bra.w   DisplaySprite                          ; Offset_0x00D322
 Offset_0x008DB0:
                 move.w  Obj_Control_Var_0E(A0), D0                       ; $003A
                 andi.w  #$FF80, D0
                 sub.w   ($FFFFF7DA).w, D0
                 cmpi.w  #$0280, D0
                 bhi.w   Offset_0x008DC8
-                bra     DisplaySprite                          ; Offset_0x00D322
+                bra.w   DisplaySprite                          ; Offset_0x00D322
 Offset_0x008DC8:
                 move.l  Obj_Control_Var_04(A0), A1                       ; $0030
-                bsr     DeleteObject_A1                        ; Offset_0x00D316
-                bra     DeleteObject                           ; Offset_0x00D314  
+                bsr.w   DeleteObject_A1                        ; Offset_0x00D316
+                bra.w   DeleteObject                           ; Offset_0x00D314  
 ;------------------------------------------------------------------------------- 
 Offset_0x008DD4:
-                bra     DisplaySprite                          ; Offset_0x00D322    
+                bra.w   DisplaySprite                          ; Offset_0x00D322    
 ;------------------------------------------------------------------------------- 
 Offset_0x008DD8:
                 move.w  Obj_X(A0), -(A7)                                 ; $0008
-                bsr     Offset_0x008C1C
+                bsr.w   Offset_0x008C1C
                 moveq   #$00, D1
                 move.b  Obj_Width(A0), D1                                ; $0019
                 moveq   #$00, D3
                 move.b  Obj_Height_2(A0), D3                             ; $0016
                 addq.b  #$01, D3
                 move.w  (A7)+, D4
-                bsr     Platform_Object_3                      ; Offset_0x00F8D0
+                bsr.w   Platform_Object_3                      ; Offset_0x00F8D0
                 move.b  Obj_Status(A0), D0                               ; $0022
                 andi.b  #$18, D0
-                beq     Offset_0x008E8E
+                beq.w   Offset_0x008E8E
                 tst.b   ($FFFFFE78).w
-                bne     Offset_0x008E8E
-                bsr     SingleObjectLoad_2                     ; Offset_0x00E714
+                bne.w   Offset_0x008E8E
+                bsr.w   SingleObjectLoad_2                     ; Offset_0x00E714
                 bne.s   Offset_0x008E7E
                 moveq   #$00, D0
                 move.w  #$000F, D1
@@ -321,17 +321,17 @@ Offset_0x008E7E:
                 addq.b  #$02, Obj_Routine(A0)                            ; $0024
                 andi.b  #$E7, Obj_Status(A0)                             ; $0022
 Offset_0x008E8E:
-                bra     Offset_0x008DA6     
+                bra.w   Offset_0x008DA6     
 ;------------------------------------------------------------------------------- 
 Offset_0x008E92:
-                bsr     Offset_0x008C1C
-                bra     Offset_0x008DA6   
+                bsr.w   Offset_0x008C1C
+                bra.w   Offset_0x008DA6   
 ;------------------------------------------------------------------------------- 
 Offset_0x008E9A:
                 move.w  Obj_X(A0), -(A7)                                 ; $0008
                 btst    #$01, Obj_Status(A0)                             ; $0022
                 beq.s   Offset_0x008ED8
-                bsr     SpeedToPos                             ; Offset_0x00D1DA
+                bsr.w   SpeedToPos                             ; Offset_0x00D1DA
                 addi.w  #$0018, Obj_Speed_Y(A0)                          ; $0012
                 cmpi.w  #$0720, Obj_Y(A0)                                ; $000C
                 bcs.s   Offset_0x008EE8
@@ -354,12 +354,12 @@ Offset_0x008EE8:
                 move.b  Obj_Height_2(A0), D3                             ; $0016
                 addq.b  #$01, D3
                 move.w  (A7)+, D4
-                bsr     Platform_Object_3                      ; Offset_0x00F8D0
-                bra     MarkObjGone                            ; Offset_0x00D200   
+                bsr.w   Platform_Object_3                      ; Offset_0x00F8D0
+                bra.w   MarkObjGone                            ; Offset_0x00D200   
 ;------------------------------------------------------------------------------- 
 Offset_0x008F00:
                 move.w  Obj_X(A0), -(A7)                                 ; $0008
-                bsr     SpeedToPos                             ; Offset_0x00D1DA
+                bsr.w   SpeedToPos                             ; Offset_0x00D1DA
                 btst    #$01, Obj_Status(A0)                             ; $0022
                 beq.s   Offset_0x008F3C
                 addi.w  #$0018, Obj_Speed_Y(A0)                          ; $0012
@@ -382,7 +382,7 @@ Offset_0x008F3C:
                 beq.s   Offset_0x008F6A
                 moveq   #$00, D3
                 move.b  Obj_Width(A0), D3                                ; $0019
-                bsr     Jmp_00_To_Object_HitWall_Right         ; Offset_0x00903C
+                bsr.w   Jmp_00_To_Object_HitWall_Right         ; Offset_0x00903C
                 tst.w   D1
                 bpl.s   Offset_0x008F6A
                 add.w   D1, Obj_X(A0)                                    ; $0008
@@ -394,8 +394,8 @@ Offset_0x008F6A:
                 move.b  Obj_Height_2(A0), D3                             ; $0016
                 addq.b  #$01, D3
                 move.w  (A7)+, D4
-                bsr     Platform_Object_3                      ; Offset_0x00F8D0
-                bra     MarkObjGone                            ; Offset_0x00D200   
+                bsr.w   Platform_Object_3                      ; Offset_0x00F8D0
+                bra.w   MarkObjGone                            ; Offset_0x00D200   
 ;-------------------------------------------------------------------------------
 OOz_Swing_Platforms_Mappings:                                  ; Offset_0x008F82
                 dc.w    Offset_0x008F8A-OOz_Swing_Platforms_Mappings
