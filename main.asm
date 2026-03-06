@@ -27196,242 +27196,293 @@ Previous_Build_DAC_Sample_04: ; Sonic 2 Beta		   ; Offset_0x0EACD3
 		binclude	"data\sounds\PB_DAC04.bin"
 ;-------------------------------------------------------------------------------
 		cnop	$00000000, $000EC000, $00000000
-;===============================================================================
-; Rotina para carregar o driver de som
-; ->>>
-;===============================================================================
-SoundDriverLoad:							   ; Offset_0x0EC000
-		move	SR, -(A7)
-		movem.l D0-D7/A0-A6, -(A7)
-		move	#$2700, SR
-		lea	(Z80_Bus_Request), A3				 ; $00A11100
-		lea	(Z80_Reset), A2				 ; $00A11200
-		moveq	#$00, D2
-		move.w	#$0100, D1
-		move.w	D1, (A3)
-		move.w	D1, (A2)
-Offset_0x0EC020:
-		btst	D2, (A3)
-		bne.s	Offset_0x0EC020
-		jsr	Offset_0x0EC03C(PC)
-		move.w	D2, (A2)
-		move.w	D2, (A3)
-		moveq	#$17, D0
-Offset_0x0EC02E:
-		dbf	D0, Offset_0x0EC02E
-		move.w	D1, (A2)
-		movem.l (A7)+, D0-D7/A0-A6
-		move	(A7)+, SR
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Subroutine to load the sound driver
+; ---------------------------------------------------------------------------
+
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+
+; loc_EC000:
+SoundDriverLoad:
+		move.w	sr,-(sp)
+		movem.l	d0-a6,-(sp)
+		move.w	#$2700,sr
+		lea	(Z80_Bus_Request).l,a3
+		lea	(Z80_Reset).l,a2
+		moveq	#0,d2
+		move.w	#$100,d1
+		move.w	d1,(a3)	; get Z80 bus
+		move.w	d1,(a2)	; release Z80 reset (was held high by console on startup)
+
+-		btst	d2,(a3)
+		bne.s	-	; wait until the 68000 has the bus
+		jsr	DecompressSoundDriver(pc)
+		move.w	d2,(a2)
+		move.w	d2,(a3)
+		moveq	#$17,d0
+
+-		dbf	d0,-		; wait for 2,314 cycles
+		move.w	d1,(a2)		; release Z80 reset
+		movem.l	(sp)+,d0-a6
+		move.w	(sp)+,sr
 		rts
-;-------------------------------------------------------------------------------
-Offset_0x0EC03C:
-		lea	Z80_Sound_Driver(PC), A6			   ; Offset_0x0EC0DC
-		move.w	#$0E7E, D7
-		moveq	#$00, D6
-		lea	(Z80_RAM_Start), A5					 ; $00A00000
-		moveq	#$00, D5
-		lea	(Z80_RAM_Start), A4					 ; $00A00000
-Offset_0x0EC054:
-		lsr.w	#$01, D6
-		btst	#$08, D6
-		bne.s	Offset_0x0EC066
-		jsr	Offset_0x0EC0D2(PC)
-		move.b	D0, D6
-		ori.w	#$FF00, D6
-Offset_0x0EC066:
-		btst	#$00, D6
-		beq.s	Offset_0x0EC078
-		jsr	Offset_0x0EC0D2(PC)
-		move.b	D0, (A5)+
-		addq.w	#$01, D5
-		bra.w	Offset_0x0EC054
-Offset_0x0EC078:
-		jsr	Offset_0x0EC0D2(PC)
-		moveq	#$00, D4
-		move.b	D0, D4
-		jsr	Offset_0x0EC0D2(PC)
-		move.b	D0, D3
-		andi.w	#$000F, D3
-		addq.w	#$02, D3
-		andi.w	#$00F0, D0
-		lsl.w	#$04, D0
-		add.w	D0, D4
-		addi.w	#$0012, D4
-		andi.w	#$0FFF, D4
-		move.w	D5, D0
-		andi.w	#$F000, D0
-		add.w	D0, D4
-		cmp.w	D4, D5
-		bcc.s	Offset_0x0EC0C0
-		subi.w	#$1000, D4
-		bcc.s	Offset_0x0EC0C0
-		add.w	D3, D5
-		addq.w	#$01, D5
-Offset_0x0EC0B2:
-		move.b	#$00, (A5)+
-		addq.w	#$01, D4
-		dbf	D3, Offset_0x0EC0B2
-		bra.w	Offset_0x0EC054
-Offset_0x0EC0C0:
-		add.w	D3, D5
-		addq.w	#$01, D5
-Offset_0x0EC0C4:
-		move.b	$00(A4, D4), (A5)+
-		addq.w	#$01, D4
-		dbf	D3, Offset_0x0EC0C4
-		bra.w	Offset_0x0EC054
-;-------------------------------------------------------------------------------
-Offset_0x0EC0D2:
-		move.b	(A6)+, D0
-		subq.w	#$01, D7
-		bne.s	Offset_0x0EC0DA
-		addq.w	#$04, A7
-Offset_0x0EC0DA:
+
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; Handles the decompression of the sound driver (Saxman compression,an LZSS variant)
+; https://segaretro.org/Saxman_compression
+
+; a4 == start of decompressed data (used for dictionary match offsets)
+; a5 == current address of end of decompressed data
+; a6 == current address in compressed sound driver
+; d3 == length of match minus 1
+; d4 == offset into decompressed data of dictionary match
+; d5 == number of bytes decompressed so far
+; d6 == descriptor field
+; d7 == bytes left to decompress
+
+; Interestingly,this suggests the 68k version IS the original,rather than
+; the Z80 version used for most songs in the final
+
+; loc_EC03E: Sound_Driver_002:
+DecompressSoundDriver:
+		lea	Snd_Driver(pc),a6
+		move.w	#Snd_Driver_End-Snd_Driver,d7 ; patched (by fixpointer.exe) after compression since the exact size can't be known beforehand
+		moveq	#0,d6		; the decompressor knows it's run out of descriptor bits when it starts reading 0's in bit 8
+		lea	(Z80_RAM).l,a5
+		moveq	#0,d5
+		lea	(Z80_RAM).l,a4
+; loc_EC054:
+SaxDec_Loop:
+		lsr.w	#1,d6		; next descriptor bit
+		btst	#8,d6		; check if we've run out of bits
+		bne.s	.nobitsleft	; (lsr 'shifts in' 0's)
+		jsr	SaxDec_GetByte(pc)
+		move.b	d0,d6
+		ori.w	#$FF00,d6	; these set bits will disappear from the high byte as the register is shifted
+; loc_EC066:
+.nobitsleft:
+		btst	#0,d6
+		beq.s	SaxDec_ReadCompressed
+
+; loc_EC06C: SaxDec_ReadUncompressed:
+		jsr	SaxDec_GetByte(pc)
+		move.b	d0,(a5)+
+		addq.w	#1,d5
+		bra.w	SaxDec_Loop
+; ---------------------------------------------------------------------------
+
+SaxDec_ReadCompressed:
+		jsr	SaxDec_GetByte(pc)
+		moveq	#0,d4
+		move.b	d0,d4
+		jsr	SaxDec_GetByte(pc)
+		move.b	d0,d3
+		andi.w	#$F,d3
+		addq.w	#2,d3	; d3 is the length of the match minus 1
+		andi.w	#$F0,d0
+		lsl.w	#4,d0
+		add.w	d0,d4
+		addi.w	#$12,d4
+		andi.w	#$FFF,d4	; d4 is the offset into the current $1000-byte window
+		; This part is a little tricky. You see,d4 currently contains the low three nibbles of an offset into the decompressed data,
+		; where the dictionary match lies. The way the high nibble is decided is first by taking it from d5 - the offset of the end
+		; of the decompressed data so far. Then,we see if the resulting offset in d4 is somehow higher than d5.
+		; If it is,then it's invalid... *unless* you subtract $1000 from it,in which case it refers to data in the previous $1000 block of bytes.
+		; This is all just a really gimmicky way of having an offset with a range of $1000 bytes from the end of the decompressed data.
+		; If,however,we cannot subtract $1000 because that would put the pointer before the start of the decompressed data,then
+		; this is actually a 'zero-fill' match,which encodes a series of zeroes.
+		move.w	d5,d0
+		andi.w	#$F000,d0
+		add.w	d0,d4
+		cmp.w	d4,d5
+		bhs.s	SaxDec_IsDictionaryReference
+		subi.w	#$1000,d4
+		bhs.s	SaxDec_IsDictionaryReference
+
+; SaxDec_IsSequenceOfZeroes:
+		add.w	d3,d5
+		addq.w	#1,d5
+
+-		move.b	#0,(a5)+
+		addq.w	#1,d4
+		dbf	d3,-
+		bra.w	SaxDec_Loop
+; ---------------------------------------------------------------------------
+
+SaxDec_IsDictionaryReference:
+		add.w	d3,d5
+		addq.w	#1,d5
+
+-		move.b	(a4,d4.w),(a5)+
+		addq.w	#1,d4
+		dbf	d3,-
+
+		bra.w	SaxDec_Loop
+; End of function DecompressSoundDriver
+
+
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+
+
+SaxDec_GetByte:
+		move.b	(a6)+,d0
+		subq.w	#1,d7	; decrement the remaining number of bytes
+		bne.s	+
+		addq.w	#4,sp	; exit the decompressor by messing with the track
++
 		rts
-;-------------------------------------------------------------------------------
-Z80_Sound_Driver:							   ; Offset_0x0EC0DC
-		binclude	"data\sounds\snd_drv.sax"
+; End of function SaxDec_GetByte
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Sound driver (Saxman-compressed)
+;
+; Evidently,it's similar to the final,just lacking several features (such
+; as Saxman-compressed music),so it is possible to replace songs using a
+; program like SMPS2ASM
+; ---------------------------------------------------------------------------
+
+Snd_Driver:
+	save
+	include "s2.sounddriver.asm" ; CPU Z80
+	restore
+	padding off
+	!org (Snd_Driver+Size_of_Snd_driver_guess) ; don't worry; I know what I'm doing
+Snd_Driver_End:
 ;-------------------------------------------------------------------------------
 		cnop	$00000000, $000ED000, $00000000
-DAC_Sample_00:						   ; Offset_0x0ED000
+DACSamples_Start:
+DAC_Sample01:						   ; Offset_0x0ED000
 		binclude	"data\sounds\DAC_00.bin"
-DAC_Sample_01:						   ; Offset_0x0ED294
+DAC_Sample01_End:
+DAC_Sample02:						   ; Offset_0x0ED294
 		binclude	"data\sounds\DAC_01.bin"
-DAC_Sample_02:						   ; Offset_0x0ED9B7
+DAC_Sample02_End:
+DAC_Sample03:						   ; Offset_0x0ED9B7
 		binclude	"data\sounds\DAC_02.bin"
-DAC_Sample_03:						   ; Offset_0x0EE56C
+DAC_Sample03_End:
+DAC_Sample04:						   ; Offset_0x0EE56C
 		binclude	"data\sounds\DAC_03.bin"
-DAC_Sample_04:						   ; Offset_0x0EED7A
+DAC_Sample04_End:
+DAC_Sample05:						   ; Offset_0x0EED7A
 		binclude	"data\sounds\DAC_04.bin"
-DAC_Sample_05:						   ; Offset_0x0EF2F0
+DAC_Sample05_End:
+DAC_Sample06:						   ; Offset_0x0EF2F0
 		binclude	"data\sounds\DAC_05.bin"
-DAC_Sample_06:						   ; Offset_0x0EFA3C
+DAC_Sample06_End:
+DAC_Sample07:						   ; Offset_0x0EFA3C
 		binclude	"data\sounds\DAC_06.bin"
+DAC_Sample07_End:
+
+; ---------------------------------------------------------------------------
+; Music pointers
+; ---------------------------------------------------------------------------
+
+music_ptr macro DATA
+DATA.pointer label *
+	rom_ptr_z80	DATA
+    endm
 ;-------------------------------------------------------------------------------
-Music_81_Ptr equ (Music_Versus_Result_Final&$FFFF)|$8000
-Music_82_Ptr equ (Music_Green_Hill&$FFFF)|$8000
-Music_83_Ptr equ (Music_Hidden_Palace_Beta&$FFFF)|$8000
-Music_84_Ptr equ (Music_Oil_Ocean_Final&$FFFF)|$8000
-Music_85_Ptr equ (Music_Metropolis&$FFFF)|$8000
-Music_86_Ptr equ (Music_Hill_Top&$FFFF)|$8000
-Music_87_Ptr equ (Music_Neo_Green_Hill&$FFFF)|$8000
-Music_88_Ptr equ (Music_Oil_Ocean_Beta&$FFFF)|$8000
-Music_89_Ptr equ (Music_Casino_Night&$FFFF)|$8000
-Music_8A_Ptr equ (Music_Death_Egg&$FFFF)|$8000
-Music_8B_Ptr equ (Music_Dust_Hill&$FFFF)|$8000
-Music_8C_Ptr equ (Music_Green_Hill_Versus_Final&$FFFF)|$8000
-Music_8D_Ptr equ (Music_Sky_Chase&$FFFF)|$8000
-Music_8E_Ptr equ (Music_Chemical_Plant&$FFFF)|$8000
-Music_8F_Ptr equ (Music_Sky_Fortress&$FFFF)|$8000
-Music_90_Ptr equ (Music_Hidden_Palace_Final&$FFFF)|$8000
-Music_91_Ptr equ (Music_Level_Select_Menu&$FFFF)|$8000
-Music_92_Ptr equ (Music_Special_Stage&$FFFF)|$8000
-Music_93_Ptr equ (Music_Level_Boss&$FFFF)|$8000
-Music_94_Ptr equ (Music_Final_Boss&$FFFF)|$8000
-Music_95_Ptr equ (Music_End_Sequence&$FFFF)|$8000
-Music_96_Ptr equ (Music_Super_Sonic&$FFFF)|$8000
-Music_97_Ptr equ (Music_Invencibility&$FFFF)|$8000
-Music_98_Ptr equ (Music_Extra_Life&$FFFF)|$8000
-Music_99_Ptr equ (Music_Title_Screen&$FFFF)|$8000
-Music_9A_Ptr equ (Music_Level_Results&$FFFF)|$8000
-Music_9B_Ptr equ (Music_Time_Over_Game_Over&$FFFF)|$8000
-Music_9C_Ptr equ (Music_Continue&$FFFF)|$8000
-Music_9D_Ptr equ (Music_Get_Emerald&$FFFF)|$8000
-Music_9E_Ptr equ (Music_Hidden_Palace_Final&$FFFF)|$8000
-;-------------------------------------------------------------------------------
-		dc.w	(((Music_97_Ptr>>$08)|(Music_97_Ptr<<$08))&$FFFF)
-		dc.w	(((Music_98_Ptr>>$08)|(Music_98_Ptr<<$08))&$FFFF)
-		dc.w	(((Music_99_Ptr>>$08)|(Music_99_Ptr<<$08))&$FFFF)
-		dc.w	(((Music_9A_Ptr>>$08)|(Music_9A_Ptr<<$08))&$FFFF)
-		dc.w	(((Music_9B_Ptr>>$08)|(Music_9B_Ptr<<$08))&$FFFF)
-		dc.w	(((Music_9C_Ptr>>$08)|(Music_9C_Ptr<<$08))&$FFFF)
-		dc.w	(((Music_9D_Ptr>>$08)|(Music_9D_Ptr<<$08))&$FFFF)
-		dc.w	(((Music_90_Ptr>>$08)|(Music_90_Ptr<<$08))&$FFFF)
-		dc.w	(((Music_9E_Ptr>>$08)|(Music_9E_Ptr<<$08))&$FFFF)
-Music_Invencibility:						   ; Offset_0x0F0012
+MusicPoint1:
+		music_ptr	Mus_Invinc		; $97
+		music_ptr	Mus_ExtraLife	; $98
+		music_ptr	Mus_Title		; $99
+		music_ptr	Mus_ActClear	; $9A
+		music_ptr	Mus_GameOver	; $9B
+		music_ptr	Mus_Continue	; $9C
+		music_ptr	Mus_Emerald		; $9D
+		music_ptr	Mus_HPZ			; $90
+		music_ptr	Mus_HPZ_Dup		; $9E
+
+Mus_Invinc:						   ; Offset_0x0F0012
 		binclude	"data\sounds\invcb_97.snd"
-Music_Extra_Life:							   ; Offset_0x0F023D
+Mus_ExtraLife:							   ; Offset_0x0F023D
 		binclude	"data\sounds\1up_98.snd"
-Music_Title_Screen:							   ; Offset_0x0F032A
+Mus_Title:							   ; Offset_0x0F032A
 		binclude	"data\sounds\tscr_99.snd"
-Music_Level_Results:						   ; Offset_0x0F04FF
+Mus_ActClear:						   ; Offset_0x0F04FF
 		binclude	"data\sounds\lres_9A.snd"
-Music_Time_Over_Game_Over:					   ; Offset_0x0F0654
+Mus_GameOver:					   ; Offset_0x0F0654
 		binclude	"data\sounds\tgovr_9B.snd"
-Music_Continue:						   ; Offset_0x0F07A3
+Mus_Continue:						   ; Offset_0x0F07A3
 		binclude	"data\sounds\cont_9c.snd"
-Music_Get_Emerald:							   ; Offset_0x0F0900
+Mus_Emerald:							   ; Offset_0x0F0900
 		binclude	"data\sounds\emrld_9d.snd"
-Music_Hidden_Palace_Final:					   ; Offset_0x0F09CE
+Mus_HPZ:					   ; Offset_0x0F09CE
+Mus_HPZ_Dup:
 		binclude	"data\sounds\hpz_90.snd"
 ;-------------------------------------------------------------------------------
 		cnop	$00000000, $000F1E8C, $00000000
 ;-------------------------------------------------------------------------------
 Sega_Snd:							   ; Offset_0x0F1E8C
 		binclude	"data\sounds\sega.snd"
+Sega_Snd_End:
 ;-------------------------------------------------------------------------------
-		dc.w	(((Music_88_Ptr>>$08)|(Music_88_Ptr<<$08))&$FFFF)
-		dc.w	(((Music_82_Ptr>>$08)|(Music_82_Ptr<<$08))&$FFFF)
-		dc.w	(((Music_85_Ptr>>$08)|(Music_85_Ptr<<$08))&$FFFF)
-		dc.w	(((Music_89_Ptr>>$08)|(Music_89_Ptr<<$08))&$FFFF)
-		dc.w	(((Music_8B_Ptr>>$08)|(Music_8B_Ptr<<$08))&$FFFF)
-		dc.w	(((Music_83_Ptr>>$08)|(Music_83_Ptr<<$08))&$FFFF)
-		dc.w	(((Music_87_Ptr>>$08)|(Music_87_Ptr<<$08))&$FFFF)
-		dc.w	(((Music_8A_Ptr>>$08)|(Music_8A_Ptr<<$08))&$FFFF)
-		dc.w	(((Music_92_Ptr>>$08)|(Music_92_Ptr<<$08))&$FFFF)
-		dc.w	(((Music_91_Ptr>>$08)|(Music_91_Ptr<<$08))&$FFFF)
-		dc.w	(((Music_95_Ptr>>$08)|(Music_95_Ptr<<$08))&$FFFF)
-		dc.w	(((Music_94_Ptr>>$08)|(Music_94_Ptr<<$08))&$FFFF)
-		dc.w	(((Music_8E_Ptr>>$08)|(Music_8E_Ptr<<$08))&$FFFF)
-		dc.w	(((Music_93_Ptr>>$08)|(Music_93_Ptr<<$08))&$FFFF)
-		dc.w	(((Music_8D_Ptr>>$08)|(Music_8D_Ptr<<$08))&$FFFF)
-		dc.w	(((Music_84_Ptr>>$08)|(Music_84_Ptr<<$08))&$FFFF)
-		dc.w	(((Music_8F_Ptr>>$08)|(Music_8F_Ptr<<$08))&$FFFF)
-		dc.w	(((Music_8C_Ptr>>$08)|(Music_8C_Ptr<<$08))&$FFFF)
-		dc.w	(((Music_81_Ptr>>$08)|(Music_81_Ptr<<$08))&$FFFF)
-		dc.w	(((Music_96_Ptr>>$08)|(Music_96_Ptr<<$08))&$FFFF)
-		dc.w	(((Music_86_Ptr>>$08)|(Music_86_Ptr<<$08))&$FFFF)
-Music_Oil_Ocean_Beta:						   ; Offset_0x0F802A
+MusicPoint2:
+		music_ptr	Mus_OOZ		; $88
+		music_ptr	Mus_GHZ		; $82
+		music_ptr	Mus_MTZ		; $85
+		music_ptr	Mus_CNZ		; $89
+		music_ptr	Mus_DHZ		; $8B
+		music_ptr	Mus_DHZ2P	; $83
+		music_ptr	Mus_NGHZ	; $87
+		music_ptr	Mus_DEZ		; $8A
+		music_ptr	Mus_SpecStg	; $92
+		music_ptr	Mus_LevelSel	; $91
+		music_ptr	Mus_Ending	; $95
+		music_ptr	Mus_FinalBoss	; $94
+		music_ptr	Mus_CPZ		; $8E
+		music_ptr	Mus_Boss	; $93
+		music_ptr	Mus_SCZ		; $8D
+		music_ptr	Mus_OOZ2	; $84
+		music_ptr	Mus_SFZ		; $8F
+		music_ptr	Mus_GHZ2P	; $8C
+		music_ptr	Mus_2PResults	; $81
+		music_ptr	Mus_SuperSonic	; $96
+		music_ptr	Mus_HTZ		; $86
+
+Mus_OOZ:						   ; Offset_0x0F802A
 		binclude	"data\sounds\ooz_88.snd"
-Music_Green_Hill:							   ; Offset_0x0F85AC
+Mus_GHZ:							   ; Offset_0x0F85AC
 		binclude	"data\sounds\ghz_82.snd"
-Music_Metropolis:							   ; Offset_0x0F8D1E
+Mus_MTZ:							   ; Offset_0x0F8D1E
 		binclude	"data\sounds\mz_85.snd"
-Music_Casino_Night:							   ; Offset_0x0F9299
+Mus_CNZ:							   ; Offset_0x0F9299
 		binclude	"data\sounds\cnz_89.snd"
-Music_Dust_Hill:							   ; Offset_0x0F99B6
+Mus_DHZ:							   ; Offset_0x0F99B6
 		binclude	"data\sounds\dhz_8b.snd"
-Music_Hidden_Palace_Beta:					   ; Offset_0x0FA056
+Mus_DHZ2P:					   ; Offset_0x0FA056
 		binclude	"data\sounds\hpz_83.snd"
-Music_Neo_Green_Hill:						   ; Offset_0x0FA54F
+Mus_NGHZ:						   ; Offset_0x0FA54F
 		binclude	"data\sounds\nghz_87.snd"
-Music_Death_Egg:							   ; Offset_0x0FACDC
+Mus_DEZ:							   ; Offset_0x0FACDC
 		binclude	"data\sounds\dez_8a.snd"
-Music_Special_Stage:						   ; Offset_0x0FB1C3
+Mus_SpecStg:						   ; Offset_0x0FB1C3
 		binclude	"data\sounds\ss_92.snd"
-Music_Level_Select_Menu:					   ; Offset_0x0FB7CA
+Mus_LevelSel:					   ; Offset_0x0FB7CA
 		binclude	"data\sounds\menu_91.snd"
-Music_End_Sequence:							   ; Offset_0x0FB945
+Mus_Ending:							   ; Offset_0x0FB945
 		binclude	"data\sounds\endsq_95.snd"
-Music_Final_Boss:							   ; Offset_0x0FBF3E
+Mus_FinalBoss:							   ; Offset_0x0FBF3E
 		binclude	"data\sounds\dezfb_94.snd"
-Music_Chemical_Plant:						   ; Offset_0x0FC276
+Mus_CPZ:						   ; Offset_0x0FC276
 		binclude	"data\sounds\cpz_8e.snd"
-Music_Level_Boss:							   ; Offset_0x0FC8C1
+Mus_Boss:							   ; Offset_0x0FC8C1
 		binclude	"data\sounds\boss_93.snd"
-Music_Sky_Chase:							   ; Offset_0x0FCB93
+Mus_SCZ:							   ; Offset_0x0FCB93
 		binclude	"data\sounds\scz_8d.snd"
-Music_Oil_Ocean_Final:						   ; Offset_0x0FCF96
+Mus_OOZ2:						   ; Offset_0x0FCF96
 		binclude	"data\sounds\ooz_84.snd"
-Music_Sky_Fortress:							   ; Offset_0x0FD41A
+Mus_SFZ:							   ; Offset_0x0FD41A
 		binclude	"data\sounds\sfz_8f.snd"
-Music_Green_Hill_Versus_Final:				   ; Offset_0x0FD847
+Mus_GHZ2P:				   ; Offset_0x0FD847
 		binclude	"data\sounds\ghzvs_8c.snd"
-Music_Versus_Result_Final:					   ; Offset_0x0FDD60
+Mus_2PResults:					   ; Offset_0x0FDD60
 		binclude	"data\sounds\vsres_81.snd"
-Music_Super_Sonic:							   ; Offset_0x0FE1C3
+Mus_SuperSonic:							   ; Offset_0x0FE1C3
 		binclude	"data\sounds\super_96.snd"
-Music_Hill_Top:						   ; Offset_0x0FE4B6
+Mus_HTZ:						   ; Offset_0x0FE4B6
 		binclude	"data\sounds\htz_86.snd"
 ;-------------------------------------------------------------------------------
 		cnop	$00000000, $000FEE00, $00000000
@@ -27511,7 +27562,7 @@ Sfx_E7_Ptr equ (Sfx_E7&$FFFF)|$8000
 Sfx_E8_Ptr equ (Sfx_E8&$FFFF)|$8000
 Sfx_E9_Ptr equ (Sfx_E9&$FFFF)|$8000
 ;-------------------------------------------------------------------------------
-Sfx_A0_To_E9:						   ; Offset_0x0FEE00
+SoundIndex:						   ; Offset_0x0FEE00
 		dc.w	(((Sfx_A0_Ptr>>$08)|(Sfx_A0_Ptr<<$08))&$FFFF)
 		dc.w	(((Sfx_A1_Ptr>>$08)|(Sfx_A1_Ptr<<$08))&$FFFF)
 		dc.w	(((Sfx_A2_Ptr>>$08)|(Sfx_A2_Ptr<<$08))&$FFFF)
