@@ -572,12 +572,9 @@ VBlank_00:							   ; Offset_0x000B82
 		beq.s	Offset_0x000BBC
 		cmpi.b	#gm_PlayMode, (Game_Mode).w			   ; $0C ; $FFFFF600
 		beq.s	Offset_0x000BBC
-		move.w	#$0100, (Z80_Bus_Request)			 ; $00A11100
-Offset_0x000BA2:
-		btst	#$00, (Z80_Bus_Request)				 ; $00A11100
-		bne.s	Offset_0x000BA2
+		stopZ80
 		jsr	(Sound_Driver_Input).l		   ; Offset_0x0012AC
-		move.w	#$0000, (Z80_Bus_Request)			 ; $00A11100
+		startZ80
 		bra.s	Offset_0x000B5E
 Offset_0x000BBC:
 		tst.b	(Water_Level_Flag).w				 ; $FFFFF730
@@ -590,10 +587,7 @@ Offset_0x000BD6:
 		dbf	D0, Offset_0x000BD6
 Offset_0x000BDA:
 		move.w	#$0001, ($FFFFF644).w
-		move.w	#$0100, (Z80_Bus_Request)			 ; $00A11100
-Offset_0x000BE8:
-		btst	#$00, (Z80_Bus_Request)				 ; $00A11100
-		bne.s	Offset_0x000BE8
+		stopZ80
 		tst.b	($FFFFF64E).w
 		bne.s	Offset_0x000C1E
 		lea	(VDP_Control_Port), A5				 ; $00C00004
@@ -616,7 +610,7 @@ Offset_0x000C42:
 		move.w	(Horizontal_Interrupt_Count).w, (A5)		 ; $FFFFF624
 		move.w	#$8230, (VDP_Control_Port)			 ; $00C00004
 		jsr	(Sound_Driver_Input).l		   ; Offset_0x0012AC
-		move.w	#$0000, (Z80_Bus_Request)			 ; $00A11100
+		startZ80
 		bra.w	Offset_0x000B5E
 Offset_0x000C60:
 		move.w	(VDP_Control_Port), D0				 ; $00C00004
@@ -632,10 +626,7 @@ Offset_0x000C88:
 		move.w	(Horizontal_Interrupt_Count).w, (VDP_Control_Port) ; $FFFFF624, $00C00004
 		move.w	#$8230, (VDP_Control_Port)			 ; $00C00004
 		move.l	($FFFFF61E).w, ($FFFFEEEC).w
-		move.w	#$0100, (Z80_Bus_Request)			 ; $00A11100
-Offset_0x000CAC:
-		btst	#$00, (Z80_Bus_Request)				 ; $00A11100
-		bne.s	Offset_0x000CAC
+		stopZ80
 		lea	(VDP_Control_Port), A5				 ; $00C00004
 		move.l	#$94019340, (A5)
 		move.l	#$96FC9500, (A5)
@@ -644,7 +635,7 @@ Offset_0x000CAC:
 		move.w	#$0083, ($FFFFF640).w
 		move.w	($FFFFF640).w, (A5)
 		jsr	(Sound_Driver_Input).l		   ; Offset_0x0012AC
-		move.w	#$0000, (Z80_Bus_Request)			 ; $00A11100
+		startZ80
 		bra.w	Offset_0x000B5E
 ;-------------------------------------------------------------------------------
 VBlank_02:							   ; Offset_0x000CEC
@@ -656,12 +647,9 @@ Offset_0x000CFC:
 		rts
 ;-------------------------------------------------------------------------------
 VBlank_14:							   ; Offset_0x000CFE
-		move.w	#$0100, (Z80_Bus_Request)			 ; $00A11100
-Offset_0x000D06:
-		btst	#$00, (Z80_Bus_Request)				 ; $00A11100
-		bne.s	Offset_0x000D06
+		stopZ80
 		bsr.w	Control_Ports_Read			   ; Offset_0x00132C
-		move.w	#$0000, (Z80_Bus_Request)			 ; $00A11100
+		startZ80
 		tst.w	(Timer_Count_Down).w				 ; $FFFFF614
 		beq.w	Offset_0x000D28
 		subq.w	#$01, (Timer_Count_Down).w			 ; $FFFFF614
@@ -686,10 +674,7 @@ VBlank_10:							   ; Offset_0x000D46
 		beq.w	VBlank_0A					   ; Offset_0x000E72
 ;-------------------------------------------------------------------------------
 VBlank_08:							   ; Offset_0x000D50
-		move.w	#$0100, (Z80_Bus_Request)			 ; $00A11100
-Offset_0x000D58:
-		btst	#$00, (Z80_Bus_Request)				 ; $00A11100
-		bne.s	Offset_0x000D58
+		stopZ80
 		bsr.w	Control_Ports_Read			   ; Offset_0x00132C
 		tst.b	($FFFFF64E).w
 		bne.s	Offset_0x000D92
@@ -728,7 +713,7 @@ Offset_0x000DB6:
 		move.w	($FFFFF640).w, (A5)
 		bsr.w	Process_DMA					   ; Offset_0x001622
 		jsr	(Sound_Driver_Input).l		   ; Offset_0x0012AC
-		move.w	#$0000, (Z80_Bus_Request)			 ; $00A11100
+		startZ80
 		movem.l (Camera_X).w, D0-D7					 ; $FFFFEE00
 		movem.l D0-D7, ($FFFFEE60).w
 		movem.l (Camera_X_2).w, D0-D7				 ; $FFFFEE20
@@ -751,10 +736,7 @@ Exit_DemoTime:						   ; Offset_0x000E70
 		rts
 ;-------------------------------------------------------------------------------
 VBlank_0A:							   ; Offset_0x000E72
-		move.w	#$0100, (Z80_Bus_Request)			 ; $00A11100
-Offset_0x000E7A:
-		btst	#$00, (Z80_Bus_Request)				 ; $00A11100
-		bne.s	Offset_0x000E7A
+		stopZ80
 		bsr.w	Control_Ports_Read			   ; Offset_0x00132C
 		lea	(VDP_Control_Port), A5				 ; $00C00004
 		move.l	#$94009340, (A5)
@@ -779,7 +761,7 @@ Offset_0x000E7A:
 		move.w	($FFFFF640).w, (A5)
 		bsr.w	Process_DMA					   ; Offset_0x001622
 		jsr	(Sound_Driver_Input).l		   ; Offset_0x0012AC
-		move.w	#$0000, (Z80_Bus_Request)			 ; $00A11100
+		startZ80
 		bsr.w	Special_Stage_Pal_Cycle		   ; Offset_0x005626
 		tst.w	(Timer_Count_Down).w				 ; $FFFFF614
 		beq.w	Offset_0x000F16
@@ -789,10 +771,7 @@ Offset_0x000F16:
 ;-------------------------------------------------------------------------------
 VBlank_0C:							   ; Offset_0x000F18
 VBlank_18:							   ; Offset_0x000F18
-		move.w	#$0100, (Z80_Bus_Request)			 ; $00A11100
-Offset_0x000F20:
-		btst	#$00, (Z80_Bus_Request)				 ; $00A11100
-		bne.s	Offset_0x000F20
+		stopZ80
 		bsr.w	Control_Ports_Read			   ; Offset_0x00132C
 		tst.b	($FFFFF64E).w
 		bne.s	Offset_0x000F5A
@@ -830,7 +809,7 @@ Offset_0x000F7E:
 		move.w	($FFFFF640).w, (A5)
 		bsr.w	Process_DMA					   ; Offset_0x001622
 		jsr	(Sound_Driver_Input).l		   ; Offset_0x0012AC
-		move.w	#$0000, (Z80_Bus_Request)			 ; $00A11100
+		startZ80
 		movem.l (Camera_X).w, D0-D7					 ; $FFFFEE00
 		movem.l D0-D7, ($FFFFEE60).w
 		movem.l (Scroll_Flag_Array).w, D0/D1		 ; $FFFFEE50
@@ -852,10 +831,7 @@ VBlank_12:							   ; Offset_0x001014
 		bra.w	Offset_0x001856
 ;-------------------------------------------------------------------------------
 VBlank_16:							   ; Offset_0x001020
-		move.w	#$0100, (Z80_Bus_Request)			 ; $00A11100
-Offset_0x001028:
-		btst	#$00, (Z80_Bus_Request)				 ; $00A11100
-		bne.s	Offset_0x001028
+		stopZ80
 		bsr.w	Control_Ports_Read			   ; Offset_0x00132C
 		lea	(VDP_Control_Port), A5				 ; $00C00004
 		move.l	#$94009340, (A5)
@@ -879,17 +855,14 @@ Offset_0x001028:
 		move.w	#$0083, ($FFFFF640).w
 		move.w	($FFFFF640).w, (A5)
 		jsr	(Sound_Driver_Input).l		   ; Offset_0x0012AC
-		move.w	#$0000, (Z80_Bus_Request)			 ; $00A11100
+		startZ80
 		tst.w	(Timer_Count_Down).w				 ; $FFFFF614
 		beq.w	Offset_0x0010BC
 		subq.w	#$01, (Timer_Count_Down).w			 ; $FFFFF614
 Offset_0x0010BC:
 		rts
 Offset_0x0010BE:
-		move.w	#$0100, (Z80_Bus_Request)			 ; $00A11100
-Offset_0x0010C6:
-		btst	#$00, (Z80_Bus_Request)				 ; $00A11100
-		bne.s	Offset_0x0010C6
+		stopZ80
 		bsr.w	Control_Ports_Read			   ; Offset_0x00132C
 		tst.b	($FFFFF64E).w
 		bne.s	Offset_0x001100
@@ -925,7 +898,7 @@ Offset_0x001124:
 		move.w	#$0083, ($FFFFF640).w
 		move.w	($FFFFF640).w, (A5)
 		jsr	(Sound_Driver_Input).l		   ; Offset_0x0012AC
-		move.w	#$0000, (Z80_Bus_Request)			 ; $00A11100
+		startZ80
 		rts
 ;===============================================================================
 ; Interrupção Vertical
@@ -954,10 +927,7 @@ Offset_0x001196:
 		move.w	#$8228, (VDP_Control_Port)			 ; $00C00004
 		move.l	#$40000010, (VDP_Control_Port)		 ; $00C00004
 		move.l	($FFFFEEEC).w, (VDP_Data_Port)		 ; $00C00000
-		move.w	#$0100, (Z80_Bus_Request)			 ; $00A11100
-Offset_0x0011D2:
-		btst	#$00, (Z80_Bus_Request)				 ; $00A11100
-		bne.s	Offset_0x0011D2
+		stopZ80
 		lea	(VDP_Control_Port), A5				 ; $00C00004
 		move.l	#$94019340, (A5)
 		move.l	#$96EE9580, (A5)
@@ -965,7 +935,7 @@ Offset_0x0011D2:
 		move.w	#$7800, (A5)
 		move.w	#$0083, ($FFFFF640).w
 		move.w	($FFFFF640).w, (A5)
-		move.w	#$0000, (Z80_Bus_Request)			 ; $00A11100
+		startZ80
 Offset_0x001208:
 		move.w	(VDP_Control_Port), D0				 ; $00C00004
 		andi.w	#$0004, D0
@@ -1048,30 +1018,30 @@ Offset_0x00129A:
 ; ->>>
 ;===============================================================================
 Sound_Driver_Input:							   ; Offset_0x0012AC
-		lea	(Sound_Buffer_Id&$FFFFFF).l, A0		 ; $00FFFFE0
-		lea	($00A01B80), A1
-		cmpi.b	#$80, $0008(A1)
+		lea	(Sound_Buffer_Id&$FFFFFF).l,A0		 ; $00FFFFE0
+		lea	(Z80_RAM+zAbsVar).l,A1
+		cmpi.b	#$80,zVar.QueueToPlay(A1)
 		bne.s	Offset_0x0012E0
-		_move.b	0(A0), D0
+		_move.b	0(A0),D0
 		beq.s	Offset_0x0012E0
 		_clr.b	0(A0)
-		move.b	D0, D1
-		subi.b	#$FE, D1
+		move.b	D0,D1
+		subi.b	#$FE,D1
 		bcs.s	Offset_0x0012DC
-		addi.b	#$7F, D1
-		move.b	D1, $0003(A1)
+		addi.b	#$7F,D1
+		move.b	D1,zVar.StopMusic(A1)
 		bra.s	Offset_0x0012E0
 Offset_0x0012DC:
-		move.b	D0, $0008(A1)
+		move.b	D0,zVar.QueueToPlay(A1)
 Offset_0x0012E0:
-		moveq	#$03, D1
+		moveq	#3,D1
 Offset_0x0012E2:
-		move.b	$01(A0, D1), D0
+		move.b	1(A0,D1.w),D0
 		beq.s	Offset_0x0012F6
-		tst.b	$09(A1, D1)
+		tst.b	zVar.Queue0(A1,D1.w)
 		bne.s	Offset_0x0012F6
-		clr.b	$01(A0, D1)
-		move.b	D0, $09(A1, D1)
+		clr.b	1(A0,D1.w)
+		move.b	D0,zVar.Queue0(A1,D1.w)
 Offset_0x0012F6:
 		dbf	D1, Offset_0x0012E2
 		rts
@@ -1085,15 +1055,12 @@ Offset_0x0012F6:
 ; ->>>
 ;===============================================================================
 Control_Ports_Init:							   ; Offset_0x0012FC
-		move.w	#$0100, (Z80_Bus_Request)			 ; $00A11100
-Control_Ports_Init_Z80Wait:					   ; Offset_0x001304
-		btst	#$00, (Z80_Bus_Request)				 ; $00A11100
-		bne.s	Control_Ports_Init_Z80Wait			   ; Offset_0x001304
+		stopZ80
 		moveq	#$40, D0
 		move.b	D0, (IO_Port_0_Control+$0001)		 ; $00A10009
 		move.b	D0, (IO_Port_1_Control+$0001)		 ; $00A1000B
 		move.b	D0, (IO_Expansion_Control+$0001)			 ; $00A1000D
-		move.w	#$0000, (Z80_Bus_Request)			 ; $00A11100
+		startZ80
 		rts
 ;===============================================================================
 ; Inicialização das portas 0, 1 e expansão
@@ -1189,10 +1156,7 @@ VDPRegSetup_Array:							   ; Offset_0x0013F2
 ; ->>>
 ;===============================================================================
 ClearScreen:						   ; Offset_0x001418
-		move.w	#$0100, (Z80_Bus_Request)			 ; $00A11100
-ClearScreen_Z80Wait:						   ; Offset_0x001420
-		btst	#$00, (Z80_Bus_Request)				 ; $00A11100
-		bne.s	ClearScreen_Z80Wait			   ; Offset_0x001420
+		stopZ80
 		lea	(VDP_Control_Port), A5				 ; $00C00004
 		move.w	#$8F01, (A5)
 		move.l	#$940F93FF, (A5)
@@ -1229,7 +1193,7 @@ ClearScreen_ClearBuffer1:					   ; Offset_0x001498
 ClearScreen_ClearBuffer2:					   ; Offset_0x0014A8
 		move.l	D0, (A1)+
 		dbf	D1, ClearScreen_ClearBuffer2		   ; Offset_0x0014A8
-		move.w	#$0000, (Z80_Bus_Request)			 ; $00A11100
+		startZ80
 		rts
 ;===============================================================================
 ; ClearScreen
@@ -1238,24 +1202,24 @@ ClearScreen_ClearBuffer2:					   ; Offset_0x0014A8
 
 Jmp_00_To_SoundDriverLoad					   ; Offset_0x0014B8
 		nop
-		jmp	(SoundDriverLoad)			   ; Offset_0x0EC000
+		jmp	(SoundDriverLoad).l			   ; Offset_0x0EC000
 ;-------------------------------------------------------------------------------
 ; Z80_Init:	  ; Inicialização do z80 não usado		   ; Offset_0x0014C0
-		move.w	#$0100, (Z80_Bus_Request)			 ; $00A11100
-		move.w	#$0100, (Z80_Reset)					 ; $00A11200
-		lea	(Z80_RAM_Start), A1					 ; $00A00000
-		move.b	#$F3, (A1)+
-		move.b	#$F3, (A1)+
-		move.b	#$C3, (A1)+
-		move.b	#$00, (A1)+
-		move.b	#$00, (A1)+
-		move.w	#$0000, (Z80_Reset)					 ; $00A11200
+		move.w	#$0100,(Z80_Bus_Request)			 ; $00A11100
+		move.w	#$0100,(Z80_Reset)					 ; $00A11200
+		lea	(Z80_RAM_Start).l, A1					 ; $00A00000
+		move.b	#$F3,(A1)+
+		move.b	#$F3,(A1)+
+		move.b	#$C3,(A1)+
+		move.b	#$00,(A1)+
+		move.b	#$00,(A1)+
+		move.w	#$0000,(Z80_Reset)					 ; $00A11200
 		nop
 		nop
 		nop
 		nop
-		move.w	#$0100, (Z80_Reset)					 ; $00A11200
-		move.w	#$0000, (Z80_Bus_Request)			 ; $00A11100
+		move.w	#$0100,(Z80_Reset)					 ; $00A11200
+		startZ80
 		rts
 ;-------------------------------------------------------------------------------
 Play_Music:							   ; Offset_0x00150C
@@ -1579,7 +1543,7 @@ Offset_0x00177C:
 		lsl.w	D1, D5
 		subq.w	#$01, D5
 Offset_0x001788:
-		move.w	D7, $00(A1, D0)
+		move.w	D7, (A1, D0)
 		addq.w	#$02, D0
 		dbf	D5, Offset_0x001788
 		bra.s	Offset_0x00174E
@@ -1597,8 +1561,8 @@ LoadPLC:							   ; Offset_0x001794
 		movem.l A1/A2, -(A7)
 		lea	(ArtLoadCues), A1			   ; Offset_0x02E7D4
 		add.w	D0, D0
-		move.w	$00(A1, D0), D0
-		lea	$00(A1, D0), A1
+		move.w	(A1, D0), D0
+		lea	(A1, D0), A1
 		lea	(PLC_Buffer).w, A2					 ; $FFFFF680
 Offset_0x0017AC:
 		tst.l	(A2)
@@ -1620,8 +1584,8 @@ LoadPLC2:							   ; Offset_0x0017C6
 		movem.l A1/A2, -(A7)
 		lea	(ArtLoadCues), A1			   ; Offset_0x02E7D4
 		add.w	D0, D0
-		move.w	$00(A1, D0), D0
-		lea	$00(A1, D0), A1
+		move.w	(A1, D0), D0
+		lea	(A1, D0), A1
 		bsr.s	ClearPLC					   ; Offset_0x0017F2
 		lea	(PLC_Buffer).w, A2					 ; $FFFFF680
 		move.w	(A1)+, D0
