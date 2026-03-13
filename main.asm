@@ -27389,7 +27389,7 @@ Mus_Invinc:						   ; Offset_0x0F0012
 Mus_ExtraLife:							   ; Offset_0x0F023D
 		include	"sound\music\98 - Extra Life.asm"
 Mus_Title:							   ; Offset_0x0F032A
-		binclude	"sound\TScr_99.snd"
+		include	"sound\music\99 - Title Screen.asm"
 Mus_ActClear:						   ; Offset_0x0F04FF
 		include	"sound\music\9A - End of Act.asm"
 Mus_GameOver:					   ; Offset_0x0F0654

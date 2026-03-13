@@ -6,13 +6,13 @@ Title_screen_Header:
 
 	smpsHeaderDAC       Title_screen_DAC
 	smpsHeaderFM        Title_screen_FM1,	$F4, $0C
-	smpsHeaderFM        Title_screen_FM2,	$F4, $0C
+	smpsHeaderFM        Title_screen_FM2,	$F4, $09
 	smpsHeaderFM        Title_screen_FM3,	$F4, $0B
 	smpsHeaderFM        Title_screen_FM4,	$F4, $0B
 	smpsHeaderFM        Title_screen_FM5,	$F4, $0E
 	smpsHeaderPSG       Title_screen_PSG1,	$00, $00, $00, fTone_03
 	smpsHeaderPSG       Title_screen_PSG2,	$00, $02, $00, fTone_03
-	smpsHeaderPSG       Title_screen_PSG3,	$00, $03, $00, fTone_04
+	smpsHeaderPSG       Title_screen_PSG3,	$00, $04, $00, fTone_04
 
 ; FM5 Data
 Title_screen_FM5:
@@ -30,15 +30,12 @@ Title_screen_FM1:
 
 ; FM2 Data
 Title_screen_FM2:
-	smpsSetvoice        $03
+	smpsSetvoice        $01
 	smpsNop             $01
 	dc.b	nRst, $30, nA3, $06, nRst, nA3, nRst, nE3, nRst, nE3, nRst, nG3
 	dc.b	$12, nB3, nD4, $0C, nA3, $06, nRst, nA3, nRst, nE3, nRst, nE3
 	dc.b	nRst, nD4, $12, nCs4, nB3, $0C, nRst, nA3, nRst, nA3, nRst, $06
-	dc.b	nAb3, $12, nA3, $06, nRst
-	smpsSetvoice        $01
-	smpsAlterVol        $02
-	dc.b	nA2, $6C
+	dc.b	nAb3, $12, nA3, $06, nRst, nA2, $6C
 	smpsNop             $01
 	smpsStop
 
@@ -179,22 +176,4 @@ Title_screen_Voices:
 	smpsVcDecayLevel    $01, $01, $0F, $01
 	smpsVcReleaseRate   $0F, $0F, $0F, $0F
 	smpsVcTotalLevel    $00, $2F, $20, $18
-
-;	Voice $03
-;	$39
-;	$06, $60, $30, $01, 	$3F, $3F, $5F, $5F, 	$11, $0F, $13, $09
-;	$05, $04, $04, $03, 	$2F, $2F, $2F, $2F, 	$27, $2C, $97, $80
-	smpsVcAlgorithm     $01
-	smpsVcFeedback      $07
-	smpsVcUnusedBits    $00
-	smpsVcDetune        $00, $03, $06, $00
-	smpsVcCoarseFreq    $01, $00, $00, $06
-	smpsVcRateScale     $01, $01, $00, $00
-	smpsVcAttackRate    $1F, $1F, $3F, $3F
-	smpsVcAmpMod        $00, $00, $00, $00
-	smpsVcDecayRate1    $09, $13, $0F, $11
-	smpsVcDecayRate2    $03, $04, $04, $05
-	smpsVcDecayLevel    $02, $02, $02, $02
-	smpsVcReleaseRate   $0F, $0F, $0F, $0F
-	smpsVcTotalLevel    $00, $97, $2C, $27
 
