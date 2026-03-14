@@ -524,11 +524,11 @@ smpsPSGAlterVolS2 macro vol
 
 ; Clears pushing sound flag in S1
 smpsClearPush macro
-	if SonicDriverVer==1
+;	if SonicDriverVer==1
 		dc.b	$ED
-	else
-		fatal "Coord. Flag to clear S1 push block flag does not exist in S2 or S3 drivers. Complain to Flamewing to add it."
-	endif
+;	else
+;		fatal "Coord. Flag to clear S1 push block flag does not exist in S2 or S3 drivers. Complain to Flamewing to add it."
+;	endif
 	endm
 
 ; Stops special SFX (S1 only) and restarts overridden music track

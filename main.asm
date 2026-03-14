@@ -188,9 +188,9 @@ ErrorTrap:							   ; Offset_0x000200
 		nop
 		bra.s	ErrorTrap					   ; Offset_0x000200
 ROM_Prog_Start:						   ; Offset_0x000206
-		tst.l	(IO_Port_0_Control)					 ; $00A10008
+		tst.l	(IO_Port_0_Control).l					 ; $00A10008
 		bne.s	PortA_OK					   ; Offset_0x000214
-		tst.w	(IO_Expansion_Control)				 ; $00A1000C
+		tst.w	(IO_Expansion_Control).l				 ; $00A1000C
 PortA_OK:							   ; Offset_0x000214
 		bne.s	PortC_OK					   ; Offset_0x000292
 		lea	InitValues(PC), A5			   ; Offset_0x000294
@@ -245,7 +245,7 @@ PSGInitLoop:						   ; Offset_0x000280
 		dbf	D5, PSGInitLoop				   ; Offset_0x000280
 		move.w	D0, (A2)
 		movem.l (A6), D0-D7/A0-A6
-		move	#$2700, SR
+		move.w	#$2700, SR
 PortC_OK:							   ; Offset_0x000292
 		bra.s	Game_Program				   ; Offset_0x000300
 ;-------------------------------------------------------------------------------
@@ -270,8 +270,8 @@ InitValues:							   ; Offset_0x000294
 		dc.b	$9F, $BF, $DF, $FF			; PSG Data
 ;-------------------------------------------------------------------------------
 Game_Program:						   ; Offset_0x000300
-		tst.w	(VDP_Control_Port)					 ; $00C00004
-		btst	#$06, (IO_Expansion_Control+$0001)			 ; $00A1000D
+		tst.w	(VDP_Control_Port).l					 ; $00C00004
+		btst	#$06, (IO_Expansion_Control+$0001).l			 ; $00A1000D
 		beq.s	ChecksumCheck				   ; Offset_0x00031C
 		cmpi.l	#"init", (Init_Flag).w
 		beq.w	AlreadyInit					   ; Offset_0x00036A
@@ -295,12 +295,12 @@ ChksumChkLoop:						   ; Offset_0x000332
 ClearSomeRAMLoop:							   ; Offset_0x00034E
 		move.l	D7, (A6)+
 		dbf	D6, ClearSomeRAMLoop		   ; Offset_0x00034E
-		move.b	(IO_Hardware_Version), D0			 ; $00A10001
+		move.b	(IO_Hardware_Version).l, D0			 ; $00A10001
 		andi.b	#$C0, D0
 		move.b	D0, (Hardware_Id).w
 		move.l	#"init", (Init_Flag).w
 AlreadyInit:						   ; Offset_0x00036A
-		lea	(M68K_RAM_Start&$FFFFFF), A6		 ; $00FF0000
+		lea	(M68K_RAM_Start&$FFFFFF).l, A6		 ; $00FF0000
 		moveq	#$00, D7
 		move.w	#$3F7F, D6
 ClearRemainingRAMLoop:						   ; Offset_0x000376
@@ -328,10 +328,10 @@ GameModeArray:						   ; Offset_0x00039C
 ;===============================================================================
 ChecksumError:						   ; Offset_0x0003B0
 		bsr.w	VDPRegSetup					   ; Offset_0x001734
-		move.l	#Color_RAM_Address, (VDP_Control_Port) ; $C0000000, $00C00004
+		move.l	#Color_RAM_Address, (VDP_Control_Port).l ; $C0000000, $00C00004
 		moveq	#$3F, D7
 ChksumErr_RedFill:							   ; Offset_0x0003C0
-		move.w	#$000E, (VDP_Data_Port)				 ; $00C00000
+		move.w	#$000E, (VDP_Data_Port).l				 ; $00C00000
 		dbf	D7, ChksumErr_RedFill		   ; Offset_0x0003C0
 ChksumErr_InfLoop:							   ; Offset_0x0003CC
 		bra.s	ChksumErr_InfLoop			   ; Offset_0x0003CC
@@ -415,7 +415,7 @@ ErrorException:						   ; Offset_0x00042A
 ; ->>>
 ;===============================================================================
 ErrorMsg_TwoAddresses:						   ; Offset_0x000432
-		move	#$2700, SR
+		move.w	#$2700, SR
 		addq.w	#$02, A7
 		move.l	(A7)+, ($FFFFFC40).w
 		addq.w	#$02, A7
@@ -427,7 +427,7 @@ ErrorMsg_TwoAddresses:						   ; Offset_0x000432
 		bsr.w	ShowErrAddress				   ; Offset_0x0005B2
 		bra.s	ErrorMsg_Wait				   ; Offset_0x000470
 ErrorMessage:						   ; Offset_0x00045A
-		move	#$2700, SR
+		move.w	#$2700, SR
 		movem.l D0-D7/A0-A7, ($FFFFFC00).w
 		bsr.w	ShowErrorMsg				   ; Offset_0x000480
 		move.l	$0002(A7), D0
@@ -435,11 +435,11 @@ ErrorMessage:						   ; Offset_0x00045A
 ErrorMsg_Wait:						   ; Offset_0x000470
 		bsr.w	Error_WaitForC				   ; Offset_0x0005D8
 		movem.l ($FFFFFC00).w, D0-D7/A0-A7
-		move	#$2300, SR
+		move.w	#$2300, SR
 		rte
 ShowErrorMsg:						   ; Offset_0x000480
-		lea	(VDP_Data_Port), A6					 ; $00C00000
-		move.l	#$78000003, (VDP_Control_Port)		 ; $00C00004
+		lea	(VDP_Data_Port).l, A6					 ; $00C00000
+		move.l	#$78000003, (VDP_Control_Port).l		 ; $00C00004
 		lea	(Art_Menu_Text).l, A0			   ; Offset_0x0005E8
 		move.w	#$027F, D1
 Error_LoadGfx:						   ; Offset_0x00049A
@@ -449,7 +449,7 @@ Error_LoadGfx:						   ; Offset_0x00049A
 		move.b	(Exception_Index).w, D0				 ; $FFFFFC44
 		move.w	Error_Text(PC, D0), D0		   ; Offset_0x0004CA
 		lea	Error_Text(PC, D0), A0		   ; Offset_0x0004CA
-		move.l	#$46040003, (VDP_Control_Port)		 ; $00C00004
+		move.l	#$46040003, (VDP_Control_Port).l		 ; $00C00004
 		moveq	#$12, D1
 Loop_Show_Error_Text:						   ; Offset_0x0004BA
 		moveq	#$00, D0
@@ -518,7 +518,7 @@ Error_WaitForC:						   ; Offset_0x0005D8
 		bne.w	Error_WaitForC				   ; Offset_0x0005D8
 		rts
 Art_Menu_Text:						   ; Offset_0x0005E8
-		binclude	"data\art\fontmenu.dat"
+		binclude	"data/art/fontmenu.dat"
 ;===============================================================================
 ; Rotina para mostrar a mensagem de erro
 ; <<<-
@@ -533,11 +533,11 @@ VBlank:								   ; Offset_0x000B08
 		tst.b	(VBlank_Index).w					 ; $FFFFF62A
 		beq.w	Default_VBlank				   ; Offset_0x000B82
 Offset_0x000B14:
-		move.w	(VDP_Control_Port), D0				 ; $00C00004
+		move.w	(VDP_Control_Port).l, D0				 ; $00C00004
 		andi.w	#$0008, D0
 		beq.s	Offset_0x000B14
-		move.l	#$40000010, (VDP_Control_Port)		 ; $00C00004
-		move.l	($FFFFF616).w, (VDP_Data_Port)		 ; $00C00000
+		move.l	#$40000010, (VDP_Control_Port).l		 ; $00C00004
+		move.l	($FFFFF616).w, (VDP_Data_Port).l		 ; $00C00000
 		btst	#$06, (Hardware_Id).w				 ; $FFFFFFF8
 		beq.s	Offset_0x000B42
 		move.w	#$0700, D0
@@ -585,7 +585,7 @@ VBlank_00:							   ; Offset_0x000B82
 Offset_0x000BBC:
 		tst.b	(Water_Level_Flag).w				 ; $FFFFF730
 		beq.w	Offset_0x000C60
-		move.w	(VDP_Control_Port), D0				 ; $00C00004
+		move.w	(VDP_Control_Port).l, D0				 ; $00C00004
 		btst	#$06, (Hardware_Id).w				 ; $FFFFFFF8
 		beq.s	Offset_0x000BDA
 		move.w	#$0700, D0
@@ -596,7 +596,7 @@ Offset_0x000BDA:
 		stopZ80
 		tst.b	($FFFFF64E).w
 		bne.s	Offset_0x000C1E
-		lea	(VDP_Control_Port), A5				 ; $00C00004
+		lea	(VDP_Control_Port).l, A5				 ; $00C00004
 		move.l	#$94009340, (A5)
 		move.l	#$96FD9580, (A5)
 		move.w	#$977F, (A5)
@@ -605,7 +605,7 @@ Offset_0x000BDA:
 		move.w	($FFFFF640).w, (A5)
 		bra.s	Offset_0x000C42
 Offset_0x000C1E:
-		lea	(VDP_Control_Port), A5				 ; $00C00004
+		lea	(VDP_Control_Port).l, A5				 ; $00C00004
 		move.l	#$94009340, (A5)
 		move.l	#$96FD9540, (A5)
 		move.w	#$977F, (A5)
@@ -614,14 +614,14 @@ Offset_0x000C1E:
 		move.w	($FFFFF640).w, (A5)
 Offset_0x000C42:
 		move.w	(Horizontal_Interrupt_Count).w, (A5)		 ; $FFFFF624
-		move.w	#$8230, (VDP_Control_Port)			 ; $00C00004
+		move.w	#$8230, (VDP_Control_Port).l			 ; $00C00004
 		jsr	(Sound_Driver_Input).l		   ; Offset_0x0012AC
 		startZ80
 		bra.w	Offset_0x000B5E
 Offset_0x000C60:
-		move.w	(VDP_Control_Port), D0				 ; $00C00004
-		move.l	#$40000010, (VDP_Control_Port)		 ; $00C00004
-		move.l	($FFFFF616).w, (VDP_Data_Port)		 ; $00C00000
+		move.w	(VDP_Control_Port).l, D0				 ; $00C00004
+		move.l	#$40000010, (VDP_Control_Port).l		 ; $00C00004
+		move.l	($FFFFF616).w, (VDP_Data_Port).l		 ; $00C00000
 		btst	#$06, (Hardware_Id).w				 ; $FFFFFFF8
 		beq.s	Offset_0x000C88
 		move.w	#$0700, D0
@@ -629,11 +629,11 @@ Offset_0x000C84:
 		dbf	D0, Offset_0x000C84
 Offset_0x000C88:
 		move.w	#$0001, ($FFFFF644).w
-		move.w	(Horizontal_Interrupt_Count).w, (VDP_Control_Port) ; $FFFFF624, $00C00004
-		move.w	#$8230, (VDP_Control_Port)			 ; $00C00004
+		move.w	(Horizontal_Interrupt_Count).w, (VDP_Control_Port).l ; $FFFFF624, $00C00004
+		move.w	#$8230, (VDP_Control_Port).l			 ; $00C00004
 		move.l	($FFFFF61E).w, ($FFFFEEEC).w
 		stopZ80
-		lea	(VDP_Control_Port), A5				 ; $00C00004
+		lea	(VDP_Control_Port).l, A5				 ; $00C00004
 		move.l	#$94019340, (A5)
 		move.l	#$96FC9500, (A5)
 		move.w	#$977F, (A5)
@@ -684,7 +684,7 @@ VBlank_08:							   ; Offset_0x000D50
 		bsr.w	Control_Ports_Read			   ; Offset_0x00132C
 		tst.b	($FFFFF64E).w
 		bne.s	Offset_0x000D92
-		lea	(VDP_Control_Port), A5				 ; $00C00004
+		lea	(VDP_Control_Port).l, A5				 ; $00C00004
 		move.l	#$94009340, (A5)
 		move.l	#$96FD9580, (A5)
 		move.w	#$977F, (A5)
@@ -693,7 +693,7 @@ VBlank_08:							   ; Offset_0x000D50
 		move.w	($FFFFF640).w, (A5)
 		bra.s	Offset_0x000DB6
 Offset_0x000D92:
-		lea	(VDP_Control_Port), A5				 ; $00C00004
+		lea	(VDP_Control_Port).l, A5				 ; $00C00004
 		move.l	#$94009340, (A5)
 		move.l	#$96FD9540, (A5)
 		move.w	#$977F, (A5)
@@ -702,15 +702,15 @@ Offset_0x000D92:
 		move.w	($FFFFF640).w, (A5)
 Offset_0x000DB6:
 		move.w	(Horizontal_Interrupt_Count).w, (A5)		 ; $FFFFF624
-		move.w	#$8230, (VDP_Control_Port)			 ; $00C00004
-		lea	(VDP_Control_Port), A5				 ; $00C00004
+		move.w	#$8230, (VDP_Control_Port).l			 ; $00C00004
+		lea	(VDP_Control_Port).l, A5				 ; $00C00004
 		move.l	#$940193C0, (A5)
 		move.l	#$96F09500, (A5)
 		move.w	#$977F, (A5)
 		move.w	#$7C00, (A5)
 		move.w	#$0083, ($FFFFF640).w
 		move.w	($FFFFF640).w, (A5)
-		lea	(VDP_Control_Port), A5				 ; $00C00004
+		lea	(VDP_Control_Port).l, A5				 ; $00C00004
 		move.l	#$94019340, (A5)
 		move.l	#$96FC9500, (A5)
 		move.w	#$977F, (A5)
@@ -733,7 +733,7 @@ Offset_0x000DB6:
 		rts
 DemoTime:							   ; Offset_0x000E56
 		bsr.w	LoadTilesAsYouMove			   ; Offset_0x006F2E
-		jsr	(HudUpdate)					   ; Offset_0x02D316
+		jsr	(HudUpdate).l					   ; Offset_0x02D316
 		bsr.w	Offset_0x001872
 		tst.w	(Timer_Count_Down).w				 ; $FFFFF614
 		beq.w	Exit_DemoTime				   ; Offset_0x000E70
@@ -744,21 +744,21 @@ Exit_DemoTime:						   ; Offset_0x000E70
 VBlank_0A:							   ; Offset_0x000E72
 		stopZ80
 		bsr.w	Control_Ports_Read			   ; Offset_0x00132C
-		lea	(VDP_Control_Port), A5				 ; $00C00004
+		lea	(VDP_Control_Port).l, A5				 ; $00C00004
 		move.l	#$94009340, (A5)
 		move.l	#$96FD9580, (A5)
 		move.w	#$977F, (A5)
 		move.w	#$C000, (A5)
 		move.w	#$0080, ($FFFFF640).w
 		move.w	($FFFFF640).w, (A5)
-		lea	(VDP_Control_Port), A5				 ; $00C00004
+		lea	(VDP_Control_Port).l, A5				 ; $00C00004
 		move.l	#$94019340, (A5)
 		move.l	#$96FC9500, (A5)
 		move.w	#$977F, (A5)
 		move.w	#$7800, (A5)
 		move.w	#$0083, ($FFFFF640).w
 		move.w	($FFFFF640).w, (A5)
-		lea	(VDP_Control_Port), A5				 ; $00C00004
+		lea	(VDP_Control_Port).l, A5				 ; $00C00004
 		move.l	#$940193C0, (A5)
 		move.l	#$96F09500, (A5)
 		move.w	#$977F, (A5)
@@ -781,7 +781,7 @@ VBlank_18:							   ; Offset_0x000F18
 		bsr.w	Control_Ports_Read			   ; Offset_0x00132C
 		tst.b	($FFFFF64E).w
 		bne.s	Offset_0x000F5A
-		lea	(VDP_Control_Port), A5				 ; $00C00004
+		lea	(VDP_Control_Port).l, A5				 ; $00C00004
 		move.l	#$94009340, (A5)
 		move.l	#$96FD9580, (A5)
 		move.w	#$977F, (A5)
@@ -790,7 +790,7 @@ VBlank_18:							   ; Offset_0x000F18
 		move.w	($FFFFF640).w, (A5)
 		bra.s	Offset_0x000F7E
 Offset_0x000F5A:
-		lea	(VDP_Control_Port), A5				 ; $00C00004
+		lea	(VDP_Control_Port).l, A5				 ; $00C00004
 		move.l	#$94009340, (A5)
 		move.l	#$96FD9540, (A5)
 		move.w	#$977F, (A5)
@@ -799,14 +799,14 @@ Offset_0x000F5A:
 		move.w	($FFFFF640).w, (A5)
 Offset_0x000F7E:
 		move.w	(Horizontal_Interrupt_Count).w, (A5)		 ; $FFFFF624
-		lea	(VDP_Control_Port), A5				 ; $00C00004
+		lea	(VDP_Control_Port).l, A5				 ; $00C00004
 		move.l	#$940193C0, (A5)
 		move.l	#$96F09500, (A5)
 		move.w	#$977F, (A5)
 		move.w	#$7C00, (A5)
 		move.w	#$0083, ($FFFFF640).w
 		move.w	($FFFFF640).w, (A5)
-		lea	(VDP_Control_Port), A5				 ; $00C00004
+		lea	(VDP_Control_Port).l, A5				 ; $00C00004
 		move.l	#$94019340, (A5)
 		move.l	#$96FC9500, (A5)
 		move.w	#$977F, (A5)
@@ -821,7 +821,7 @@ Offset_0x000F7E:
 		movem.l (Scroll_Flag_Array).w, D0/D1		 ; $FFFFEE50
 		movem.l D0/D1, (Scroll_Flag_Array_2).w		 ; $FFFFEEA0
 		bsr.w	LoadTilesAsYouMove			   ; Offset_0x006F2E
-		jsr	(HudUpdate)					   ; Offset_0x02D316
+		jsr	(HudUpdate).l					   ; Offset_0x02D316
 		bsr.w	Offset_0x001856
 		rts
 ;-------------------------------------------------------------------------------
@@ -839,21 +839,21 @@ VBlank_12:							   ; Offset_0x001014
 VBlank_16:							   ; Offset_0x001020
 		stopZ80
 		bsr.w	Control_Ports_Read			   ; Offset_0x00132C
-		lea	(VDP_Control_Port), A5				 ; $00C00004
+		lea	(VDP_Control_Port).l, A5				 ; $00C00004
 		move.l	#$94009340, (A5)
 		move.l	#$96FD9580, (A5)
 		move.w	#$977F, (A5)
 		move.w	#$C000, (A5)
 		move.w	#$0080, ($FFFFF640).w
 		move.w	($FFFFF640).w, (A5)
-		lea	(VDP_Control_Port), A5				 ; $00C00004
+		lea	(VDP_Control_Port).l, A5				 ; $00C00004
 		move.l	#$94019340, (A5)
 		move.l	#$96FC9500, (A5)
 		move.w	#$977F, (A5)
 		move.w	#$7800, (A5)
 		move.w	#$0083, ($FFFFF640).w
 		move.w	($FFFFF640).w, (A5)
-		lea	(VDP_Control_Port), A5				 ; $00C00004
+		lea	(VDP_Control_Port).l, A5				 ; $00C00004
 		move.l	#$940193C0, (A5)
 		move.l	#$96F09500, (A5)
 		move.w	#$977F, (A5)
@@ -872,7 +872,7 @@ Offset_0x0010BE:
 		bsr.w	Control_Ports_Read			   ; Offset_0x00132C
 		tst.b	($FFFFF64E).w
 		bne.s	Offset_0x001100
-		lea	(VDP_Control_Port), A5				 ; $00C00004
+		lea	(VDP_Control_Port).l, A5				 ; $00C00004
 		move.l	#$94009340, (A5)
 		move.l	#$96FD9580, (A5)
 		move.w	#$977F, (A5)
@@ -881,7 +881,7 @@ Offset_0x0010BE:
 		move.w	($FFFFF640).w, (A5)
 		bra.s	Offset_0x001124
 Offset_0x001100:
-		lea	(VDP_Control_Port), A5				 ; $00C00004
+		lea	(VDP_Control_Port).l, A5				 ; $00C00004
 		move.l	#$94009340, (A5)
 		move.l	#$96FD9540, (A5)
 		move.w	#$977F, (A5)
@@ -889,14 +889,14 @@ Offset_0x001100:
 		move.w	#$0080, ($FFFFF640).w
 		move.w	($FFFFF640).w, (A5)
 Offset_0x001124:
-		lea	(VDP_Control_Port), A5				 ; $00C00004
+		lea	(VDP_Control_Port).l, A5				 ; $00C00004
 		move.l	#$94019340, (A5)
 		move.l	#$96FC9500, (A5)
 		move.w	#$977F, (A5)
 		move.w	#$7800, (A5)
 		move.w	#$0083, ($FFFFF640).w
 		move.w	($FFFFF640).w, (A5)
-		lea	(VDP_Control_Port), A5				 ; $00C00004
+		lea	(VDP_Control_Port).l, A5				 ; $00C00004
 		move.l	#$940193C0, (A5)
 		move.l	#$96F09500, (A5)
 		move.w	#$977F, (A5)
@@ -924,17 +924,17 @@ HBlank:								   ; Offset_0x00117C
 		move.l	A5, -(A7)
 		move.l	D0, -(A7)
 Offset_0x001196:
-		move.w	(VDP_Control_Port), D0				 ; $00C00004
+		move.w	(VDP_Control_Port).l, D0				 ; $00C00004
 		andi.w	#$0004, D0
 		beq.s	Offset_0x001196
 		move.w	($FFFFF60C).w, D0
 		andi.b	#$BF, D0
-		move.w	D0, (VDP_Control_Port)				 ; $00C00004
-		move.w	#$8228, (VDP_Control_Port)			 ; $00C00004
-		move.l	#$40000010, (VDP_Control_Port)		 ; $00C00004
-		move.l	($FFFFEEEC).w, (VDP_Data_Port)		 ; $00C00000
+		move.w	D0, (VDP_Control_Port).l				 ; $00C00004
+		move.w	#$8228, (VDP_Control_Port).l			 ; $00C00004
+		move.l	#$40000010, (VDP_Control_Port).l		 ; $00C00004
+		move.l	($FFFFEEEC).w, (VDP_Data_Port).l		 ; $00C00000
 		stopZ80
-		lea	(VDP_Control_Port), A5				 ; $00C00004
+		lea	(VDP_Control_Port).l, A5				 ; $00C00004
 		move.l	#$94019340, (A5)
 		move.l	#$96EE9580, (A5)
 		move.w	#$977F, (A5)
@@ -943,12 +943,12 @@ Offset_0x001196:
 		move.w	($FFFFF640).w, (A5)
 		startZ80
 Offset_0x001208:
-		move.w	(VDP_Control_Port), D0				 ; $00C00004
+		move.w	(VDP_Control_Port).l, D0				 ; $00C00004
 		andi.w	#$0004, D0
 		beq.s	Offset_0x001208
 		move.w	($FFFFF60C).w, D0
 		ori.b	#$40, D0
-		move.w	D0, (VDP_Control_Port)				 ; $00C00004
+		move.w	D0, (VDP_Control_Port).l				 ; $00C00004
 		move.l	(A7)+, D0
 		move.l	(A7)+, A5
 Offset_0x001226:
@@ -959,10 +959,10 @@ Offset_0x001226:
 ; ->>>
 ;-------------------------------------------------------------------------------
 Pal_To_ColorRAM:							   ; Offset_0x001228
-		move	#$2700, SR
+		move.w	#$2700, SR
 		move.w	#$0000, ($FFFFF644).w
-		movem.l A0/A1, -(A7)
-		lea	(VDP_Data_Port), A1					 ; $00C00000
+		movem.l A0-A1, -(A7)
+		lea	(VDP_Data_Port).l, A1					 ; $00C00000
 		lea	($FFFFFA80).w, A0
 		move.l	#Color_RAM_Address, $0004(A1)		 ; $C0000000
 		move.l	(A0)+, (A1)
@@ -998,7 +998,7 @@ Pal_To_ColorRAM:							   ; Offset_0x001228
 		move.l	(A0)+, (A1)
 		move.l	(A0)+, (A1)
 		move.w	#$8ADF, $0004(A1)
-		movem.l (A7)+, A0/A1
+		movem.l (A7)+, A0-A1
 		tst.b	($FFFFF64F).w
 		bne.s	Offset_0x00129A
 		rte
@@ -1063,9 +1063,9 @@ Offset_0x0012F6:
 Control_Ports_Init:							   ; Offset_0x0012FC
 		stopZ80
 		moveq	#$40, D0
-		move.b	D0, (IO_Port_0_Control+$0001)		 ; $00A10009
-		move.b	D0, (IO_Port_1_Control+$0001)		 ; $00A1000B
-		move.b	D0, (IO_Expansion_Control+$0001)			 ; $00A1000D
+		move.b	D0, (IO_Port_0_Control+$0001).l		 ; $00A10009
+		move.b	D0, (IO_Port_1_Control+$0001).l		 ; $00A1000B
+		move.b	D0, (IO_Expansion_Control+$0001).l			 ; $00A1000D
 		startZ80
 		rts
 ;===============================================================================
@@ -1079,7 +1079,7 @@ Control_Ports_Init:							   ; Offset_0x0012FC
 ;===============================================================================
 Control_Ports_Read:							   ; Offset_0x00132C
 		lea	(Control_Ports_Buffer_Data).w, A0			 ; $FFFFF604
-		lea	(IO_Joypad_Port_0), A1				 ; $00A10003
+		lea	(IO_Joypad_Port_0).l, A1				 ; $00A10003
 		bsr.s	Control_Ports_Read_Data		   ; Offset_0x00133A
 		addq.w	#$02, A1
 Control_Ports_Read_Data:					   ; Offset_0x00133A
@@ -1112,8 +1112,8 @@ Control_Ports_Read_Data:					   ; Offset_0x00133A
 ; ->>>
 ;===============================================================================
 VDPRegSetup:						   ; Offset_0x001368
-		lea	(VDP_Control_Port), A0				 ; $00C00004
-		lea	(VDP_Data_Port), A1					 ; $00C00000
+		lea	(VDP_Control_Port).l, A0				 ; $00C00004
+		lea	(VDP_Data_Port).l, A1					 ; $00C00000
 		lea	(VDPRegSetup_Array).l, A2		   ; Offset_0x0013F2
 		moveq	#$12, D7
 Offset_0x00137C:
@@ -1123,10 +1123,10 @@ Offset_0x00137C:
 		move.w	D0, ($FFFFF60C).w
 		move.w	#$8ADF, (Horizontal_Interrupt_Count).w ; 224 linhas ; $FFFFF624
 		moveq	#$00, D0
-		move.l	#$40000010, (VDP_Control_Port)		 ; $00C00004
+		move.l	#$40000010, (VDP_Control_Port).l		 ; $00C00004
 		move.w	D0, (A1)
 		move.w	D0, (A1)
-		move.l	#$C0000000, (VDP_Control_Port)		 ; $00C00004
+		move.l	#$C0000000, (VDP_Control_Port).l		 ; $00C00004
 		move.w	#$003F, D7
 Offset_0x0013B0:
 		move.w	D0, (A1)
@@ -1134,12 +1134,12 @@ Offset_0x0013B0:
 		clr.l	($FFFFF616).w
 		clr.l	($FFFFF61A).w
 		move.l	D1, -(A7)
-		lea	(VDP_Control_Port), A5				 ; $00C00004
+		lea	(VDP_Control_Port).l, A5				 ; $00C00004
 		move.w	#$8F01, (A5)
 		move.l	#$94FF93FF, (A5)
 		move.w	#$9780, (A5)
 		move.l	#$40000080, (A5)
-		move.w	#$0000, (VDP_Data_Port)				 ; $00C00000
+		move.w	#$0000, (VDP_Data_Port).l				 ; $00C00000
 Offset_0x0013E2:
 		move.w	(A5), D1
 		btst	#$01, D1
@@ -1163,23 +1163,23 @@ VDPRegSetup_Array:							   ; Offset_0x0013F2
 ;===============================================================================
 ClearScreen:						   ; Offset_0x001418
 		stopZ80
-		lea	(VDP_Control_Port), A5				 ; $00C00004
+		lea	(VDP_Control_Port).l, A5				 ; $00C00004
 		move.w	#$8F01, (A5)
 		move.l	#$940F93FF, (A5)
 		move.w	#$9780, (A5)
 		move.l	#$40000083, (A5)
-		move.w	#$0000, (VDP_Data_Port)				 ; $00C00000
+		move.w	#$0000, (VDP_Data_Port).l				 ; $00C00000
 ClearScreen_DMAWait:						   ; Offset_0x00144C
 		move.w	(A5), D1
 		btst	#$01, D1
 		bne.s	ClearScreen_DMAWait			   ; Offset_0x00144C
 		move.w	#$8F02, (A5)
-		lea	(VDP_Control_Port), A5				 ; $00C00004
+		lea	(VDP_Control_Port).l, A5				 ; $00C00004
 		move.w	#$8F01, (A5)
 		move.l	#$940F93FF, (A5)
 		move.w	#$9780, (A5)
 		move.l	#$60000083, (A5)
-		move.w	#$0000, (VDP_Data_Port)				 ; $00C00000
+		move.w	#$0000, (VDP_Data_Port).l				 ; $00C00000
 ClearScreen_DMAWait_2:						   ; Offset_0x00147A
 		move.w	(A5), D1
 		btst	#$01, D1
@@ -1299,7 +1299,7 @@ Pause_SlowMotion:							   ; Offset_0x001596
 ; ->>>
 ;===============================================================================
 ShowVDPGraphics:							   ; Offset_0x0015A4
-		lea	(VDP_Data_Port), A6					 ; $00C00000
+		lea	(VDP_Data_Port).l, A6					 ; $00C00000
 		move.l	#$00800000, D4
 ShowVDPGraphics_LineLoop:					   ; Offset_0x0015B0
 		move.l	D0, $0004(A6)
@@ -1364,7 +1364,7 @@ Offset_0x001620:
 ; ->>>
 ;===============================================================================
 Process_DMA:						   ; Offset_0x001622
-		lea	(VDP_Control_Port), A5				 ; $00C00004
+		lea	(VDP_Control_Port).l, A5				 ; $00C00004
 		lea	(DMA_Buffer_List).w, A1				 ; $FFFFDC00
 Process_DMA_Loop:							   ; Offset_0x00162C
 		move.w	(A1)+, D0
@@ -1392,21 +1392,21 @@ Process_DMA_End:							   ; Offset_0x001644
 ; ->>>
 ;===============================================================================
 NemesisDec:							   ; Offset_0x001654
-		movem.l D0-D7/A0/A1/A3-A5, -(A7)
+		movem.l D0-D7/A0-A1/A3-A5, -(A7)
 		lea	(NemesisDec_Output).l, A3		   ; Offset_0x001716
-		lea	(VDP_Data_Port), A4					 ; $00C00000
+		lea	(VDP_Data_Port).l, A4					 ; $00C00000
 		bra.s	NemesisDec_Main				   ; Offset_0x001670
 ;-------------------------------------------------------------------------------
 NemesisDecToRAM:							   ; Offset_0x001666
-		movem.l D0-D7/A0/A1/A3-A5, -(A7)
+		movem.l D0-D7/A0-A1/A3-A5, -(A7)
 		lea	(NemesisDec_OutputToRAM).l, A3		   ; Offset_0x00172C
 NemesisDec_Main:							   ; Offset_0x001670
 		lea	($FFFFAA00).w, A1
 		move.w	(A0)+, D2
 		lsl.w	#$01, D2
 		bcc.s	Offset_0x00167E
-			  ; Aponta A3 para NemesisDec_Output_XOR se A3 = NemesisDec_Output ou
-			  ; Aponta A3 para NemesisDec_OutputRAM_XOR se A3 = NemesisDec_OutputRAM
+		; Aponta A3 para NemesisDec_Output_XOR se A3 = NemesisDec_Output ou
+		; Aponta A3 para NemesisDec_OutputRAM_XOR se A3 = NemesisDec_OutputRAM
 		adda.w	#(NemesisDec_Output_XOR-NemesisDec_Output), A3	 ; $000A
 Offset_0x00167E:
 		lsl.w	#$02, D2
@@ -1420,7 +1420,7 @@ Offset_0x00167E:
 		move.b	(A0)+, D5
 		move.w	#$0010, D6
 		bsr.s	NemesisDec_2				   ; Offset_0x00169E
-		movem.l (A7)+, D0-D7/A0/A1/A3-A5
+		movem.l (A7)+, D0-D7/A0-A1/A3-A5
 		rts
 ;-------------------------------------------------------------------------------
 NemesisDec_2:						   ; Offset_0x00169E
@@ -1432,7 +1432,7 @@ NemesisDec_2:						   ; Offset_0x00169E
 		bcc.s	Offset_0x0016EA
 		andi.w	#$00FF, D1
 		add.w	D1, D1
-		move.b	$00(A1, D1), D0
+		move.b	(A1, D1), D0
 		ext.w	D0
 		sub.w	D0, D6
 		cmpi.w	#$0009, D6
@@ -1452,8 +1452,8 @@ NemesisDec_Loop_SubType:					   ; Offset_0x0016D6
 		or.b	D1, D4
 		subq.w	#$01, D3
 		bne.s	Offset_0x0016E4
-			  ; A3 Contém uma das rotinas de descompressão no formato Nemesis.
-			  ; ( NemesisDec_Output_XOR ou NemesisDec_OutputRAM_XOR )
+		; A3 Contém uma das rotinas de descompressão no formato Nemesis.
+		; ( NemesisDec_Output_XOR ou NemesisDec_OutputRAM_XOR )
 		jmp	(A3)
 ;-------------------------------------------------------------------------------
 NemesisDec_3						   ; Offset_0x0016E0
@@ -1564,8 +1564,8 @@ Offset_0x001788:
 ; ->>>
 ;===============================================================================
 LoadPLC:							   ; Offset_0x001794
-		movem.l A1/A2, -(A7)
-		lea	(ArtLoadCues), A1			   ; Offset_0x02E7D4
+		movem.l A1-A2, -(A7)
+		lea	(ArtLoadCues).l, A1			   ; Offset_0x02E7D4
 		add.w	D0, D0
 		move.w	(A1, D0), D0
 		lea	(A1, D0), A1
@@ -1583,12 +1583,12 @@ Offset_0x0017B8:
 		move.w	(A1)+, (A2)+
 		dbf	D0, Offset_0x0017B8
 Offset_0x0017C0:
-		movem.l (A7)+, A1/A2
+		movem.l (A7)+, A1-A2
 		rts
 ;-------------------------------------------------------------------------------
 LoadPLC2:							   ; Offset_0x0017C6
-		movem.l A1/A2, -(A7)
-		lea	(ArtLoadCues), A1			   ; Offset_0x02E7D4
+		movem.l A1-A2, -(A7)
+		lea	(ArtLoadCues).l, A1			   ; Offset_0x02E7D4
 		add.w	D0, D0
 		move.w	(A1, D0), D0
 		lea	(A1, D0), A1
@@ -1601,7 +1601,7 @@ Offset_0x0017E4:
 		move.w	(A1)+, (A2)+
 		dbf	D0, Offset_0x0017E4
 Offset_0x0017EC:
-		movem.l (A7)+, A1/A2
+		movem.l (A7)+, A1-A2
 		rts
 ;===============================================================================
 ; Rotinas para carga dos gráficos no array ArtLoadCues de acordo com o
@@ -1641,7 +1641,7 @@ RunPLC:								   ; Offset_0x001800
 		move.w	(A0)+, D2
 		bpl.s	Offset_0x001822
 		; Aponta A3 para NemesisDec_Output_XOR se A3 = NemesisDec_Output ou
-			  ; Aponta A3 para NemesisDec_OutputRAM_XOR se A3 = NemesisDec_OutputRAM
+		; Aponta A3 para NemesisDec_OutputRAM_XOR se A3 = NemesisDec_OutputRAM
 		adda.w	#(NemesisDec_Output_XOR-NemesisDec_Output), A3	 ; $000A
 Offset_0x001822:
 		andi.w	#$7FFF, D2
@@ -1682,7 +1682,7 @@ Offset_0x001872:
 		move.w	($FFFFF684).w, D0
 		addi.w	#$0060, ($FFFFF684).w
 Offset_0x00188A:
-		lea	(VDP_Control_Port), A4				 ; $00C00004
+		lea	(VDP_Control_Port).l, A4				 ; $00C00004
 		lsl.l	#$02, D0
 		lsr.w	#$02, D0
 		ori.w	#$4000, D0
@@ -1725,10 +1725,10 @@ Offset_0x0018F6:
 ; ->>>
 ;===============================================================================
 RunPLC_ROM:							   ; Offset_0x001900
-		lea	(ArtLoadCues), A1			   ; Offset_0x02E7D4
+		lea	(ArtLoadCues).l, A1			   ; Offset_0x02E7D4
 		add.w	D0, D0
-		move.w	$00(A1, D0), D0
-		lea	$00(A1, D0), A1
+		move.w	(A1, D0), D0
+		lea	(A1, D0), A1
 		move.w	(A1)+, D1
 RunPLC_ROM_Loop:							   ; Offset_0x001912
 		move.l	(A1)+, A0
@@ -1738,7 +1738,7 @@ RunPLC_ROM_Loop:							   ; Offset_0x001912
 		lsr.w	#$02, D0
 		ori.w	#$4000, D0
 		swap	D0
-		move.l	D0, (VDP_Control_Port)				 ; $00C00004
+		move.l	D0, (VDP_Control_Port).l				 ; $00C00004
 		bsr.w	NemesisDec					   ; Offset_0x001654
 		dbf	D1, RunPLC_ROM_Loop			   ; Offset_0x001912
 		rts
@@ -1955,28 +1955,28 @@ KosinskiDec:						   ; Offset_0x001AB0
 		moveq	#$0F, D4
 Offset_0x001ABC:
 		lsr.w	#$01, D5
-		move	SR, D6
+		move.w	SR, D6
 		dbf	D4, Offset_0x001ACE
 		move.b	(A0)+, $0001(A7)
 		move.b	(A0)+, (A7)
 		move.w	(A7), D5
 		moveq	#$0F, D4
 Offset_0x001ACE:
-		move	D6, CCR
+		move.w	D6, CCR
 		bcc.s	Offset_0x001AD6
 		move.b	(A0)+, (A1)+
 		bra.s	Offset_0x001ABC
 Offset_0x001AD6:
 		moveq	#$00, D3
 		lsr.w	#$01, D5
-		move	SR, D6
+		move.w	SR, D6
 		dbf	D4, Offset_0x001AEA
 		move.b	(A0)+, $0001(A7)
 		move.b	(A0)+, (A7)
 		move.w	(A7), D5
 		moveq	#$0F, D4
 Offset_0x001AEA:
-		move	D6, CCR
+		move.w	D6, CCR
 		bcs.s	Offset_0x001B1A
 		lsr.w	#$01, D5
 		dbf	D4, Offset_0x001AFE
@@ -2010,7 +2010,7 @@ Offset_0x001B1A:
 		move.b	D1, D3
 		addq.w	#$01, D3
 Offset_0x001B30:
-		move.b	$00(A1, D2), D0
+		move.b	(A1, D2), D0
 		move.b	D0, (A1)+
 		dbf	D3, Offset_0x001B30
 		bra.s	Offset_0x001ABC
@@ -2657,7 +2657,7 @@ PalCycle_GHz:						   ; Offset_0x001FAC
 		addq.w	#$01, ($FFFFF632).w
 		andi.w	#$0003, D0
 		lsl.w	#$03, D0
-		move.l	$00(A0, D0), ($FFFFFB26).w
+		move.l	(A0, D0), ($FFFFFB26).w
 		move.l	$04(A0, D0), ($FFFFFB3C).w
 Offset_0x001FD8:
 		rts
@@ -2681,7 +2681,7 @@ PalCycle_Wz:						   ; Offset_0x001FDA
 		move.w	#$0006, ($FFFFF632).w
 Offset_0x001FFC:
 		lea	($FFFFFB66).w, A1
-		move.l	$00(A0, D0), (A1)+
+		move.l	(A0, D0), (A1)+
 		move.l	$04(A0, D0), (A1)
 Offset_0x002008:
 		rts
@@ -2706,7 +2706,7 @@ PalCycle_Mz:						   ; Offset_0x00200A
 		move.w	#$0000, ($FFFFF632).w
 Offset_0x002032:
 		lea	($FFFFFB4A).w, A1
-		move.w	$00(A0, D0), (A1)
+		move.w	(A0, D0), (A1)
 Offset_0x00203A:
 		subq.w	#$01, ($FFFFF666).w
 		bpl.s	Offset_0x00206E
@@ -2719,7 +2719,7 @@ Offset_0x00203A:
 		move.w	#$0000, ($FFFFF652).w
 Offset_0x002062:
 		lea	($FFFFFB42).w, A1
-		move.l	$00(A0, D0), (A1)+
+		move.l	(A0, D0), (A1)+
 		move.w	$04(A0, D0), (A1)
 Offset_0x00206E:
 		subq.w	#$01, ($FFFFF668).w
@@ -2733,7 +2733,7 @@ Offset_0x00206E:
 		move.w	#$0000, ($FFFFF654).w
 Offset_0x002096:
 		lea	($FFFFFB5E).w, A1
-		move.w	$00(A0, D0), (A1)
+		move.w	(A0, D0), (A1)
 Offset_0x00209E:
 		rts
 ;-------------------------------------------------------------------------------
@@ -2755,7 +2755,7 @@ PalCycle_HTz:						   ; Offset_0x0020A0
 		andi.w	#$000F, D0
 		move.b	Pal_HTzCyc_Data(PC, D0), ($FFFFF635).w ; Offset_0x0020D4
 		lsl.w	#$03, D0
-		move.l	$00(A0, D0), ($FFFFFB26).w
+		move.l	(A0, D0), ($FFFFFB26).w
 		move.l	$04(A0, D0), ($FFFFFB3C).w
 Offset_0x0020D2:
 		rts
@@ -2783,11 +2783,11 @@ PalCycle_HPz:						   ; Offset_0x0020E4
 		move.w	#$0006, ($FFFFF632).w
 Offset_0x002106:
 		lea	($FFFFFB72).w, A1
-		move.l	$00(A0, D0), (A1)+
+		move.l	(A0, D0), (A1)+
 		move.l	$04(A0, D0), (A1)
 		lea	(Pal_HPzCyc2).l, A0			   ; Offset_0x0023C8
 		lea	($FFFFFAF2).w, A1
-		move.l	$00(A0, D0), (A1)+
+		move.l	(A0, D0), (A1)+
 		move.l	$04(A0, D0), (A1)
 Offset_0x002124:
 		rts
@@ -2809,7 +2809,7 @@ PalCycle_OOz:						   ; Offset_0x002126
 		addq.w	#$02, ($FFFFF632).w
 		andi.w	#$0006, ($FFFFF632).w
 		lea	($FFFFFB54).w, A1
-		move.l	$00(A0, D0), (A1)+
+		move.l	(A0, D0), (A1)+
 		move.l	$04(A0, D0), (A1)
 Offset_0x002152:
 		rts
@@ -2830,7 +2830,7 @@ PalCycle_DHz:						   ; Offset_0x002154
 		move.w	($FFFFF632).w, D0
 		addq.w	#$02, ($FFFFF632).w
 		andi.w	#$0006, ($FFFFF632).w
-		move.w	$00(A0, D0), ($FFFFFB36).w
+		move.w	(A0, D0), ($FFFFFB36).w
 Offset_0x00217A:
 		rts
 ;-------------------------------------------------------------------------------
@@ -2853,7 +2853,7 @@ PalCycle_CNz:						   ; Offset_0x00217C
 		bcs.s	Offset_0x0021A6
 		move.w	#$0000, ($FFFFF632).w
 Offset_0x0021A6:
-		lea	$00(A0, D0), A0
+		lea	(A0, D0), A0
 		lea	(Palette_Buffer).w, A1				 ; $FFFFFB00
 		_move.w	0(A0), $004A(A1)
 		move.w	$0006(A0), $004C(A1)
@@ -2862,7 +2862,7 @@ Offset_0x0021A6:
 		move.w	$0018(A0), $0058(A1)
 		move.w	$001E(A0), $005A(A1)
 		lea	(Pal_CNzCyc2).l, A0			   ; Offset_0x002414
-		lea	$00(A0, D0), A0
+		lea	(A0, D0), A0
 		_move.w	0(A0), $0064(A1)
 		move.w	$0006(A0), $0066(A1)
 		move.w	$000C(A0), $0068(A1)
@@ -2876,7 +2876,7 @@ Offset_0x00220A:
 		lea	($FFFFFB72).w, A1
 		move.w	$04(A0, D0), (A1)+
 		move.w	$02(A0, D0), (A1)+
-		move.w	$00(A0, D0), (A1)+
+		move.w	(A0, D0), (A1)+
 Offset_0x00221A:
 		rts
 ;-------------------------------------------------------------------------------
@@ -2900,7 +2900,7 @@ PalCycle_CPz:						   ; Offset_0x00221C
 		move.w	#$0000, ($FFFFF632).w
 Offset_0x002244:
 		lea	($FFFFFB78).w, A1
-		move.l	$00(A0, D0), (A1)+
+		move.l	(A0, D0), (A1)+
 		move.w	$04(A0, D0), (A1)
 		lea	(Pal_CPzCyc2).l, A0			   ; Offset_0x002484
 		move.w	($FFFFF652).w, D0
@@ -2909,12 +2909,12 @@ Offset_0x002244:
 		bcs.s	Offset_0x00226C
 		move.w	#$0000, ($FFFFF652).w
 Offset_0x00226C:
-		move.w	$00(A0, D0), ($FFFFFB7E).w
+		move.w	(A0, D0), ($FFFFFB7E).w
 		lea	(Pal_CPzCyc3).l, A0			   ; Offset_0x0024AE
 		move.w	($FFFFF654).w, D0
 		addq.w	#$02, ($FFFFF654).w
 		andi.w	#$001E, ($FFFFF654).w
-		move.w	$00(A0, D0), ($FFFFFB5E).w
+		move.w	(A0, D0), ($FFFFFB5E).w
 Offset_0x00228C:
 		rts
 ;-------------------------------------------------------------------------------
@@ -2936,7 +2936,7 @@ PalCycle_NGHz:						   ; Offset_0x00228E
 		andi.w	#$0003, D0
 		lsl.w	#$03, D0
 		lea	($FFFFFB44).w, A1
-		move.l	$00(A0, D0), (A1)+
+		move.l	(A0, D0), (A1)+
 		move.l	$04(A0, D0), (A1)
 Offset_0x0022BA:
 		rts
@@ -3369,7 +3369,7 @@ Offset_0x002842:
 Offset_0x00284C:
 		cmpi.w	#$0060, D0
 		bcc.s	Offset_0x002856
-		move.w	(A0)+, $00(A1, D0)
+		move.w	(A0)+, (A1, D0)
 Offset_0x002856:
 		addq.w	#$02, D0
 		dbf	D1, Offset_0x002842
@@ -3401,7 +3401,7 @@ Offset_0x002882:
 Offset_0x0028A0:
 		move.w	D0, ($FFFFF632).w
 		lea	(Pal_SegaCyc2).l, A0			   ; Offset_0x0028E4
-		lea	$00(A0, D0), A0
+		lea	(A0, D0), A0
 		lea	($FFFFFB04).w, A1
 		move.l	(A0)+, (A1)+
 		move.l	(A0)+, (A1)+
@@ -3415,7 +3415,7 @@ Offset_0x0028C0:
 		bne.s	Offset_0x0028CA
 		addq.w	#$02, D0
 Offset_0x0028CA:
-		move.w	(A0), $00(A1, D0)
+		move.w	(A0), (A1, D0)
 		addq.w	#$02, D0
 		dbf	D1, Offset_0x0028C0
 Offset_0x0028D4:
@@ -3544,49 +3544,49 @@ PalPointers:						   ; Offset_0x002980
 		dc.w	$FB20, $0007
 
 Pal_Sega_Bg:						   ; Offset_0x002A50
-		binclude	"data\all\sega_bg.pal"
+		binclude	"data/all/sega_bg.pal"
 Pal_Title_Screen:							   ; Offset_0x002AD0
-		binclude	"data\all\titlscrn.pal"
+		binclude	"data/all/titlscrn.pal"
 Pal_Level_Select_Menu:						   ; Offset_0x002B50
-		binclude	"data\all\lvl_menu.pal"
+		binclude	"data/all/lvl_menu.pal"
 Pal_Sonic_And_Miles:						   ; Offset_0x002BD0
-		binclude	"data\all\sonic.pal"
+		binclude	"data/all/sonic.pal"
 Pal_GHz:							   ; Offset_0x002BF0
 Pal_Lvl1:							   ; Offset_0x002BF0
 Pal_Lvl3:							   ; Offset_0x002BF0
 Pal_Lvl9:							   ; Offset_0x002BF0
 Pal_GCz:							   ; Offset_0x002BF0
-		binclude	"data\ghz\ghz.pal"
+		binclude	"data/ghz/ghz.pal"
 Pal_Wz:								   ; Offset_0x002C50
-		binclude	"data\wz\wz.pal"
+		binclude	"data/wz/wz.pal"
 Pal_Mz:								   ; Offset_0x002CB0
-		binclude	"data\mz\mz.pal"
+		binclude	"data/mz/mz.pal"
 Pal_HTz:							   ; Offset_0x002D10
-		binclude	"data\htz\htz.pal"
+		binclude	"data/htz/htz.pal"
 Pal_HPz:							   ; Offset_0x002D70
-		binclude	"data\hpz\hpz.pal"
+		binclude	"data/hpz/hpz.pal"
 Pal_HPz_Water:						   ; Offset_0x002DD0
-		binclude	"data\hpz\hpz_uw.pal"
+		binclude	"data/hpz/hpz_uw.pal"
 Pal_OOz:							   ; Offset_0x002E50
-		binclude	"data\ooz\ooz.pal"
+		binclude	"data/ooz/ooz.pal"
 Pal_DHz:							   ; Offset_0x002EB0
-		binclude	"data\dhz\dhz.pal"
+		binclude	"data/dhz/dhz.pal"
 Pal_CNz:							   ; Offset_0x002F10
-		binclude	"data\cnz\cnz_1.pal"
+		binclude	"data/cnz/cnz_1.pal"
 Pal_Lvl6:	  ; Casino Night Act 2					   ; Offset_0x002F70
-		binclude	"data\cnz\cnz_2.pal"
+		binclude	"data/cnz/cnz_2.pal"
 Pal_CPz:							   ; Offset_0x002FD0
-		binclude	"data\cpz\cpz.pal"
+		binclude	"data/cpz/cpz.pal"
 Pal_CPz_Water:						   ; Offset_0x003030
-		binclude	"data\cpz\cpz_uw.pal"
+		binclude	"data/cpz/cpz_uw.pal"
 Pal_NGHz:							   ; Offset_0x0030B0
-		binclude	"data\nghz\nghz.pal"
+		binclude	"data/nghz/nghz.pal"
 Pal_NGHz_Water:						   ; Offset_0x003110
-		binclude	"data\nghz\nghz_uw.pal"
+		binclude	"data/nghz/nghz_uw.pal"
 Pal_DEz:							   ; Offset_0x003190
-		binclude	"data\dez\dez.pal"
+		binclude	"data/dez/dez.pal"
 Pal_Special_Stage_Main:						   ; Offset_0x0031B0
-		binclude	"data\ss\ss_main.pal"
+		binclude	"data/ss/ss_main.pal"
 Offset_0x003230:
 		dc.w	$0002, $0000, $006C, $008E, $00CE, $0044, $0EEE, $0AAA
 		dc.w	$0888, $0444, $0666, $0006, $00EE, $0088, $002E, $002A
@@ -3600,7 +3600,7 @@ Offset_0x003230:
 ; ->>>
 ;===============================================================================
 Wait_For_VSync:						   ; Offset_0x003250
-		move	#$2300, SR
+		move.w	#$2300, SR
 Wait_For_VSync_Inf_Loop:					   ; Offset_0x003254
 		tst.b	(VBlank_Index).w					 ; $FFFFF62A
 		bne.s	Wait_For_VSync_Inf_Loop		   ; Offset_0x003254
@@ -3700,7 +3700,7 @@ Sine_Table:							   ; Offset_0x00329A
 ; ->>>
 ;===============================================================================
 CalcAngle:							   ; Offset_0x00351A
-		movem.l D3/D4, -(A7)
+		movem.l D3-D4, -(A7)
 		moveq	#$00, D3
 		moveq	#$00, D4
 		move.w	D1, D3
@@ -3739,11 +3739,11 @@ Offset_0x003564:
 		neg.w	D0
 		addi.w	#$0100, D0
 Offset_0x003570:
-		movem.l (A7)+, D3/D4
+		movem.l (A7)+, D3-D4
 		rts
 Offset_0x003576:
 		move.w	#$0040, D0
-		movem.l (A7)+, D3/D4
+		movem.l (A7)+, D3-D4
 		rts
 ;-------------------------------------------------------------------------------
 Angle_Table:						   ; Offset_0x003580
@@ -3794,7 +3794,7 @@ Sega_Screen:						   ; Offset_0x003684
 		bsr.w	Play_Music					   ; Offset_0x00150C
 		bsr.w	ClearPLC					   ; Offset_0x0017F2
 		bsr.w	Pal_FadeFrom				   ; Offset_0x00266C
-		lea	(VDP_Control_Port), A6				 ; $00C00004
+		lea	(VDP_Control_Port).l, A6				 ; $00C00004
 		move.w	#$8004, (A6)
 		move.w	#$8230, (A6)
 		move.w	#$8407, (A6)
@@ -3802,31 +3802,31 @@ Sega_Screen:						   ; Offset_0x003684
 		move.w	#$8B00, (A6)
 		move.w	#$8C81, (A6)
 		clr.b	($FFFFF64E).w
-		move	#$2700, SR
+		move.w	#$2700, SR
 		move.w	($FFFFF60C).w, D0
 		andi.b	#$BF, D0
-		move.w	D0, (VDP_Control_Port)				 ; $00C00004
+		move.w	D0, (VDP_Control_Port).l				 ; $00C00004
 		bsr.w	ClearScreen					   ; Offset_0x001418
-		move.l	#$40000000, (VDP_Control_Port)		 ; $00C00004
-		lea	(Art_SEGA), A0				   ; Offset_0x074876
+		move.l	#$40000000, (VDP_Control_Port).l		 ; $00C00004
+		lea	(Art_SEGA).l, A0				   ; Offset_0x074876
 		bsr.w	NemesisDec					   ; Offset_0x001654
-		lea	(M68K_RAM_Start), A1				 ; $FFFF0000
-		lea	(Sega_Mappings), A0			   ; Offset_0x074CE6
+		lea	(M68K_RAM_Start).l, A1				 ; $FFFF0000
+		lea	(Sega_Mappings).l, A0			   ; Offset_0x074CE6
 		move.w	#$0000, D0
 		bsr.w	EnigmaDec					   ; Offset_0x001932
-		lea	(M68K_RAM_Start), A1				 ; $FFFF0000
+		lea	(M68K_RAM_Start).l, A1				 ; $FFFF0000
 		move.l	#$65100003, D0
 		moveq	#$17, D1
 		moveq	#$07, D2
 		bsr.w	ShowVDPGraphics				   ; Offset_0x0015A4
-		lea	($FFFF0180), A1
+		lea	($FFFF0180).l, A1
 		move.l	#$40000003, D0
 		moveq	#$27, D1
 		moveq	#$1B, D2
 		bsr.w	ShowVDPGraphics				   ; Offset_0x0015A4
 		tst.b	(Hardware_Id).w				 ; $FFFFFFF8
 		bmi.s	Offset_0x003736
-		lea	($FFFF0A40), A1
+		lea	($FFFF0A40).l, A1
 		move.l	#$453A0003, D0
 		moveq	#$02, D1
 		moveq	#$01, D2
@@ -3841,7 +3841,7 @@ Offset_0x003736:
 		move.w	#$00B4, (Timer_Count_Down).w		 ; $FFFFF614
 		move.w	($FFFFF60C).w, D0
 		ori.b	#$40, D0
-		move.w	D0, (VDP_Control_Port)				 ; $00C00004
+		move.w	D0, (VDP_Control_Port).l				 ; $00C00004
 Offset_0x003768:
 		move.b	#$02, (VBlank_Index).w				 ; $FFFFF62A
 		bsr.w	Wait_For_VSync				   ; Offset_0x003250
@@ -3876,8 +3876,8 @@ Title_Screen:						   ; Offset_0x0037B0
 		bsr.w	Play_Music					   ; Offset_0x00150C
 		bsr.w	ClearPLC					   ; Offset_0x0017F2
 		bsr.w	Pal_FadeFrom				   ; Offset_0x00266C
-		move	#$2700, SR
-		lea	(VDP_Control_Port), A6				 ; $00C00004
+		move.w	#$2700, SR
+		lea	(VDP_Control_Port).l, A6				 ; $00C00004
 		move.w	#$8004, (A6)
 		move.w	#$8230, (A6)
 		move.w	#$8407, (A6)
@@ -3921,14 +3921,14 @@ Offset_0x00383C:
 		moveq	#$03, D0
 		bsr.w	PalLoad1					   ; Offset_0x002914
 		bsr.w	Pal_FadeTo					   ; Offset_0x0025C8
-		move	#$2700, SR
-		move.l	#$40000000, (VDP_Control_Port)		 ; $00C00004
-		lea	(Art_Title_Screen_Bg_Wings), A0		   ; Offset_0x075436
+		move.w	#$2700, SR
+		move.l	#$40000000, (VDP_Control_Port).l		 ; $00C00004
+		lea	(Art_Title_Screen_Bg_Wings).l, A0		   ; Offset_0x075436
 		bsr.w	NemesisDec					   ; Offset_0x001654
-		move.l	#$40000001, (VDP_Control_Port)		 ; $00C00004
-		lea	(Art_Title_Screen_Sonic_Miles), A0	   ; Offset_0x076D98
+		move.l	#$40000001, (VDP_Control_Port).l		 ; $00C00004
+		lea	(Art_Title_Screen_Sonic_Miles).l, A0	   ; Offset_0x076D98
 		bsr.w	NemesisDec					   ; Offset_0x001654
-		lea	(VDP_Data_Port), A6					 ; $00C00000
+		lea	(VDP_Data_Port).l, A6					 ; $00C00000
 		move.l	#$50000003, $0004(A6)
 		lea	(Art_Menu_Text).l, A5			   ; Offset_0x0005E8
 		move.w	#$028F, D1
@@ -3943,30 +3943,30 @@ Offset_0x003890:
 		move.w	#$0000, (Level_Id).w				 ; $FFFFFE10
 		move.w	#$0000, ($FFFFF634).w
 		bsr.w	Pal_FadeFrom				   ; Offset_0x00266C
-		move	#$2700, SR
-		lea	(M68K_RAM_Start), A1				 ; $FFFF0000
-		lea	(TS_Wings_Sonic_Mappings), A0		   ; Offset_0x074DE2
+		move.w	#$2700, SR
+		lea	(M68K_RAM_Start).l, A1				 ; $FFFF0000
+		lea	(TS_Wings_Sonic_Mappings).l, A0		   ; Offset_0x074DE2
 		move.w	#$0000, D0
 		bsr.w	EnigmaDec					   ; Offset_0x001932
-		lea	(M68K_RAM_Start), A1				 ; $FFFF0000
+		lea	(M68K_RAM_Start).l, A1				 ; $FFFF0000
 		move.l	#$40000003, D0
 		moveq	#$27, D1
 		moveq	#$1B, D2
 		bsr.w	ShowVDPGraphics				   ; Offset_0x0015A4
-		lea	(M68K_RAM_Start), A1				 ; $FFFF0000
-		lea	(Title_Screen_Bg_Mappings), A0		   ; Offset_0x074F3A
+		lea	(M68K_RAM_Start).l, A1				 ; $FFFF0000
+		lea	(Title_Screen_Bg_Mappings).l, A0		   ; Offset_0x074F3A
 		move.w	#$0000, D0
 		bsr.w	EnigmaDec					   ; Offset_0x001932
-		lea	(M68K_RAM_Start), A1				 ; $FFFF0000
+		lea	(M68K_RAM_Start).l, A1				 ; $FFFF0000
 		move.l	#$60000003, D0
 		moveq	#$1F, D1
 		moveq	#$1B, D2
 		bsr.w	ShowVDPGraphics				   ; Offset_0x0015A4
-		lea	(M68K_RAM_Start), A1				 ; $FFFF0000
-		lea	(Title_Screen_R_Bg_Mappings), A0	   ; Offset_0x0751EE
+		lea	(M68K_RAM_Start).l, A1				 ; $FFFF0000
+		lea	(Title_Screen_R_Bg_Mappings).l, A0	   ; Offset_0x0751EE
 		move.w	#$0000, D0
 		bsr.w	EnigmaDec					   ; Offset_0x001932
-		lea	(M68K_RAM_Start), A1				 ; $FFFF0000
+		lea	(M68K_RAM_Start).l, A1				 ; $FFFF0000
 		move.l	#$60400003, D0
 		moveq	#$1F, D1
 		moveq	#$1B, D2
@@ -3987,8 +3987,8 @@ Offset_0x003966:
 		move.b	#$0E, (Obj_Memory_Address+$0040).w			 ; $FFFFB040
 		move.b	#$0E, (Obj_Memory_Address+$0080).w			 ; $FFFFB080
 		move.b	#$01, (Obj_Memory_Address+$009A).w			 ; $FFFFB09A
-		jsr	(Load_Objects)				   ; Offset_0x00CEA8
-		jsr	(Build_Sprites)				   ; Offset_0x00D442
+		jsr	(Load_Objects).l				   ; Offset_0x00CEA8
+		jsr	(Build_Sprites).l				   ; Offset_0x00D442
 		moveq	#$00, D0
 		bsr.w	LoadPLC2					   ; Offset_0x0017C6
 		move.w	#$0000, ($FFFFFFD4).w
@@ -3998,14 +3998,14 @@ Offset_0x003966:
 		move.w	#$0000, ($FFFFE500).w
 		move.w	($FFFFF60C).w, D0
 		ori.b	#$40, D0
-		move.w	D0, (VDP_Control_Port)				 ; $00C00004
+		move.w	D0, (VDP_Control_Port).l				 ; $00C00004
 		bsr.w	Pal_FadeTo					   ; Offset_0x0025C8
 TitleScreen_Loop:							   ; Offset_0x0039C0
 		move.b	#$04, (VBlank_Index).w				 ; $FFFFF62A
 		bsr.w	Wait_For_VSync				   ; Offset_0x003250
-		jsr	(Load_Objects)				   ; Offset_0x00CEA8
+		jsr	(Load_Objects).l				   ; Offset_0x00CEA8
 		bsr.w	Bg_Scroll_Title_Screen		   ; Offset_0x005F00
-		jsr	(Build_Sprites)				   ; Offset_0x00D442
+		jsr	(Build_Sprites).l				   ; Offset_0x00D442
 		bsr.w	RunPLC				   ; Offset_0x001800
 		tst.b	(Hardware_Id).w				 ; $FFFFFFF8
 		bpl.s	Code_Sequence_J				   ; Offset_0x0039EC
@@ -4069,9 +4069,9 @@ LevelSelect_ClearScroll:					   ; Offset_0x003A94
 		move.l	D0, (A1)+
 		dbf	D1, LevelSelect_ClearScroll			   ; Offset_0x003A94
 		move.l	D0, ($FFFFF616).w
-		move	#$2700, SR
-		lea	(VDP_Data_Port), A6					 ; $00C00000
-		move.l	#$60000003, (VDP_Control_Port)		 ; $00C00004
+		move.w	#$2700, SR
+		lea	(VDP_Data_Port).l, A6					 ; $00C00000
+		move.l	#$60000003, (VDP_Control_Port).l		 ; $00C00004
 		move.w	#$03FF, D1
 LevelSelect_ClearVRAM:						   ; Offset_0x003AB6
 		move.l	D0, (A6)
@@ -4270,7 +4270,7 @@ Offset_0x003D3A:
 		rts
 Offset_0x003D3C:
 		lea	(Level_Select_Text).l, A1		   ; Offset_0x003DF4
-		lea	(VDP_Data_Port), A6					 ; $00C00000
+		lea	(VDP_Data_Port).l, A6					 ; $00C00000
 		move.l	#$608C0003, D4
 		move.w	#$8680, D3
 		moveq	#$1A, D1
@@ -4297,7 +4297,7 @@ Offset_0x003D54:
 		bne.s	Offset_0x003DA2
 		move.w	#$C680, D3
 Offset_0x003DA2:
-		move.l	#$6DB00003, (VDP_Control_Port)		 ; $00C00004
+		move.l	#$6DB00003, (VDP_Control_Port).l		 ; $00C00004
 		move.w	($FFFFFF84).w, D0
 		addi.w	#$0080, D0
 		move.b	D0, D2
@@ -4361,7 +4361,7 @@ Level_Select_Text:							   ; Offset_0x003DF4
 		even
 ;-------------------------------------------------------------------------------
 ; Offset_0x0040CE:
-		lea	(M68K_RAM_Start), A1				 ; $FFFF0000
+		lea	(M68K_RAM_Start).l, A1				 ; $FFFF0000
 		move.w	#$02EB, D2
 Offset_0x0040D8:
 		move.w	(A1), D0
@@ -4375,16 +4375,16 @@ Offset_0x0040D8:
 		rts
 ;-------------------------------------------------------------------------------
 ; Offset_0x0040F0:
-		lea	($00FE0000), A1
-		lea	($00FE0080), A2
-		lea	(M68K_RAM_Start), A3				 ; $FFFF0000
+		lea	($00FE0000).l, A1
+		lea	($00FE0080).l, A2
+		lea	(M68K_RAM_Start).l, A3				 ; $FFFF0000
 		move.w	#$003F, D1
 Offset_0x004106:
 		bsr.w	Offset_0x004198
 		bsr.w	Offset_0x004198
 		dbf	D1, Offset_0x004106
-		lea	($00FE0000), A1
-		lea	(M68K_RAM_Start&$FFFFFF), A2		 ; $00FF0000
+		lea	($00FE0000).l, A1
+		lea	(M68K_RAM_Start&$FFFFFF).l, A2		 ; $00FF0000
 		move.w	#$003F, D1
 Offset_0x004122:
 		move.w	#$0000, (A2)+
@@ -4396,17 +4396,17 @@ Offset_0x00412E:
 		rts
 ;-------------------------------------------------------------------------------
 ; Offset_0x004136:
-		lea	($00FE0000), A1
-		lea	(M68K_RAM_Start), A3				 ; $FFFF0000
+		lea	($00FE0000).l, A1
+		lea	(M68K_RAM_Start).l, A3				 ; $FFFF0000
 		moveq	#$1F, D0
 Offset_0x004144:
 		move.l	(A1)+, (A3)+
 		dbf	D0, Offset_0x004144
 		moveq	#$00, D7
-		lea	($00FE0000), A1
+		lea	($00FE0000).l, A1
 		move.w	#$00FF, D5
 Offset_0x004156:
-		lea	(M68K_RAM_Start), A3				 ; $FFFF0000
+		lea	(M68K_RAM_Start).l, A3				 ; $FFFF0000
 		move.w	D7, D6
 Offset_0x00415E:
 		movem.l A1-A3, -(A7)
@@ -4485,9 +4485,9 @@ Level_Init:							   ; Offset_0x0041DC
 		bsr.w	Pal_FadeFrom				   ; Offset_0x00266C
 		tst.w	(Auto_Control_Player_Flag).w		 ; $FFFFFFF0
 		bmi.s	Offset_0x004224
-		move	#$2700, SR
+		move.w	#$2700, SR
 		bsr.w	ClearScreen					   ; Offset_0x001418
-		move	#$2300, SR
+		move.w	#$2300, SR
 		moveq	#$00, D0
 		move.w	D0, ($FFFFFE04).w
 		move.b	(Level_Id).w, D0					 ; $FFFFFE10
@@ -4497,7 +4497,7 @@ Level_Init:							   ; Offset_0x0041DC
 		add.w	D0, D0
 		add.w	D1, D0
 		lea	(TilesMainTable), A2		   ; Offset_0x02E708
-		lea	$00(A2, D0), A2
+		lea	(A2, D0), A2
 		moveq	#$00, D0
 		move.b	(A2), D0
 		beq.s	Offset_0x00421E
@@ -4546,7 +4546,7 @@ Init_Water:							   ; Offset_0x00428C
 		move.b	#$01, (Water_Level_Flag).w			 ; $FFFFF730
 		move.w	#$0000, (Two_Player_Flag).w			 ; $FFFFFFD8
 Init_No_Water:						   ; Offset_0x004298
-		lea	(VDP_Control_Port), A6				 ; $00C00004
+		lea	(VDP_Control_Port).l, A6				 ; $00C00004
 		move.w	#$8B03, (A6)
 		move.w	#$8230, (A6)
 		move.w	#$8407, (A6)
@@ -4583,7 +4583,7 @@ Offset_0x0042F4:
 		lsr.w	#$06, D0
 		andi.w	#$FFFE, D0
 		lea	(Water_Height_Array).l, A1			   ; Offset_0x004736
-		move.w	$00(A1, D0), D0
+		move.w	(A1, D0), D0
 		move.w	D0, (Water_Level).w					 ; $FFFFF646
 		move.w	D0, (Water_Level_Change).w			 ; $FFFFF648
 		move.w	D0, (Water_Level_New).w				 ; $FFFFF64A
@@ -4613,21 +4613,21 @@ LevelInit_NoUndewaterPalette:				   ; Offset_0x004372
 		moveq	#$00, D0
 		move.b	(Level_Id).w, D0					 ; $FFFFFE10
 		lea	PlayList(PC), A1			   ; Offset_0x0041B8
-		move.b	$00(A1, D0), D0
+		move.b	(A1, D0), D0
 		bsr.w	Play_Music					   ; Offset_0x00150C
 		move.b	#$34, (Title_Card_RAM_Obj_Data).w			 ; $FFFFB080
 LevelInit_TitleCard:						   ; Offset_0x004390
 		move.b	#$0C, (VBlank_Index).w				 ; $FFFFF62A
 		bsr.w	Wait_For_VSync				   ; Offset_0x003250
-		jsr	(Load_Objects)				   ; Offset_0x00CEA8
-		jsr	(Build_Sprites)				   ; Offset_0x00D442
+		jsr	(Load_Objects).l				   ; Offset_0x00CEA8
+		jsr	(Build_Sprites).l				   ; Offset_0x00D442
 		bsr.w	RunPLC				   ; Offset_0x001800
 		move.w	($FFFFB108).w, D0
 		cmp.w	($FFFFB130).w, D0
 		bne.s	LevelInit_TitleCard			   ; Offset_0x004390
 		tst.l	(PLC_Buffer).w				 ; $FFFFF680
 		bne.s	LevelInit_TitleCard			   ; Offset_0x004390
-		jsr	(Head_Up_Display_Base)		   ; Offset_0x02D488
+		jsr	(Head_Up_Display_Base).l		   ; Offset_0x02D488
 Offset_0x0043C0:
 		moveq	#$03, D0
 		bsr.w	PalLoad1					   ; Offset_0x002914
@@ -4635,9 +4635,9 @@ Offset_0x0043C0:
 		bsr.w	Background_Scroll_Layer		   ; Offset_0x005E04
 		bset	#$02, (Scroll_Flag_Array).w			 ; $FFFFEE50
 		bsr.w	Main_Level_Load_16_128_Blocks		   ; Offset_0x0078AE
-		jsr	(Load_16x16_Mappings_For_Dyn_Sprites)  ; Offset_0x02CC94
+		jsr	(Load_16x16_Mappings_For_Dyn_Sprites).l  ; Offset_0x02CC94
 		bsr.w	Load_Tiles_From_Start		   ; Offset_0x0077D2
-		jsr	(FloorLog_Unk)				   ; Offset_0x013F46
+		jsr	(FloorLog_Unk).l				   ; Offset_0x013F46
 		bsr.w	Load_Colision_Index			   ; Offset_0x004B28
 		bsr.w	Water_Effects				   ; Offset_0x0046D8
 		move.b	#$01, (Player_One).w				 ; $FFFFB000
@@ -4669,10 +4669,10 @@ Offset_0x004464:
 		bne.s	Offset_0x004472
 		move.b	#$07, ($FFFFB780).w
 Offset_0x004472:
-		jsr	(Load_Object_Pos)			   ; Offset_0x00E1E8
-		jsr	(Load_Ring_Pos)				   ; Offset_0x00DDC4
-		jsr	(Load_Objects)				   ; Offset_0x00CEA8
-		jsr	(Build_Sprites)				   ; Offset_0x00D442
+		jsr	(Load_Object_Pos).l			   ; Offset_0x00E1E8
+		jsr	(Load_Ring_Pos).l				   ; Offset_0x00DDC4
+		jsr	(Load_Objects).l				   ; Offset_0x00CEA8
+		jsr	(Build_Sprites).l				   ; Offset_0x00D442
 		bsr.w	Jmp_00_To_Dynamic_Art_Cues			   ; Offset_0x0052B4
 		moveq	#$00, D0
 		tst.b	(Saved_Level_Flag).w				 ; $FFFFFE30
@@ -4700,14 +4700,14 @@ Offset_0x0044A2:
 		moveq	#$00, D0
 		move.b	(Level_Id).w, D0					 ; $FFFFFE10
 		lsl.w	#$02, D0
-		move.l	$00(A1, D0), A1
+		move.l	(A1, D0), A1
 		tst.w	(Auto_Control_Player_Flag).w		 ; $FFFFFFF0
 		bpl.s	Offset_0x004516
 		lea	(Demo_End_Index).l, A1		   ; Offset_0x004AF8
 		move.w	($FFFFFFF4).w, D0
 		subq.w	#$01, D0
 		lsl.w	#$02, D0
-		move.l	$00(A1, D0), A1
+		move.l	(A1, D0), A1
 Offset_0x004516:
 		move.b	$0001(A1), ($FFFFF792).w
 		subq.b	#$01, ($FFFFF792).w
@@ -4760,7 +4760,7 @@ Level_Main_Loop:							   ; Offset_0x0045B2
 		addq.w	#$01, ($FFFFFE04).w
 		bsr.w	Init_Demo_Control			   ; Offset_0x00495C
 		bsr.w	Water_Effects				   ; Offset_0x0046D8
-		jsr	(Load_Objects)				   ; Offset_0x00CEA8
+		jsr	(Load_Objects).l				   ; Offset_0x00CEA8
 		tst.w	($FFFFFE02).w
 		bne.w	Level				   ; Offset_0x0041C8
 		tst.w	(Debug_Mode_Flag_Index).w			 ; $FFFFFE08
@@ -4771,15 +4771,15 @@ Offset_0x0045E8:
 		bsr.w	Background_Scroll_Layer		   ; Offset_0x005E04
 Offset_0x0045EC:
 		bsr.w	Change_Water_Surface_Pos			   ; Offset_0x0046AE
-		jsr	(Load_Ring_Pos)				   ; Offset_0x00DDC4
+		jsr	(Load_Ring_Pos).l				   ; Offset_0x00DDC4
 		bsr.w	Jmp_00_To_Dynamic_Art_Cues			   ; Offset_0x0052B4
 		bsr.w	PalCycle_Load				   ; Offset_0x001F70
 		bsr.w	RunPLC				   ; Offset_0x001800
 		bsr.w	Oscillate_Num_Do			   ; Offset_0x004C38
 		bsr.w	Change_Object_Frame			   ; Offset_0x004CD0
 		bsr.w	Test_End_Level_Art_Load		   ; Offset_0x004D3E
-		jsr	(Build_Sprites)				   ; Offset_0x00D442
-		jsr	(Load_Object_Pos)			   ; Offset_0x00E1E8
+		jsr	(Build_Sprites).l				   ; Offset_0x00D442
+		jsr	(Load_Object_Pos).l			   ; Offset_0x00E1E8
 		cmpi.b	#gm_DemoMode, (Game_Mode).w			   ; $08 ; $FFFFF600
 		beq.s	Offset_0x00462E
 		cmpi.b	#gm_PlayMode, (Game_Mode).w			   ; $0C ; $FFFFF600
@@ -4809,9 +4809,9 @@ Offset_0x004676:
 		move.b	#$08, (VBlank_Index).w				 ; $FFFFF62A
 		bsr.w	Wait_For_VSync				   ; Offset_0x003250
 		bsr.w	Init_Demo_Control			   ; Offset_0x00495C
-		jsr	(Load_Objects)				   ; Offset_0x00CEA8
-		jsr	(Build_Sprites)				   ; Offset_0x00D442
-		jsr	(Load_Object_Pos)			   ; Offset_0x00E1E8
+		jsr	(Load_Objects).l				   ; Offset_0x00CEA8
+		jsr	(Build_Sprites).l				   ; Offset_0x00D442
+		jsr	(Load_Object_Pos).l			   ; Offset_0x00E1E8
 		subq.w	#$01, ($FFFFF794).w
 		bpl.s	Offset_0x0046A6
 		move.w	#$0002, ($FFFFF794).w
@@ -5036,7 +5036,7 @@ S1_LZ_Water_Slides:							   ; Offset_0x0048C2
 		andi.w	#$007F, D1
 		add.w	D1, D0
 		lea	(Level_Map_Buffer).w, A2			 ; $FFFF8000
-		move.b	$00(A2, D0), D0
+		move.b	(A2, D0), D0
 		lea	Offset_0x00495B(PC), A2
 		moveq	#$06, D1
 Offset_0x0048EE:
@@ -5085,7 +5085,7 @@ Init_Demo_Control:							   ; Offset_0x00495C
 		rts
 ;-------------------------------------------------------------------------------
 ; Demo_Record: ; Não usado					  ;	 Offset_0x004964
-		lea	($00FE8000), A1
+		lea	($00FE8000).l, A1
 		move.w	($FFFFF790).w, D0
 		adda.w	D0, A1
 		move.b	(Control_Ports_Buffer_Data).w, D0			 ; $FFFFF604
@@ -5103,7 +5103,7 @@ Offset_0x004986:
 Offset_0x00499A:
 		cmpi.b	#$00, (Level_Id).w					 ; $FFFFFE10
 		bne.s	Offset_0x0049D8
-		lea	($00FEC000), A1
+		lea	($00FEC000).l, A1
 		move.w	($FFFFF732).w, D0
 		adda.w	D0, A1
 		move.b	($FFFFF606).w, D0
@@ -5420,22 +5420,22 @@ Demo_Casino_Night:							   ; Offset_0x004DB2
 Demo_Genocide_City:							   ; Offset_0x004DB2
 Demo_Neo_Green_Hill:						   ; Offset_0x004DB2
 Demo_Death_Egg:						   ; Offset_0x004DB2
-		binclude	"data\ghz\dm_sonic.dat"
+		binclude	"data/ghz/dm_sonic.dat"
 Demo_Green_Hill_Miles:						   ; Offset_0x004EB2
-		binclude	"data\ghz\dm_miles.dat"
+		binclude	"data/ghz/dm_miles.dat"
 Demo_Hill_Top:						   ; Offset_0x004FB2
-		binclude	"data\htz\demo.dat"
+		binclude	"data/htz/demo.dat"
 Demo_Hidden_Palace:							   ; Offset_0x0050B2
-		binclude	"data\hpz\demo.dat"
+		binclude	"data/hpz/demo.dat"
 Demo_Chemical_Plant:						   ; Offset_0x0051B2
-		binclude	"data\cpz\demo.dat"
+		binclude	"data/cpz/demo.dat"
 ;===============================================================================
 ; Modo de jogo ou demonstração das fases
 ; <<<-
 ;===============================================================================
 		nop
 Jmp_00_To_Dynamic_Art_Cues:					   ; Offset_0x0052B4
-		jmp	(Dynamic_Art_Cues)			   ; Offset_0x02C61C
+		jmp	(Dynamic_Art_Cues).l			   ; Offset_0x02C61C
 		dc.w	$0000
 ;===============================================================================
 ; Rotina principal de controle dos Estágios Especiais
@@ -5445,23 +5445,23 @@ Special_Stage:						   ; Offset_0x0052BC
 		move.w	#$00CA, D0
 		bsr.w	Play_Sfx					   ; Offset_0x001512
 		bsr.w	Pal_MakeFlash				   ; Offset_0x002794
-		move	#$2700, SR
-		lea	(VDP_Control_Port), A6				 ; $00C00004
+		move.w	#$2700, SR
+		lea	(VDP_Control_Port).l, A6				 ; $00C00004
 		move.w	#$8B03, (A6)
 		move.w	#$8004, (A6)
 		move.w	#$8AAF, (Horizontal_Interrupt_Count).w		 ; $FFFFF624
 		move.w	#$9011, (A6)
 		move.w	($FFFFF60C).w, D0
 		andi.b	#$BF, D0
-		move.w	D0, (VDP_Control_Port)				 ; $00C00004
+		move.w	D0, (VDP_Control_Port).l				 ; $00C00004
 		bsr.w	ClearScreen					   ; Offset_0x001418
-		move	#$2300, SR
-		lea	(VDP_Control_Port), A5				 ; $00C00004
+		move.w	#$2300, SR
+		lea	(VDP_Control_Port).l, A5				 ; $00C00004
 		move.w	#$8F01, (A5)
 		move.l	#$946F93FF, (A5)
 		move.w	#$9780, (A5)
 		move.l	#$50000081, (A5)
-		move.w	#$0000, (VDP_Data_Port)				 ; $00C00000
+		move.w	#$0000, (VDP_Data_Port).l				 ; $00C00000
 Offset_0x00531C:
 		move.w	(A5), D1
 		btst	#$01, D1
@@ -5498,7 +5498,7 @@ Offset_0x00536C:
 		clr.w	($FFFFFE02).w
 		moveq	#$16, D0
 		bsr.w	PalLoad1					   ; Offset_0x002914
-		jsr	(Special_Stage_Load)		   ; Offset_0x02BC66
+		jsr	(Special_Stage_Load).l		   ; Offset_0x02BC66
 		move.l	#$00000000, (Camera_X).w			 ; $FFFFEE00
 		move.l	#$00000000, (Camera_Y).w			 ; $FFFFEE04
 		move.b	#$09, (Player_One).w				 ; $FFFFB000
@@ -5511,7 +5511,7 @@ Offset_0x00536C:
 		lea	(Demo_Index).l, A1			   ; Offset_0x004A70
 		moveq	#$06, D0
 		lsl.w	#$02, D0
-		move.l	$00(A1, D0), A1
+		move.l	(A1, D0), A1
 		move.b	$0001(A1), ($FFFFF792).w
 		subq.b	#$01, ($FFFFF792).w
 		clr.w	(Ring_Count).w				 ; $FFFFFE20
@@ -5526,7 +5526,7 @@ Offset_0x00536C:
 Offset_0x0053F8:
 		move.w	($FFFFF60C).w, D0
 		ori.b	#$40, D0
-		move.w	D0, (VDP_Control_Port)				 ; $00C00004
+		move.w	D0, (VDP_Control_Port).l				 ; $00C00004
 		bsr.w	Pal_MakeWhite				   ; Offset_0x0026EA
 Special_Stage_Loop:							   ; Offset_0x00540A
 		bsr.w	Pause				   ; Offset_0x00152A
@@ -5534,9 +5534,9 @@ Special_Stage_Loop:							   ; Offset_0x00540A
 		bsr.w	Wait_For_VSync				   ; Offset_0x003250
 		bsr.w	Init_Demo_Control			   ; Offset_0x00495C
 		move.w	(Control_Ports_Buffer_Data).w, ($FFFFF602).w ; $FFFFF604
-		jsr	(Load_Objects)				   ; Offset_0x00CEA8
-		jsr	(Build_Sprites)				   ; Offset_0x00D442
-		jsr	(Special_Stage_Show_Layout)			   ; Offset_0x02B738
+		jsr	(Load_Objects).l				   ; Offset_0x00CEA8
+		jsr	(Build_Sprites).l				   ; Offset_0x00D442
+		jsr	(Special_Stage_Show_Layout).l			   ; Offset_0x02B738
 		bsr.w	Special_Stage_Background_Animate	   ; Offset_0x0058A8
 		tst.w	(Auto_Control_Player_Flag).w		 ; $FFFFFFF0
 		beq.s	Offset_0x005446
@@ -5560,9 +5560,9 @@ Special_Stage_Loop_2:						   ; Offset_0x00547A
 		bsr.w	Wait_For_VSync				   ; Offset_0x003250
 		bsr.w	Init_Demo_Control			   ; Offset_0x00495C
 		move.w	(Control_Ports_Buffer_Data).w, ($FFFFF602).w ; $FFFFF604
-		jsr	(Load_Objects)				   ; Offset_0x00CEA8
-		jsr	(Build_Sprites)				   ; Offset_0x00D442
-		jsr	(Special_Stage_Show_Layout)			   ; Offset_0x02B738
+		jsr	(Load_Objects).l				   ; Offset_0x00CEA8
+		jsr	(Build_Sprites).l				   ; Offset_0x00D442
+		jsr	(Special_Stage_Show_Layout).l			   ; Offset_0x02B738
 		bsr.w	Special_Stage_Background_Animate	   ; Offset_0x0058A8
 		subq.w	#$01, ($FFFFF794).w
 		bpl.s	Offset_0x0054B4
@@ -5571,14 +5571,14 @@ Special_Stage_Loop_2:						   ; Offset_0x00547A
 Offset_0x0054B4:
 		tst.w	(Timer_Count_Down).w				 ; $FFFFF614
 		bne.s	Special_Stage_Loop_2		   ; Offset_0x00547A
-		move	#$2700, SR
-		lea	(VDP_Control_Port), A6				 ; $00C00004
+		move.w	#$2700, SR
+		lea	(VDP_Control_Port).l, A6				 ; $00C00004
 		move.w	#$8230, (A6)
 		move.w	#$8407, (A6)
 		move.w	#$9001, (A6)
 		bsr.w	ClearScreen					   ; Offset_0x001418
-		jsr	(Head_Up_Display_Base)		   ; Offset_0x02D488
-		move	#$2300, SR
+		jsr	(Head_Up_Display_Base).l		   ; Offset_0x02D488
+		move.w	#$2300, SR
 		moveq	#$16, D0
 		bsr.w	PalLoad2					   ; Offset_0x002930
 		moveq	#$00, D0
@@ -5603,8 +5603,8 @@ SS_Results_Loop:							   ; Offset_0x005522
 		bsr.w	Pause				   ; Offset_0x00152A
 		move.b	#$0C, (VBlank_Index).w				 ; $FFFFF62A
 		bsr.w	Wait_For_VSync				   ; Offset_0x003250
-		jsr	(Load_Objects)				   ; Offset_0x00CEA8
-		jsr	(Build_Sprites)				   ; Offset_0x00D442
+		jsr	(Load_Objects).l				   ; Offset_0x00CEA8
+		jsr	(Build_Sprites).l				   ; Offset_0x00D442
 		bsr.w	RunPLC				   ; Offset_0x001800
 		tst.w	($FFFFFE02).w
 		beq.s	SS_Results_Loop				   ; Offset_0x005522
@@ -5625,11 +5625,11 @@ Special_Stage_Exit_To_Level:				   ; Offset_0x005562
 		rts
 ;-------------------------------------------------------------------------------
 Special_Stage_Background_Load:				   ; Offset_0x00556C
-		lea	(M68K_RAM_Start), A1				 ; $FFFF0000
+		lea	(M68K_RAM_Start).l, A1				 ; $FFFF0000
 		move.w	#$4051, D0
 		bsr.w	EnigmaDec					   ; Offset_0x001932
 		move.l	#$50000001, D3
-		lea	(M68K_RAM_Start+$0080), A2			 ; $FFFF0080
+		lea	(M68K_RAM_Start+$0080).l, A2			 ; $FFFF0080
 		moveq	#$06, D7
 Offset_0x005588:
 		move.l	D3, D0
@@ -5646,7 +5646,7 @@ Offset_0x005598:
 		bne.s	Offset_0x0055AC
 		cmpi.w	#$0006, D7
 		bne.s	Offset_0x0055BC
-		lea	(M68K_RAM_Start), A1				 ; $FFFF0000
+		lea	(M68K_RAM_Start).l, A1				 ; $FFFF0000
 Offset_0x0055AC:
 		movem.l D0-D4, -(A7)
 		moveq	#$07, D1
@@ -5667,15 +5667,15 @@ Offset_0x0055BC:
 Offset_0x0055E6:
 		adda.w	#$0080, A2
 		dbf	D7, Offset_0x005588
-		lea	(M68K_RAM_Start), A1				 ; $FFFF0000
+		lea	(M68K_RAM_Start).l, A1				 ; $FFFF0000
 		move.w	#$4000, D0
 		bsr.w	EnigmaDec					   ; Offset_0x001932
-		lea	(M68K_RAM_Start), A1				 ; $FFFF0000
+		lea	(M68K_RAM_Start).l, A1				 ; $FFFF0000
 		move.l	#$40000003, D0
 		moveq	#$3F, D1
 		moveq	#$1F, D2
 		bsr.w	ShowVDPGraphics				   ; Offset_0x0015A4
-		lea	(M68K_RAM_Start), A1				 ; $FFFF0000
+		lea	(M68K_RAM_Start).l, A1				 ; $FFFF0000
 		move.l	#$50000003, D0
 		moveq	#$3F, D1
 		moveq	#$3F, D2
@@ -5687,7 +5687,7 @@ Special_Stage_Pal_Cycle:					   ; Offset_0x005626
 		bne.s	Offset_0x0056AA
 		subq.w	#$01, ($FFFFF79C).w
 		bpl.s	Offset_0x0056AA
-		lea	(VDP_Control_Port), A6				 ; $00C00004
+		lea	(VDP_Control_Port).l, A6				 ; $00C00004
 		move.w	($FFFFF79A).w, D0
 		addq.w	#$01, ($FFFFF79A).w
 		andi.w	#$001F, D0
@@ -5703,7 +5703,7 @@ Offset_0x005656:
 		move.b	(A0)+, D0
 		move.w	D0, ($FFFFF7A0).w
 		lea	(SS_Pal_Cycle_Data_01).l, A1			   ; Offset_0x005780
-		lea	$00(A1, D0), A1
+		lea	(A1, D0), A1
 		move.w	#$8200, D0
 		move.b	(A1)+, D0
 		move.w	D0, (A6)
@@ -5711,8 +5711,8 @@ Offset_0x005656:
 		move.w	#$8400, D0
 		move.b	(A0)+, D0
 		move.w	D0, (A6)
-		move.l	#$40000010, (VDP_Control_Port)		 ; $00C00004
-		move.l	($FFFFF616).w, (VDP_Data_Port)		 ; $00C00000
+		move.l	#$40000010, (VDP_Control_Port).l		 ; $00C00004
+		move.l	($FFFFF616).w, (VDP_Data_Port).l		 ; $00C00000
 		moveq	#$00, D0
 		move.b	(A0)+, D0
 		bmi.s	Offset_0x0056AC
@@ -5862,7 +5862,7 @@ Offset_0x00595E:
 		move.b	(A2)+, D1
 		subq.w	#$01, D1
 Offset_0x005968:
-		move.l	D0, $00(A1, D2)
+		move.l	D0, (A1, D2)
 		addq.w	#$04, D2
 		andi.w	#$03FC, D2
 		dbf	D1, Offset_0x005968
@@ -6352,7 +6352,7 @@ Offset_0x005F6C:
 		move.w	($FFFFA800).w, D1
 		andi.w	#$001F, D1
 		lea	(Bg_Scroll_Data).l, A2		   ; Offset_0x006028
-		lea	$00(A2, D1), A2
+		lea	(A2, D1), A2
 		move.w	#$0014, D1
 Offset_0x005F82:
 		move.b	(A2)+, D0
@@ -6480,7 +6480,7 @@ Offset_0x0060D8:
 		move.w	($FFFFA800).w, D1
 		andi.w	#$001F, D1
 		lea	Bg_Scroll_Data(PC), A2		   ; Offset_0x006028
-		lea	$00(A2, D1), A2
+		lea	(A2, D1), A2
 		move.w	#$000A, D1
 Offset_0x0060F4:
 		move.b	(A2)+, D0
@@ -6726,7 +6726,7 @@ Offset_0x0062FE:
 		move.w	($FFFFFE04).w, D0
 		andi.w	#$003F, D0
 		lea	Bg_Scroll_Data(PC), A1		   ; Offset_0x006028
-		lea	$00(A1, D0), A1
+		lea	(A1, D0), A1
 		moveq	#$00, D0
 		move.b	(A1)+, D0
 		add.w	D0, ($FFFFF616).w
@@ -6871,7 +6871,7 @@ Offset_0x0064B4:
 		move.w	D0, D2
 		andi.w	#$03F0, D0
 		lsr.w	#$03, D0
-		lea	$00(A2, D0), A2
+		lea	(A2, D0), A2
 		bra.w	Bg_Scroll_X					   ; Offset_0x006BCC
 ;-------------------------------------------------------------------------------
 Bg_Scroll_OOz:						   ; Offset_0x0064D2
@@ -6920,7 +6920,7 @@ Bg_Scroll_DHz_1:							   ; Offset_0x006532
 		move.w	($FFFFFE04).w, D0
 		andi.w	#$003F, D0
 		lea	Bg_Scroll_Data(PC), A1		   ; Offset_0x006028
-		lea	$00(A1, D0), A1
+		lea	(A1, D0), A1
 		moveq	#$00, D0
 		move.b	(A1)+, D0
 		add.w	D0, ($FFFFF616).w
@@ -7348,7 +7348,7 @@ Offset_0x0069C2:
 		move.w	D0, D2
 		andi.w	#$03F0, D0
 		lsr.w	#$04, D0
-		lea	$00(A0, D0), A0
+		lea	(A0, D0), A0
 		move.w	D0, D4
 		lea	(Scroll_Buffer_Data).w, A1			 ; $FFFFE000
 		move.w	#$000E, D1
@@ -7407,7 +7407,7 @@ Offset_0x006A4E:
 		move.w	($FFFFA800).w, D0
 		andi.w	#$001F, D0
 		lea	Bg_Scroll_Data(PC), A2		   ; Offset_0x006028
-		lea	$00(A2, D0), A2
+		lea	(A2, D0), A2
 Offset_0x006A64:
 		move.b	(A2)+, D0
 		ext.w	D0
@@ -7441,7 +7441,7 @@ Bg_Scroll_NGHz_Act_2:						   ; Offset_0x006A98
 		move.w	($FFFFFE04).w, D0
 		andi.w	#$003F, D0
 		lea	Bg_Scroll_Data(PC), A1		   ; Offset_0x006028
-		lea	$00(A1, D0), A1
+		lea	(A1, D0), A1
 		moveq	#$00, D0
 		move.b	(A1)+, D0
 		add.w	D0, ($FFFFF616).w
@@ -7915,8 +7915,8 @@ Offset_0x006F00:
 		rts
 ;-------------------------------------------------------------------------------
 ; Offset_0x006F02: ; Left over do Sonic 1, não usado
-		lea	(VDP_Control_Port), A5				 ; $00C00004
-		lea	(VDP_Data_Port), A6					 ; $00C00000
+		lea	(VDP_Control_Port).l, A5				 ; $00C00004
+		lea	(VDP_Data_Port).l, A6					 ; $00C00000
 		lea	(Scroll_Flag_Array+$0002).w, A2		 ; $FFFFEE52
 		lea	(Camera_X_x2).w, A3					 ; $FFFFEE08
 		lea	(Level_Map_Bg_Buffer).w, A4			 ; $FFFF8080
@@ -7935,8 +7935,8 @@ Offset_0x006F00:
 ; ->>>
 ;===============================================================================
 LoadTilesAsYouMove:							   ; Offset_0x006F2E
-		lea	(VDP_Control_Port), A5				 ; $00C00004
-		lea	(VDP_Data_Port), A6					 ; $00C00000
+		lea	(VDP_Control_Port).l, A5				 ; $00C00004
+		lea	(VDP_Data_Port).l, A6					 ; $00C00000
 		lea	(Scroll_Flag_Array_2+$0002).w, A2			 ; $FFFFEEA2
 		lea	($FFFFEE68).w, A3
 		lea	(Level_Map_Bg_Buffer).w, A4			 ; $FFFF8080
@@ -8187,9 +8187,9 @@ Offset_0x0071DC:
 		add.w	D4, D0
 		andi.w	#$01F0, D0
 		lsr.w	#$04, D0
-		move.b	$00(A0, D0), D0
+		move.b	(A0, D0), D0
 		lea	(Scroll_Mem_Address_Data).l, A3		   ; Offset_0x007350
-		move.w	$00(A3, D0), A3
+		move.w	(A3, D0), A3
 		beq.s	Offset_0x007210
 		moveq	#-$10, D5
 		movem.l D4/D5, -(A7)
@@ -8222,7 +8222,7 @@ Offset_0x00723E:
 		move.w	(Camera_Y_x4).w, D0					 ; $FFFFEE0C
 		andi.w	#$01F0, D0
 		lsr.w	#$04, D0
-		lea	$00(A0, D0), A0
+		lea	(A0, D0), A0
 		bra.w	Offset_0x007358
 ;-------------------------------------------------------------------------------
 ; Rotina de controle da rolagem da fase Scrap Brain Zone 1
@@ -8283,7 +8283,7 @@ Offset_0x0072F6:
 		add.w	D4, D0
 		andi.w	#$03F0, D0
 		lsr.w	#$04, D0
-		move.b	$00(A0, D0), D0
+		move.b	(A0, D0), D0
 		move.w	Scroll_Mem_Address_Data(PC, D0), A3	   ; Offset_0x007350
 		moveq	#-$10, D5
 		movem.l D4/D5, -(A7)
@@ -8308,7 +8308,7 @@ Offset_0x00733A:
 		move.w	(Camera_Y_x4).w, D0					 ; $FFFFEE0C
 		andi.w	#$07F0, D0
 		lsr.w	#$04, D0
-		lea	$00(A0, D0), A0
+		lea	(A0, D0), A0
 		bra.w	Offset_0x007358
 ;-------------------------------------------------------------------------------
 ; Rotina de controle da rolagem da fase Chemical Plant
@@ -8561,7 +8561,7 @@ Calc_Chunk_RAM_Pos:							   ; Offset_0x007570
 		add.w	D3, D0
 		moveq	#-$01, D3
 		clr.w	D3
-		move.b	$00(A4, D0), D3
+		move.b	(A4, D0), D3
 		lsl.w	#$07, D3
 		andi.w	#$0070, D4
 		andi.w	#$000E, D5
@@ -8757,7 +8757,7 @@ Draw_Blocks:						   ; Offset_0x007716
 		add.w	D3, D0
 		moveq	#-$01, D3
 		clr.w	D3
-		move.b	$00(A4, D0), D3
+		move.b	(A4, D0), D3
 		lsl.w	#$07, D3
 		andi.w	#$0070, D4
 		andi.w	#$000E, D5
@@ -8847,8 +8847,8 @@ Calc_VRAM_Pos_2_2P:							   ; Offset_0x0077B6
 ; ->>>			durante a carga da fase.
 ;===============================================================================
 Load_Tiles_From_Start:						   ; Offset_0x0077D2
-		lea	(VDP_Control_Port), A5				 ; $00C00004
-		lea	(VDP_Data_Port), A6					 ; $00C00000
+		lea	(VDP_Control_Port).l, A5				 ; $00C00004
+		lea	(VDP_Data_Port).l, A6					 ; $00C00000
 		tst.w	(Two_Player_Flag).w					 ; $FFFFFFD8
 		beq.s	Offset_0x0077F2
 		lea	(Camera_X_2).w, A3					 ; $FFFFEE20
@@ -8878,9 +8878,9 @@ Offset_0x007822:
 		move.w	D1, D4
 		moveq	#$00, D5
 		moveq	#$1F, D6
-		move	#$2700, SR
+		move.w	#$2700, SR
 		bsr.w	Offset_0x00745C
-		move	#$2300, SR
+		move.w	#$2300, SR
 		movem.l (A7)+, D4-D6
 		addi.w	#$0010, D4
 		dbf	D6, Offset_0x007822
@@ -8896,9 +8896,9 @@ Offset_0x007852:
 		move.w	D1, D4
 		moveq	#$00, D5
 		moveq	#$1F, D6
-		move	#$2700, SR
+		move.w	#$2700, SR
 		bsr.w	Offset_0x00745C
-		move	#$2300, SR
+		move.w	#$2300, SR
 		movem.l (A7)+, D4-D6
 		addi.w	#$0010, D4
 		dbf	D6, Offset_0x007852
@@ -8914,9 +8914,9 @@ Offset_0x007882:
 		move.w	D1, D4
 		moveq	#$00, D5
 		moveq	#$1F, D6
-		move	#$2700, SR
+		move.w	#$2700, SR
 		bsr.w	Offset_0x00746C
-		move	#$2300, SR
+		move.w	#$2300, SR
 		movem.l (A7)+, D4-D6
 		addi.w	#$0010, D4
 		dbf	D6, Offset_0x007882
@@ -8939,7 +8939,7 @@ Main_Level_Load_16_128_Blocks:				   ; Offset_0x0078AE
 		add.w	D0, D0
 		add.w	D1, D0
 		lea	(TilesMainTable), A2		   ; Offset_0x02E708
-		lea	$00(A2, D0), A2
+		lea	(A2, D0), A2
 		move.l	A2, -(A7)
 		addq.w	#$04, A2
 		move.l	(A2)+, A0
@@ -8970,7 +8970,7 @@ Offset_0x007902:
 		cmpi.b	#$07, (Level_Id).w					 ; $FFFFFE10
 		bne.s	Offset_0x007934
 		lea	(Blocks_Mem_Address+$0980).w, A1			 ; $FFFF9980
-		lea	(Hill_Top_Blocks), A0		   ; Offset_0x08F64E
+		lea	(Hill_Top_Blocks).l, A0		   ; Offset_0x08F64E
 		move.w	#$03FF, D2
 Offset_0x007918:
 		move.w	(A0)+, D0
@@ -8986,7 +8986,7 @@ Offset_0x00792E:
 		dbf	D2, Offset_0x007918
 Offset_0x007934:
 		move.l	(A2)+, A0
-		lea	(M68K_RAM_Start), A1				 ; $FFFF0000
+		lea	(M68K_RAM_Start).l, A1				 ; $FFFF0000
 		bsr.w	KosinskiDec					   ; Offset_0x001AB0
 		bra.s	Load_Level_Data				   ; Offset_0x007972
 ;-------------------------------------------------------------------------------
@@ -8997,8 +8997,8 @@ Offset_0x007934:
 		moveq	#$00, D1
 		moveq	#$00, D2
 		move.w	(A0)+, D0
-		lea	$00(A0, D0), A1
-		lea	(M68K_RAM_Start), A2				 ; $FFFF0000
+		lea	(A0, D0), A1
+		lea	(M68K_RAM_Start).l, A2				 ; $FFFF0000
 		lea	(Level_Map_Buffer).w, A3			 ; $FFFF8000
 Offset_0x007958:
 		bsr.w	Offset_0x001B50
@@ -9006,7 +9006,7 @@ Offset_0x007958:
 		bmi.s	Offset_0x007958
 		bra.s	Load_Level_Data				   ; Offset_0x007972
 Offset_0x007962:
-		lea	(M68K_RAM_Start), A1				 ; $FFFF0000
+		lea	(M68K_RAM_Start).l, A1				 ; $FFFF0000
 		move.w	#$3FFF, D0
 Offset_0x00796C:
 		move.w	(A0)+, (A1)+
@@ -9050,9 +9050,9 @@ Interleave_Level_Layout:					   ; Offset_0x0079BA
 		ror.b	#$01, D0
 		lsr.w	#$05, D0
 		add.w	D1, D0
-		lea	(Level_Layout), A1			   ; Offset_0x03CA4E
-		move.w	$00(A1, D0), D0
-		lea	$00(A1, D0.l), A1
+		lea	(Level_Layout).l, A1			   ; Offset_0x03CA4E
+		move.w	(A1, D0), D0
+		lea	(A1, D0.l), A1
 		moveq	#$00, D1
 		move.w	D1, D2
 		move.b	(A1)+, D1
@@ -9074,7 +9074,7 @@ Offset_0x0079F2:
 		dbf	D0, Offset_0x0079F2
 		move.l	(A7)+, A1
 		dbf	D4, Offset_0x0079EE
-		lea	$00(A1, D5), A1
+		lea	(A1, D5), A1
 		lea	$0100(A3), A3
 		dbf	D2, Offset_0x0079EA
 		rts
@@ -9084,16 +9084,16 @@ Offset_0x0079F2:
 ;===============================================================================
 
 ; Offset_0x007A0C: ; Não usado
-		lea	($00FE0000), A1
-		lea	($00FE0080), A2
-		lea	(M68K_RAM_Start), A3				 ; $FFFF0000
+		lea	($00FE0000).l, A1
+		lea	($00FE0080).l, A2
+		lea	(M68K_RAM_Start).l, A3				 ; $FFFF0000
 		move.w	#$003F, D1
 Offset_0x007A22:
 		bsr.w	Offset_0x007AB4
 		bsr.w	Offset_0x007AB4
 		dbf	D1, Offset_0x007A22
-		lea	($00FE0000), A1
-		lea	(M68K_RAM_Start&$FFFFFF), A2		 ; $00FF0000
+		lea	($00FE0000).l, A1
+		lea	(M68K_RAM_Start&$FFFFFF).l, A2		 ; $00FF0000
 		move.w	#$003F, D1
 Offset_0x007A3E:
 		move.w	#$0000, (A2)+
@@ -9105,17 +9105,17 @@ Offset_0x007A4A:
 		rts
 ;-------------------------------------------------------------------------------
 ; Offset_0x007A52: ; Não usado
-		lea	($00FE0000), A1
-		lea	(M68K_RAM_Start), A3				 ; $FFFF0000
+		lea	($00FE0000).l, A1
+		lea	(M68K_RAM_Start).l, A3				 ; $FFFF0000
 		moveq	#$1F, D0
 Offset_0x007A60:
 		move.l	(A1)+, (A3)+
 		dbf	D0, Offset_0x007A60
 		moveq	#$00, D7
-		lea	($00FE0000), A1
+		lea	($00FE0000).l, A1
 		move.w	#$00FF, D5
 Offset_0x007A72:
-		lea	(M68K_RAM_Start), A3				 ; $FFFF0000
+		lea	(M68K_RAM_Start).l, A3				 ; $FFFF0000
 		move.w	D7, D6
 Offset_0x007A7A:
 		movem.l A1-A3, -(A7)
@@ -9855,9 +9855,9 @@ Offset_0x0082CE:
 		bne.s	Offset_0x0082F8
 		move.b	#$57, (A1)		  ; Carrega o objeto 0x57 - Chefe da DHz
 Offset_0x0082F8:
-		move.l	#$6C000002, (VDP_Control_Port)		 ; $00C00004
-		lea	(VDP_Data_Port), A6					 ; $00C00000
-		lea	(Art_DHz_Boss_Rocks), A2			   ; Offset_0x088F8C
+		move.l	#$6C000002, (VDP_Control_Port).l		 ; $00C00004
+		lea	(VDP_Data_Port).l, A6					 ; $00C00000
+		lea	(Art_DHz_Boss_Rocks).l, A2			   ; Offset_0x088F8C
 		moveq	#$03, D0
 Offset_0x008310:
 		move.l	(A2)+, (A6)
@@ -10010,28 +10010,28 @@ DynResize_DEz:						   ; Offset_0x008466
 ;===============================================================================
 
 Obj_0x11_Bridge:							   ; Offset_0x008468
-		include "data\objects\obj_0x11.asm"
+		include "data/objects/obj_0x11.asm"
 Obj_0x15_Bridge:							   ; Offset_0x008A84
-		include "data\objects\obj_0x15.asm"
+		include "data/objects/obj_0x15.asm"
 Jmp_00_To_Object_HitWall_Right:				   ; Offset_0x00903C
 ;-------------------------------------------------------------------------------
-		jmp	(Object_HitWall_Right)		   ; Offset_0x01430A
+		jmp	(Object_HitWall_Right).l		   ; Offset_0x01430A
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x17_Log_Spikes:						   ; Offset_0x009044
-		include "data\objects\obj_0x17.asm"
+		include "data/objects/obj_0x17.asm"
 ;-------------------------------------------------------------------------------
 		nop
 ;-------------------------------------------------------------------------------
 Obj_0x18_Platforms:							   ; Offset_0x0091E0
-		include "data\objects\obj_0x18.asm"
+		include "data/objects/obj_0x18.asm"
 ;-------------------------------------------------------------------------------
 		nop
 ;-------------------------------------------------------------------------------
 Obj_0x1A_Collapsing_Platforms:				   ; Offset_0x0095DC
-		include "data\objects\obj_0x1A.asm"
+		include "data/objects/obj_0x1A.asm"
 Obj_0x1F_Collapsing_Platforms:				   ; Offset_0x009728
-		include "data\objects\obj_0x1F.asm"
+		include "data/objects/obj_0x1F.asm"
 ;-------------------------------------------------------------------------------
 Collapsing_Platforms_Data:					   ; Offset_0x009912
 		dc.b	$1C, $18, $14, $10, $1A, $16, $12, $0E
@@ -10296,9 +10296,9 @@ Offset_0x009EA4:
 		nop
 ;-------------------------------------------------------------------------------
 Obj_0x1C_Misc:						   ; Offset_0x009EE8
-		include "data\objects\obj_0x1C.asm"
+		include "data/objects/obj_0x1C.asm"
 Obj_0x71_Mz_HPz_Misc:						   ; Offset_0x009FA0
-		include "data\objects\obj_0x71.asm"
+		include "data/objects/obj_0x71.asm"
 ;-------------------------------------------------------------------------------
 HTz_Misc_Mappings:							   ; Offset_0x00A086
 		dc.w	Offset_0x00A08A-HTz_Misc_Mappings
@@ -10384,16 +10384,16 @@ Offset_0x00A154:
 		nop
 ;-------------------------------------------------------------------------------
 Obj_0x2A_Up_Down_Pillar:					   ; Offset_0x00A158
-		include "data\objects\obj_0x2A.asm"
+		include "data/objects/obj_0x2A.asm"
 Obj_0x2D_Automatic_Door:					   ; Offset_0x00A22E
-		include "data\objects\obj_0x2D.asm"
+		include "data/objects/obj_0x2D.asm"
 ;-------------------------------------------------------------------------------
 		nop
 ;-------------------------------------------------------------------------------
 Obj_0x28_Flickies:							   ; Offset_0x00A3E8
-		include "data\objects\obj_0x28.asm"
+		include "data/objects/obj_0x28.asm"
 Obj_0x29_Enemy_Points:						   ; Offset_0x00A922
-		include "data\objects\obj_0x29.asm"
+		include "data/objects/obj_0x29.asm"
 ;-------------------------------------------------------------------------------
 Flickies_Mappings:							   ; Offset_0x00A978
 		dc.w	Offset_0x00A988-Flickies_Mappings
@@ -10499,7 +10499,7 @@ Offset_0x00AA86:
 		dc.l	$F805000E, $00070000
 ;-------------------------------------------------------------------------------
 Obj_0x25_Rings:						   ; Offset_0x00AA98
-		include "data\objects\obj_0x25.asm"
+		include "data/objects/obj_0x25.asm"
 ;-------------------------------------------------------------------------------
 ; Rotina para adicionar anéis ao contador, verificando o limmite e bonificando
 ; ->>>			com vida extra ao adiquirir 100 e 200 anéis
@@ -10527,11 +10527,11 @@ Offset_0x00ABCC:
 ; <<<-			com vida extra ao adiquirir 100 e 200 anéis
 ;-------------------------------------------------------------------------------
 Obj_0x37_Rings_Lost:						   ; Offset_0x00ABD2
-		include "data\objects\obj_0x37.asm"
+		include "data/objects/obj_0x37.asm"
 Obj_S1_0x4B_Big_Ring:						   ; Offset_0x00AD26
-		include "data\objects\objs1_4B.asm"
+		include "data/objects/objs1_4B.asm"
 Obj_S1_0x7C_Big_Ring_Flash:					   ; Offset_0x00ADEA
-		include "data\objects\objs1_7C.asm"
+		include "data/objects/objs1_7C.asm"
 ;-------------------------------------------------------------------------------
 Rings_Animate_Data:							   ; Offset_0x00AE98
 		dc.w	Offset_0x00AE9A-Rings_Animate_Data
@@ -10674,9 +10674,9 @@ Offset_0x00B0E2:
 		dc.l	$000F1844, $18220000
 ;-------------------------------------------------------------------------------
 Obj_0x26_Monitors:							   ; Offset_0x00B104
-		include "data\objects\obj_0x26.asm"
+		include "data/objects/obj_0x26.asm"
 Obj_0x2E_Monitors_Contents:					   ; Offset_0x00B2D2
-		include "data\objects\obj_0x2E.asm"
+		include "data/objects/obj_0x2E.asm"
 ;-------------------------------------------------------------------------------
 ; Rotinas complementares referenciadas no objeto 0x26
 ; ->>>
@@ -10833,9 +10833,9 @@ Monitor_Broken_Map:							   ; Offset_0x00B656
 ; <<<-
 ;-------------------------------------------------------------------------------
 Obj_0x0E_Sonic_Miles:						   ; Offset_0x00B660
-		include "data\objects\obj_0x0E.asm"
+		include "data/objects/obj_0x0E.asm"
 Obj_0x0F:							   ; Offset_0x00B6E6
-		include "data\objects\obj_0x0F.asm"
+		include "data/objects/obj_0x0F.asm"
 ;-------------------------------------------------------------------------------
 S1_Sonic_In_Title_Screen_Animate_Data:				   ; Offset_0x00B802
 		dc.w	Offset_0x00B804-S1_Sonic_In_Title_Screen_Animate_Data
@@ -10931,15 +10931,15 @@ Miles_In_Title_Screen_Map:					   ; Offset_0x00B9AC
 		nop
 ;-------------------------------------------------------------------------------
 Obj_0x34_Title_Cards:						   ; Offset_0x00BA00
-		include "data\objects\obj_0x34.asm"
+		include "data/objects/obj_0x34.asm"
 Obj_0x39_Time_Over_Game_Over:				   ; Offset_0x00BC44
-		include "data\objects\obj_0x39.asm"
+		include "data/objects/obj_0x39.asm"
 Obj_0x3A_Level_Results:						   ; Offset_0x00BD06
-		include "data\objects\obj_0x3A.asm"
+		include "data/objects/obj_0x3A.asm"
 Obj_S1_0x7E_Special_Stage_Results:					   ; Offset_0x00BF3E
-		include "data\objects\objs1_7E.asm"
+		include "data/objects/objs1_7E.asm"
 Obj_S1_0x7F_Emeralds:						   ; Offset_0x00C0E4
-		include "data\objects\objs1_7F.asm"
+		include "data/objects/objs1_7F.asm"
 ;-------------------------------------------------------------------------------
 ; Mapeamento dos títulos das fases
 ; ->>>
@@ -11296,14 +11296,14 @@ Offset_0x00C816:
 ; <<<-
 ;-------------------------------------------------------------------------------
 Obj_0x36_Spikes:							   ; Offset_0x00C818
-		include "data\objects\obj_0x36.asm"
+		include "data/objects/obj_0x36.asm"
 Obj_0x3B_Rock:						   ; Offset_0x00CBD4
-		include "data\objects\obj_0x3B.asm"
+		include "data/objects/obj_0x3B.asm"
 ;-------------------------------------------------------------------------------
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x3C_Breakable_Wall:					   ; Offset_0x00CC50
-		include "data\objects\obj_0x3C.asm"
+		include "data/objects/obj_0x3C.asm"
 Obj_Null:							   ; Offset_0x00CEA4
 		bra.w	Obj_Null_2					   ; Offset_0x00D1AA
 ;===============================================================================
@@ -11737,7 +11737,7 @@ Offset_0x00D38E:
 		subq.b	#$01, Obj_Ani_Time(A0)					 ; $001E
 		bpl.s	Offset_0x00D3C8
 		add.w	D0, D0
-		adda.w	$00(A1, D0), A1
+		adda.w	(A1, D0), A1
 		move.b	(A1), Obj_Ani_Time(A0)					 ; $001E
 		moveq	#$00, D1
 		move.b	Obj_Ani_Frame(A0), D1					 ; $001B
@@ -11825,7 +11825,7 @@ Offset_0x00D462:
 		beq.w	Offset_0x00D53C
 		moveq	#$02, D6
 Offset_0x00D46A:
-		move.w	$00(A4, D6), A0
+		move.w	(A4, D6), A0
 		tst.b	(A0)
 		beq.w	Offset_0x00D55E
 		tst.l	Obj_Map(A0)						 ; $0004
@@ -11855,7 +11855,7 @@ Offset_0x00D46A:
 		moveq	#$00, D0
 		move.b	Obj_Height_2(A0), D0					 ; $0016
 		move.w	Obj_Y(A0), D2					 ; $000C
-		sub.w	Obj_Map(A1), D2					 ; $0004
+		sub.w	4(A1), D2					 ; $0004
 		move.w	D2, D1
 		add.w	D0, D1
 		bmi.s	Offset_0x00D534
@@ -11871,7 +11871,7 @@ Offset_0x00D4E8:
 		bra.s	Offset_0x00D50E
 Offset_0x00D4F2:
 		move.w	Obj_Y(A0), D2					 ; $000C
-		sub.w	Obj_Map(A1), D2					 ; $0004
+		sub.w	4(A1), D2					 ; $0004
 		addi.w	#$0080, D2
 		andi.w	#$07FF, D2
 		cmpi.w	#$0060, D2
@@ -11885,7 +11885,7 @@ Offset_0x00D50E:
 		bne.s	Offset_0x00D52A
 		move.b	Obj_Map_Id(A0), D1				 ; $001A
 		add.w	D1, D1
-		adda.w	$00(A1, D1), A1
+		adda.w	(A1, D1), A1
 		move.w	(A1)+, D1
 		subq.w	#$01, D1
 		bmi.s	Offset_0x00D52E
@@ -11932,7 +11932,7 @@ Offset_0x00D560:
 		moveq	#$00, D0
 		move.b	Obj_Inertia(A0), D0				 ; $0014
 		move.w	Obj_Y(A0), D2					 ; $000C
-		sub.w	Obj_Map(A4), D2					 ; $0004
+		sub.w	4(A4), D2					 ; $0004
 		move.w	D2, D1
 		add.w	D0, D1
 		bmi.w	Offset_0x00D648
@@ -11944,7 +11944,7 @@ Offset_0x00D560:
 		bra.s	Offset_0x00D5DC
 Offset_0x00D5C0:
 		move.w	Obj_Y(A0), D2					 ; $000C
-		sub.w	Obj_Map(A4), D2					 ; $0004
+		sub.w	4(A4), D2					 ; $0004
 		addi.w	#$0080, D2
 		andi.w	#$07FF, D2
 		cmpi.w	#$0060, D2
@@ -11957,7 +11957,7 @@ Offset_0x00D5DC:
 		beq.s	Offset_0x00D5FA
 		add.w	D1, D1
 		move.l	A5, A1
-		adda.w	$00(A1, D1), A1
+		adda.w	(A1, D1), A1
 		move.w	(A1)+, D1
 		subq.w	#$01, D1
 		bmi.s	Offset_0x00D5FA
@@ -11977,7 +11977,7 @@ Offset_0x00D60E:
 		sub.w	(A4), D3
 		addi.w	#$0080, D3
 		move.w	(A6)+, D2
-		sub.w	Obj_Map(A4), D2					 ; $0004
+		sub.w	4(A4), D2					 ; $0004
 		addi.w	#$0080, D2
 		andi.w	#$07FF, D2
 		addq.w	#$01, A6
@@ -11985,7 +11985,7 @@ Offset_0x00D60E:
 		move.b	(A6)+, D1
 		add.w	D1, D1
 		move.l	A5, A1
-		adda.w	$00(A1, D1), A1
+		adda.w	(A1, D1), A1
 		move.w	(A1)+, D1
 		subq.w	#$01, D1
 		bmi.s	Offset_0x00D642
@@ -12162,7 +12162,7 @@ Offset_0x00D7D8:
 		move.w	D0, -(A7)
 		moveq	#$02, D6
 Offset_0x00D7E2:
-		move.w	$00(A4, D6), A0
+		move.w	(A4, D6), A0
 		tst.b	(A0)
 		beq.w	Offset_0x00D8A6
 		andi.b	#$7F, Obj_Flags(A0)				 ; $0001
@@ -12190,7 +12190,7 @@ Offset_0x00D7E2:
 		moveq	#$00, D0
 		move.b	Obj_Height_2(A0), D0					 ; $0016
 		move.w	Obj_Y(A0), D2					 ; $000C
-		sub.w	Obj_Map(A1), D2					 ; $0004
+		sub.w	4(A1), D2					 ; $0004
 		move.w	D2, D1
 		add.w	D0, D1
 		bmi.s	Offset_0x00D8A6
@@ -12207,7 +12207,7 @@ Offset_0x00D856:
 		bra.s	Offset_0x00D880
 Offset_0x00D864:
 		move.w	Obj_Y(A0), D2					 ; $000C
-		sub.w	Obj_Map(A1), D2					 ; $0004
+		sub.w	4(A1), D2					 ; $0004
 		addi.w	#$0080, D2
 		cmpi.w	#$0060, D2
 		bcs.s	Offset_0x00D8A6
@@ -12221,7 +12221,7 @@ Offset_0x00D880:
 		bne.s	Offset_0x00D89C
 		move.b	Obj_Map_Id(A0), D1				 ; $001A
 		add.w	D1, D1
-		adda.w	$00(A1, D1), A1
+		adda.w	(A1, D1), A1
 		move.w	(A1)+, D1
 		subq.w	#$01, D1
 		bmi.s	Offset_0x00D8A0
@@ -12264,7 +12264,7 @@ Offset_0x00D8FA:
 		beq.w	Offset_0x00D9C8
 		moveq	#$02, D6
 Offset_0x00D902:
-		move.w	$00(A4, D6), A0
+		move.w	(A4, D6), A0
 		tst.b	(A0)
 		beq.w	Offset_0x00D9C0
 		move.b	Obj_Flags(A0), D0				 ; $0001
@@ -12291,7 +12291,7 @@ Offset_0x00D902:
 		moveq	#$00, D0
 		move.b	Obj_Height_2(A0), D0					 ; $0016
 		move.w	Obj_Y(A0), D2					 ; $000C
-		sub.w	Obj_Map(A1), D2					 ; $0004
+		sub.w	4(A1), D2					 ; $0004
 		move.w	D2, D1
 		add.w	D0, D1
 		bmi.s	Offset_0x00D9C0
@@ -12308,7 +12308,7 @@ Offset_0x00D970:
 		bra.s	Offset_0x00D99A
 Offset_0x00D97E:
 		move.w	Obj_Y(A0), D2					 ; $000C
-		sub.w	Obj_Map(A1), D2					 ; $0004
+		sub.w	4(A1), D2					 ; $0004
 		addi.w	#$0080, D2
 		cmpi.w	#$0060, D2
 		bcs.s	Offset_0x00D9C0
@@ -12991,7 +12991,7 @@ Offset_0x00DFBE:
 		move.b	(Object_Frame_Buffer+$0003).w, D1			 ; $FFFFFEA3
 Offset_0x00DFFC:
 		add.w	D1, D1
-		adda.w	$00(A1, D1), A1
+		adda.w	(A1, D1), A1
 		move.b	(A1)+, D0
 		ext.w	D0
 		add.w	D2, D0
@@ -13043,7 +13043,7 @@ Offset_0x00E058:
 		cmpi.w	#$0170, D2
 		bge.s	Offset_0x00E0BC
 		add.w	D6, D2
-		lea	(Level_Rings_Mappings), A1			   ; Offset_0x00E198
+		lea	(Level_Rings_Mappings).l, A1			   ; Offset_0x00E198
 		moveq	#$00, D1
 		move.b	$0001(A0), D1
 		bne.s	Offset_0x00E094
@@ -13101,9 +13101,9 @@ Offset_0x00E0F0:
 		move.w	(Level_Id).w, D0					 ; $FFFFFE10
 		ror.b	#$01, D0
 		lsr.w	#$06, D0
-		lea	(Rings_Layout), A1			   ; Offset_0x0E8000
-		move.w	$00(A1, D0), D0
-		lea	$00(A1, D0), A1
+		lea	(Rings_Layout).l, A1			   ; Offset_0x0E8000
+		move.w	(A1, D0), D0
+		lea	(A1, D0), A1
 		lea	($FFFFE806).w, A2
 Offset_0x00E114:
 		move.w	(A1)+, D2
@@ -13220,7 +13220,7 @@ Offset_0x00E1FC:
 		move.w	(Level_Id).w, D0					 ; $FFFFFE10
 		ror.b	#$01, D0
 		lsr.w	#$06, D0
-		lea	(Objects_Layout), A0		   ; Offset_0x04C000
+		lea	(Objects_Layout).l, A0		   ; Offset_0x04C000
 		move.l	A0, A1
 		adda.w	$00(A0, D0), A0
 		move.l	A0, ($FFFFF770).w
@@ -13790,12 +13790,12 @@ Exit_Load_Object_List:						   ; Offset_0x00E742
 ; <<<-
 ;-------------------------------------------------------------------------------
 Obj_0x41_Springs:							   ; Offset_0x00E744
-		include "data\objects\obj_0x41.asm"
+		include "data/objects/obj_0x41.asm"
 ;-------------------------------------------------------------------------------
 		nop
 ;-------------------------------------------------------------------------------
 Obj_0x0D_End_Panel:							   ; Offset_0x00F098
-		include "data\objects\obj_0x0D.asm"
+		include "data/objects/obj_0x0D.asm"
 ;-------------------------------------------------------------------------------
 		nop
 ;-------------------------------------------------------------------------------
@@ -14194,7 +14194,7 @@ Offset_0x00F730:
 		blo.w	Offset_0x00F678
 		move.l	A0, -(A7)
 		move.l	A1, A0
-		jsr	(Kill_Player)				   ; Offset_0x02B57C
+		jsr	(Kill_Player).l				   ; Offset_0x02B57C
 		move.l	(A7)+, A0
 		move.w	D6, D4
 		addi.b	#$0F, D4
@@ -14451,10 +14451,10 @@ Offset_0x00F9B6:
 		move.w	A0, D1
 		subi.w	#Obj_Memory_Address, D1					 ; $B000
 		bne.s	Offset_0x00F9F4
-		jsr	(Sonic_ResetOnFloor)		   ; Offset_0x010A46
+		jsr	(Sonic_ResetOnFloor).l		   ; Offset_0x010A46
 		bra.s	Offset_0x00F9FA
 Offset_0x00F9F4:
-		jsr	(Miles_ResetOnFloor)		   ; Offset_0x011EC6
+		jsr	(Miles_ResetOnFloor).l		   ; Offset_0x011EC6
 Offset_0x00F9FA:
 		move.l	(A7)+, A0
 Offset_0x00F9FC:
@@ -14547,29 +14547,29 @@ Offset_0x00FAEC:
 		rts
 ;-------------------------------------------------------------------------------
 Obj_0x01_Sonic:						   ; Offset_0x00FAF0
-		include "data\objects\obj_0x01.asm"
+		include "data/objects/obj_0x01.asm"
 ;-------------------------------------------------------------------------------
 Kill_Sonic:							   ; Offset_0x011128
-		jmp	(Kill_Player)				   ; Offset_0x02B57C
+		jmp	(Kill_Player).l				   ; Offset_0x02B57C
 ;-------------------------------------------------------------------------------
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x02_Miles:						   ; Offset_0x011130
-		include "data\objects\obj_0x02.asm"
+		include "data/objects/obj_0x02.asm"
 Obj_0x05_Miles_Tail:						   ; Offset_0x012442
-		include "data\objects\obj_0x05.asm"
+		include "data/objects/obj_0x05.asm"
 ;-------------------------------------------------------------------------------
 Kill_Miles:							   ; Offset_0x012544
-		jmp	(Kill_Player)				   ; Offset_0x02B57C
+		jmp	(Kill_Player).l				   ; Offset_0x02B57C
 ;-------------------------------------------------------------------------------
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x0A_Sonic_Miles_Underwater:					   ; Offset_0x01254C
-		include "data\objects\obj_0x0A.asm"
+		include "data/objects/obj_0x0A.asm"
 Obj_0x38_Shield:							   ; Offset_0x012AF0
-		include "data\objects\obj_0x38.asm"
+		include "data/objects/obj_0x38.asm"
 Obj_0x35_Invincibility:						   ; Offset_0x012B72
-		include "data\objects\obj_0x35.asm"
+		include "data/objects/obj_0x35.asm"
 ;-------------------------------------------------------------------------------
 Shield_AnimateData:							   ; Offset_0x013066
 		dc.w	Offset_0x013068-Shield_AnimateData
@@ -14660,9 +14660,9 @@ Offset_0x0131A6:
 		dc.l	$F00F0012, $0009FFF0
 ;-------------------------------------------------------------------------------
 Obj_0x08_Dust_Water_Splash:					   ; Offset_0x0131B0
-		include "data\objects\obj_0x08.asm"
+		include "data/objects/obj_0x08.asm"
 Obj_0x7E_Super_Sonic_Stars:					   ; Offset_0x013552
-		include "data\objects\obj_0x7E.asm"
+		include "data/objects/obj_0x7E.asm"
 ;===============================================================================
 ; Rotina para calcular o ângulo do jogador
 ; ->>>
@@ -15026,7 +15026,7 @@ Floor_Check_Tile:							   ; Offset_0x0139F6
 		moveq	#-$01, D1
 		clr.w	D1
 		lea	(Level_Map_Buffer).w, A1			 ; $FFFF8000
-		move.b	$00(A1, D0), D1
+		move.b	(A1, D0), D1
 		add.w	D1, D1
 		move.w	Chunk_Mem_Address(PC, D1), D1		   ; Offset_0x013A30
 		move.w	D2, D0
@@ -15104,10 +15104,10 @@ Offset_0x013C42:
 Offset_0x013C50:
 		move.l	(Current_Colision_Pointer).w, A2			 ; $FFFFF796
 		add.w	D0, D0
-		move.w	$00(A2, D0), D0
+		move.w	(A2, D0), D0
 		beq.s	Offset_0x013C42
-		lea	(AngleMap), A2				   ; Offset_0x0368EA
-		move.b	$00(A2, D0), (A4)
+		lea	(AngleMap).l, A2				   ; Offset_0x0368EA
+		move.b	(A2, D0), (A4)
 		lsl.w	#$04, D0
 		move.w	D3, D1
 		btst	#$0A, D4
@@ -15123,8 +15123,8 @@ Offset_0x013C74:
 Offset_0x013C84:
 		andi.w	#$000F, D1
 		add.w	D0, D1
-		lea	(Colision_Array_1), A2		   ; Offset_0x0369EA
-		move.b	$00(A2, D1), D0
+		lea	(Colision_Array_1).l, A2		   ; Offset_0x0369EA
+		move.b	(A2, D1), D0
 		ext.w	D0
 		eor.w	D6, D4
 		btst	#$0B, D4
@@ -15171,10 +15171,10 @@ Offset_0x013CE8:
 Offset_0x013CF6:
 		move.l	(Current_Colision_Pointer).w, A2			 ; $FFFFF796
 		add.w	D0, D0
-		move.w	$00(A2, D0), D0
+		move.w	(A2, D0), D0
 		beq.s	Offset_0x013CE8
-		lea	(AngleMap), A2				   ; Offset_0x0368EA
-		move.b	$00(A2, D0), (A4)
+		lea	(AngleMap).l, A2				   ; Offset_0x0368EA
+		move.b	(A2, D0), (A4)
 		lsl.w	#$04, D0
 		move.w	D3, D1
 		btst	#$0A, D4
@@ -15190,8 +15190,8 @@ Offset_0x013D1A:
 Offset_0x013D2A:
 		andi.w	#$000F, D1
 		add.w	D0, D1
-		lea	(Colision_Array_1), A2		   ; Offset_0x0369EA
-		move.b	$00(A2, D1), D0
+		lea	(Colision_Array_1).l, A2		   ; Offset_0x0369EA
+		move.b	(A2, D1), D0
 		ext.w	D0
 		eor.w	D6, D4
 		btst	#$0B, D4
@@ -15237,10 +15237,10 @@ Offset_0x013D7E:
 Offset_0x013D84:
 		move.l	(Current_Colision_Pointer).w, A2			 ; $FFFFF796
 		add.w	D0, D0
-		move.w	$00(A2, D0), D0
+		move.w	(A2, D0), D0
 		beq.s	Offset_0x013D7E
-		lea	(AngleMap), A2				   ; Offset_0x0368EA
-		move.b	$00(A2, D0), (A4)
+		lea	(AngleMap).l, A2				   ; Offset_0x0368EA
+		move.b	(A2, D0), (A4)
 		lsl.w	#$04, D0
 		move.w	D3, D1
 		btst	#$0A, D4
@@ -15256,8 +15256,8 @@ Offset_0x013DA8:
 Offset_0x013DB8:
 		andi.w	#$000F, D1
 		add.w	D0, D1
-		lea	(Colision_Array_1), A2		   ; Offset_0x0369EA
-		move.b	$00(A2, D1), D0
+		lea	(Colision_Array_1).l, A2		   ; Offset_0x0369EA
+		move.b	(A2, D1), D0
 		ext.w	D0
 		eor.w	D6, D4
 		btst	#$0B, D4
@@ -15312,10 +15312,10 @@ Offset_0x013E1C:
 Offset_0x013E2A:
 		move.l	(Current_Colision_Pointer).w, A2			 ; $FFFFF796
 		add.w	D0, D0
-		move.w	$00(A2, D0), D0
+		move.w	(A2, D0), D0
 		beq.s	Offset_0x013E1C
-		lea	(AngleMap), A2				   ; Offset_0x0368EA
-		move.b	$00(A2, D0), (A4)
+		lea	(AngleMap).l, A2				   ; Offset_0x0368EA
+		move.b	(A2, D0), (A4)
 		lsl.w	#$04, D0
 		move.w	D2, D1
 		btst	#$0B, D4
@@ -15331,8 +15331,8 @@ Offset_0x013E56:
 Offset_0x013E5E:
 		andi.w	#$000F, D1
 		add.w	D0, D1
-		lea	(Colision_Array_2), A2		   ; Offset_0x0379EA
-		move.b	$00(A2, D1), D0
+		lea	(Colision_Array_2).l, A2		   ; Offset_0x0379EA
+		move.b	(A2, D1), D0
 		ext.w	D0
 		eor.w	D6, D4
 		btst	#$0A, D4
@@ -15379,10 +15379,10 @@ Offset_0x013EC2:
 Offset_0x013ED0:
 		move.l	(Current_Colision_Pointer).w, A2			 ; $FFFFF796
 		add.w	D0, D0
-		move.w	$00(A2, D0), D0
+		move.w	(A2, D0), D0
 		beq.s	Offset_0x013EC2
-		lea	(AngleMap), A2				   ; Offset_0x0368EA
-		move.b	$00(A2, D0), (A4)
+		lea	(AngleMap).l, A2				   ; Offset_0x0368EA
+		move.b	(A2, D0), (A4)
 		lsl.w	#$04, D0
 		move.w	D2, D1
 		btst	#$0B, D4
@@ -15398,8 +15398,8 @@ Offset_0x013EFC:
 Offset_0x013F04:
 		andi.w	#$000F, D1
 		add.w	D0, D1
-		lea	(Colision_Array_2), A2		   ; Offset_0x0379EA
-		move.b	$00(A2, D1), D0
+		lea	(Colision_Array_2).l, A2		   ; Offset_0x0379EA
+		move.b	(A2, D1), D0
 		ext.w	D0
 		eor.w	D6, D4
 		btst	#$0A, D4
@@ -15434,8 +15434,8 @@ Offset_0x013F36:
 FloorLog_Unk:						   ; Offset_0x013F46
 		rts		 ; Com este rts a rotina abaixo ficou desativada
 ; Offset_0x013F48:
-		lea	(Colision_Array_1), A1		   ; Offset_0x0369EA
-		lea	(Colision_Array_1), A2		   ; Offset_0x0369EA
+		lea	(Colision_Array_1).l, A1		   ; Offset_0x0369EA
+		lea	(Colision_Array_1).l, A2		   ; Offset_0x0369EA
 		move.w	#$00FF, D3
 Offset_0x013F58:
 		moveq	#$10, D5
@@ -15454,11 +15454,11 @@ Offset_0x013F64:
 		dbf	D2, Offset_0x013F5E
 		adda.w	#$0020, A1
 		dbf	D3, Offset_0x013F58
-		lea	(Colision_Array_1), A1		   ; Offset_0x0369EA
-		lea	(Colision_Array_2), A2		   ; Offset_0x0379EA
+		lea	(Colision_Array_1).l, A1		   ; Offset_0x0369EA
+		lea	(Colision_Array_2).l, A2		   ; Offset_0x0379EA
 		bsr.s	Offset_0x013F9C
-		lea	(Colision_Array_1), A1		   ; Offset_0x0369EA
-		lea	(Colision_Array_1), A2		   ; Offset_0x0369EA
+		lea	(Colision_Array_1).l, A1		   ; Offset_0x0369EA
+		lea	(Colision_Array_1).l, A2		   ; Offset_0x0369EA
 Offset_0x013F9C:
 		move.w	#$0FFF, D3
 Offset_0x013FA0:
@@ -15990,19 +15990,19 @@ Exit_Object_HitWall_Left:					   ; Offset_0x0144BC
 		nop
 ;-------------------------------------------------------------------------------
 Obj_0x79_Lamp_Post:							   ; Offset_0x0144C0
-		include "data\objects\obj_0x79.asm"
+		include "data/objects/obj_0x79.asm"
 ;-------------------------------------------------------------------------------
 		nop
 ;-------------------------------------------------------------------------------
 Obj_0x7D_Hidden_Bonus:						   ; Offset_0x014768
-		include "data\objects\obj_0x7D.asm"
+		include "data/objects/obj_0x7D.asm"
 ;-------------------------------------------------------------------------------
 		nop
 ;-------------------------------------------------------------------------------
 Obj_0x44_Red_Ball_Bumper:					   ; Offset_0x01486C
-		include "data\objects\obj_0x44.asm"
+		include "data/objects/obj_0x44.asm"
 Obj_0x24_Oxygen_Bubbles:					   ; Offset_0x0149CC
-		include "data\objects\obj_0x24.asm"
+		include "data/objects/obj_0x24.asm"
 ;-------------------------------------------------------------------------------
 Sonic_Underwater_Mappings:					   ; Offset_0x014CFC
 		dc.w	Offset_0x014D40-Sonic_Underwater_Mappings
@@ -16080,69 +16080,69 @@ Offset_0x014DBE:
 		dc.l	$F4061F31, $1B98FFF8
 ;-------------------------------------------------------------------------------
 Obj_0x03_Layer_Switch:						   ; Offset_0x014DC8
-		include "data\objects\obj_0x03.asm"
+		include "data/objects/obj_0x03.asm"
 Obj_0x0B_Open_Close_Platform:				   ; Offset_0x0151C4
-		include "data\objects\obj_0x0B.asm"
+		include "data/objects/obj_0x0B.asm"
 ;-------------------------------------------------------------------------------
 		nop
 ;-------------------------------------------------------------------------------
 Jmp_00_To_MarkObjGone:						   ; Offset_0x015314
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 ;-------------------------------------------------------------------------------
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x0C_Unk_Platform:						   ; Offset_0x01531C
-		include "data\objects\obj_0x0C.asm"
+		include "data/objects/obj_0x0C.asm"
 ;-------------------------------------------------------------------------------
 		nop
 Jmp_01_To_MarkObjGone:						   ; Offset_0x015414
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_00_To_CalcSine:							   ; Offset_0x01541A
 		jmp	(CalcSine).l					   ; Offset_0x003282
 ;-------------------------------------------------------------------------------
 Obj_0x12_HPz_Master_Emerald:				   ; Offset_0x015420
-		include "data\objects\obj_0x12.asm"
+		include "data/objects/obj_0x12.asm"
 ;-------------------------------------------------------------------------------
 		nop
 Jmp_00_To_DisplaySprite:					   ; Offset_0x01549C
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_00_To_DeleteObject:						   ; Offset_0x0154A2
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 ;-------------------------------------------------------------------------------
 Obj_0x13_HPz_Waterfalls:					   ; Offset_0x0154A8
-		include "data\objects\obj_0x13.asm"
+		include "data/objects/obj_0x13.asm"
 ;-------------------------------------------------------------------------------
 Jmp_01_To_DisplaySprite:					   ; Offset_0x0159C0
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_01_To_DeleteObject:						   ; Offset_0x0159C6
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 ;-------------------------------------------------------------------------------
 Obj_0x04_Water_Surface:						   ; Offset_0x0159CC
-		include "data\objects\obj_0x04.asm"
+		include "data/objects/obj_0x04.asm"
 Obj_0x49_Waterfall:							   ; Offset_0x015C8E
-		include "data\objects\obj_0x49.asm"
+		include "data/objects/obj_0x49.asm"
 Obj_0x31_Lava_Attributes:					   ; Offset_0x015EDC
-		include "data\objects\obj_0x31.asm"
+		include "data/objects/obj_0x31.asm"
 Obj_0x74_Invisible_Block:					   ; Offset_0x015FBA
-		include "data\objects\obj_0x74.asm"
+		include "data/objects/obj_0x74.asm"
 Obj_0x7C_Metal_Structure:					   ; Offset_0x0160BE
-		include "data\objects\obj_0x7C.asm"
+		include "data/objects/obj_0x7C.asm"
 Obj_0x27_Object_Hit:						   ; Offset_0x016174
-		include "data\objects\obj_0x27.asm"
+		include "data/objects/obj_0x27.asm"
 Obj_0x84_Auto_Spin:							   ; Offset_0x016248
-		include "data\objects\obj_0x84.asm"
+		include "data/objects/obj_0x84.asm"
 ;-------------------------------------------------------------------------------
 Jmp_02_To_DisplaySprite:					   ; Offset_0x016390
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_02_To_DeleteObject:						   ; Offset_0x016396
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_00_To_ModifySpriteAttr_2P:				   ; Offset_0x01639C
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_00_To_Check_Object_On_Screen:					   ; Offset_0x0163A2
-		jmp	(Check_Object_On_Screen)			   ; Offset_0x00DD66
+		jmp	(Check_Object_On_Screen).l			   ; Offset_0x00DD66
 ;-------------------------------------------------------------------------------
 Obj_0x06_Spiral_Attributes:					   ; Offset_0x0163A8
-		include "data\objects\obj_0x06.asm"
+		include "data/objects/obj_0x06.asm"
 ;-------------------------------------------------------------------------------
 		nop
 ;-------------------------------------------------------------------------------
@@ -16152,95 +16152,95 @@ Jmp_01_To_CalcSine:							   ; Offset_0x016800
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x14_Seesaw:							   ; Offset_0x016808
-		include "data\objects\obj_0x14.asm"
+		include "data/objects/obj_0x14.asm"
 ;-------------------------------------------------------------------------------
 Jmp_00_To_SingleObjectLoad_2:				   ; Offset_0x016C74
-		jmp	(SingleObjectLoad_2)		   ; Offset_0x00E714
+		jmp	(SingleObjectLoad_2).l		   ; Offset_0x00E714
 Jmp_01_To_ModifySpriteAttr_2P:				   ; Offset_0x016C7A
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_00_To_ObjectFall:						   ; Offset_0x016C80
-		jmp	(ObjectFall)				   ; Offset_0x00D1AE
+		jmp	(ObjectFall).l				   ; Offset_0x00D1AE
 Jmp_00_To_MarkObjGone_2:					   ; Offset_0x016C86
-		jmp	(MarkObjGone_2)				   ; Offset_0x00D238
+		jmp	(MarkObjGone_2).l				   ; Offset_0x00D238
 ;-------------------------------------------------------------------------------
 Obj_0x16_Teleferics:						   ; Offset_0x016C8C
-		include "data\objects\obj_0x16.asm"
+		include "data/objects/obj_0x16.asm"
 ;-------------------------------------------------------------------------------
 		nop
 Jmp_03_To_DeleteObject:						   ; Offset_0x016E98
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_02_To_MarkObjGone:						   ; Offset_0x016E9E
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_01_To_SingleObjectLoad_2:				   ; Offset_0x016EA4
-		jmp	(SingleObjectLoad_2)		   ; Offset_0x00E714
+		jmp	(SingleObjectLoad_2).l		   ; Offset_0x00E714
 Jmp_02_To_ModifySpriteAttr_2P:				   ; Offset_0x016EAA
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_00_To_SpeedToPos:						   ; Offset_0x016EB0
-		jmp	(SpeedToPos)				   ; Offset_0x00D1DA
+		jmp	(SpeedToPos).l				   ; Offset_0x00D1DA
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x19_Rotating_Platforms:				   ; Offset_0x016EB8
-		include "data\objects\obj_0x19.asm"
+		include "data/objects/obj_0x19.asm"
 ;-------------------------------------------------------------------------------
 		nop
 Jmp_03_To_DisplaySprite:					   ; Offset_0x0170FC
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_04_To_DeleteObject:						   ; Offset_0x017102
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_03_To_ModifySpriteAttr_2P:				   ; Offset_0x017108
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_01_To_SpeedToPos:						   ; Offset_0x01710E
-		jmp	(SpeedToPos)				   ; Offset_0x00D1DA
+		jmp	(SpeedToPos).l				   ; Offset_0x00D1DA
 ;-------------------------------------------------------------------------------
 Obj_0x1B_Speed_Booster:						   ; Offset_0x017114
-		include "data\objects\obj_0x1B.asm"
+		include "data/objects/obj_0x1B.asm"
 ;-------------------------------------------------------------------------------
 		nop
 Jmp_03_To_MarkObjGone:						   ; Offset_0x017260
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_04_To_ModifySpriteAttr_2P:				   ; Offset_0x017266
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 ;-------------------------------------------------------------------------------
 Obj_0x1D_Worms:						   ; Offset_0x01726C
-		include "data\objects\obj_0x1D.asm"
+		include "data/objects/obj_0x1D.asm"
 ;-------------------------------------------------------------------------------
 		nop
 Jmp_04_To_MarkObjGone:						   ; Offset_0x0173CC
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_02_To_SingleObjectLoad_2:				   ; Offset_0x0173D2
-		jmp	(SingleObjectLoad_2)		   ; Offset_0x00E714
+		jmp	(SingleObjectLoad_2).l		   ; Offset_0x00E714
 Jmp_00_To_ModifySpriteAttr_2P_A1:					   ; Offset_0x0173D8
-		jmp	(ModifySpriteAttr_2P_A1)			   ; Offset_0x00DBDA
+		jmp	(ModifySpriteAttr_2P_A1).l			   ; Offset_0x00DBDA
 Jmp_02_To_SpeedToPos:						   ; Offset_0x0173DE
-		jmp	(SpeedToPos)				   ; Offset_0x00D1DA
+		jmp	(SpeedToPos).l				   ; Offset_0x00D1DA
 ;-------------------------------------------------------------------------------
 Obj_0x1E_Tube_Attributes:					   ; Offset_0x0173E4
-		include "data\objects\obj_0x1E.asm"
+		include "data/objects/obj_0x1E.asm"
 ;-------------------------------------------------------------------------------
 Jmp_00_To_MarkObjGone_3:					   ; Offset_0x017E2C
-		jmp	(MarkObjGone_3)				   ; Offset_0x00D26C
+		jmp	(MarkObjGone_3).l				   ; Offset_0x00D26C
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x20_HTz_Boss_FireBall:					   ; Offset_0x017E34
-		include "data\objects\obj_0x20.asm"
+		include "data/objects/obj_0x20.asm"
 ;-------------------------------------------------------------------------------
 Jmp_05_To_DeleteObject:						   ; Offset_0x018118
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_05_To_MarkObjGone:						   ; Offset_0x01811E
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_03_To_SingleObjectLoad_2:				   ; Offset_0x018124
-		jmp	(SingleObjectLoad_2)		   ; Offset_0x00E714
+		jmp	(SingleObjectLoad_2).l		   ; Offset_0x00E714
 Jmp_00_To_AnimateSprite:					   ; Offset_0x01812A
-		jmp	(AnimateSprite)				   ; Offset_0x00D372
+		jmp	(AnimateSprite).l				   ; Offset_0x00D372
 Jmp_05_To_ModifySpriteAttr_2P:				   ; Offset_0x018130
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_03_To_SpeedToPos:						   ; Offset_0x018136
-		jmp	(SpeedToPos)				   ; Offset_0x00D1DA
+		jmp	(SpeedToPos).l				   ; Offset_0x00D1DA
 ;-------------------------------------------------------------------------------
 Obj_0x2F_Breakable_Floor:					   ; Offset_0x01813C
-		include "data\objects\obj_0x2F.asm"
+		include "data/objects/obj_0x2F.asm"
 Obj_0x32_Breakable_Obstacle:				   ; Offset_0x01834A
-		include "data\objects\obj_0x32.asm"
+		include "data/objects/obj_0x32.asm"
 ;-------------------------------------------------------------------------------
 Breakable_Floor_Mappings:					   ; Offset_0x01852A
 		dc.w	Offset_0x01853E-Breakable_Floor_Mappings
@@ -16327,182 +16327,182 @@ Offset_0x0186B8:
 ;-------------------------------------------------------------------------------
 		nop
 Jmp_04_To_DisplaySprite:					   ; Offset_0x0186DC
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_06_To_DeleteObject:						   ; Offset_0x0186E2
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_00_To_SingleObjectLoad:					   ; Offset_0x0186E8
-		jmp	(SingleObjectLoad)			   ; Offset_0x00E6FE
+		jmp	(SingleObjectLoad).l			   ; Offset_0x00E6FE
 Jmp_06_To_MarkObjGone:						   ; Offset_0x0186EE
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_06_To_ModifySpriteAttr_2P:				   ; Offset_0x0186F4
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_00_To_Smash_Object:						   ; Offset_0x0186FA
-		jmp	(Smash_Object)				   ; Offset_0x00CD24
+		jmp	(Smash_Object).l				   ; Offset_0x00CD24
 Jmp_00_To_SolidObject:						   ; Offset_0x018700
-		jmp	(SolidObject)				   ; Offset_0x00F344
+		jmp	(SolidObject).l				   ; Offset_0x00F344
 Jmp_04_To_SpeedToPos:						   ; Offset_0x018706
-		jmp	(SpeedToPos)				   ; Offset_0x00D1DA
+		jmp	(SpeedToPos).l				   ; Offset_0x00D1DA
 ;-------------------------------------------------------------------------------
 Obj_0x30_Earthquake_Tiles_Attributes:				   ; Offset_0x01870C
-		include "data\objects\obj_0x30.asm"
+		include "data/objects/obj_0x30.asm"
 ;-------------------------------------------------------------------------------
 Jmp_07_To_DeleteObject:						   ; Offset_0x018900
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Offset_0x018906:
-		jmp	(Offset_0x02B4CA)
+		jmp	(Offset_0x02B4CA).l
 Jmp_01_To_MarkObjGone_3:					   ; Offset_0x01890C
-		jmp	(MarkObjGone_3)				   ; Offset_0x00D26C
+		jmp	(MarkObjGone_3).l				   ; Offset_0x00D26C
 Offset_0x018912:
-		jmp	(Offset_0x00FA9C)
+		jmp	(Offset_0x00FA9C).l
 Jmp_00_To_SolidObject_2:					   ; Offset_0x018918
-		jmp	(SolidObject_2)				   ; Offset_0x00F39E
+		jmp	(SolidObject_2).l				   ; Offset_0x00F39E
 Jmp_00_To_SolidObject_3:					   ; Offset_0x01891E
-		jmp	(SolidObject_3)				   ; Offset_0x00F3F0
+		jmp	(SolidObject_3).l				   ; Offset_0x00F3F0
 ;-------------------------------------------------------------------------------
 Obj_0x33_Touch_Booster:						   ; Offset_0x018924
-		include "data\objects\obj_0x33.asm"
+		include "data/objects/obj_0x33.asm"
 ;-------------------------------------------------------------------------------
 Jmp_07_To_MarkObjGone:						   ; Offset_0x018C5C
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_04_To_SingleObjectLoad_2:				   ; Offset_0x018C62
-		jmp	(SingleObjectLoad_2)		   ; Offset_0x00E714
+		jmp	(SingleObjectLoad_2).l		   ; Offset_0x00E714
 Jmp_01_To_SolidObject:						   ; Offset_0x018C68
-		jmp	(SolidObject)				   ; Offset_0x00F344
+		jmp	(SolidObject).l				   ; Offset_0x00F344
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x43_Giant_Spikeball:					   ; Offset_0x018C70
-		include "data\objects\obj_0x43.asm"
+		include "data/objects/obj_0x43.asm"
 ;-------------------------------------------------------------------------------
 Jmp_05_To_SingleObjectLoad_2:				   ; Offset_0x018E44
-		jmp	(SingleObjectLoad_2)		   ; Offset_0x00E714
+		jmp	(SingleObjectLoad_2).l		   ; Offset_0x00E714
 Jmp_07_To_ModifySpriteAttr_2P:				   ; Offset_0x018E4A
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 ;-------------------------------------------------------------------------------
 Obj_0x07_0il_Attributes:					   ; Offset_0x018E50
-		include "data\objects\obj_0x07.asm"
+		include "data/objects/obj_0x07.asm"
 ;-------------------------------------------------------------------------------
 		nop
 Oil_Kill_Player:							   ; Offset_0x018F14
-		jmp	(Kill_Player)				   ; Offset_0x02B57C
+		jmp	(Kill_Player).l				   ; Offset_0x02B57C
 Jmp_00_To_Platform_Object_A1:				   ; Offset_0x018F1A
-		jmp	(Platform_Object_A1)		   ; Offset_0x00F842
+		jmp	(Platform_Object_A1).l		   ; Offset_0x00F842
 ;-------------------------------------------------------------------------------
 Obj_0x45_Spring_Push_Boost:					   ; Offset_0x018F20
-		include "data\objects\obj_0x45.asm"
+		include "data/objects/obj_0x45.asm"
 Obj_0x46_Spring_Ball:						   ; Offset_0x01983E
-		include "data\objects\obj_0x46.asm"
+		include "data/objects/obj_0x46.asm"
 ;-------------------------------------------------------------------------------
 		nop
 Jmp_08_To_DeleteObject:						   ; Offset_0x019AEC
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_01_To_SingleObjectLoad:					   ; Offset_0x019AF2
-		jmp	(SingleObjectLoad)			   ; Offset_0x00E6FE
+		jmp	(SingleObjectLoad).l			   ; Offset_0x00E6FE
 Jmp_08_To_MarkObjGone:						   ; Offset_0x019AF8
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_08_To_ModifySpriteAttr_2P:				   ; Offset_0x019AFE
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_02_To_SolidObject:						   ; Offset_0x019B04
-		jmp	(SolidObject)				   ; Offset_0x00F344
+		jmp	(SolidObject).l				   ; Offset_0x00F344
 Jmp_00_To_SolidObject_2_A1:					   ; Offset_0x019B0A
-		jmp	(SolidObject_2_A1)			   ; Offset_0x00F3B4
+		jmp	(SolidObject_2_A1).l			   ; Offset_0x00F3B4
 Offset_0x019B10:
-		jmp	(Offset_0x00F494)
+		jmp	(Offset_0x00F494).l
 Jmp_05_To_SpeedToPos:						   ; Offset_0x019B16
-		jmp	(SpeedToPos)				   ; Offset_0x00D1DA
+		jmp	(SpeedToPos).l				   ; Offset_0x00D1DA
 ;-------------------------------------------------------------------------------
 Obj_0x47_Switch:							   ; Offset_0x019B1C
-		include "data\objects\obj_0x47.asm"
+		include "data/objects/obj_0x47.asm"
 ;-------------------------------------------------------------------------------
 		nop
 Jmp_09_To_MarkObjGone:						   ; Offset_0x019BE4
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_09_To_ModifySpriteAttr_2P:				   ; Offset_0x019BEA
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_03_To_SolidObject:						   ; Offset_0x019BF0
-		jmp	(SolidObject)				   ; Offset_0x00F344
+		jmp	(SolidObject).l				   ; Offset_0x00F344
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x3D_Break_Boost:						   ; Offset_0x019BF8
-		include "data\objects\obj_0x3D.asm"
+		include "data/objects/obj_0x3D.asm"
 ;-------------------------------------------------------------------------------
 Jmp_05_To_DisplaySprite:					   ; Offset_0x01A004
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_09_To_DeleteObject:						   ; Offset_0x01A00A
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_0A_To_MarkObjGone:						   ; Offset_0x01A010
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_06_To_SingleObjectLoad_2:				   ; Offset_0x01A016
-		jmp	(SingleObjectLoad_2)		   ; Offset_0x00E714
+		jmp	(SingleObjectLoad_2).l		   ; Offset_0x00E714
 Jmp_02_To_MarkObjGone_3:					   ; Offset_0x01A01C
-		jmp	(MarkObjGone_3)				   ; Offset_0x00D26C
+		jmp	(MarkObjGone_3).l				   ; Offset_0x00D26C
 Jmp_0A_To_ModifySpriteAttr_2P:				   ; Offset_0x01A022
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_01_To_Smash_Object:						   ; Offset_0x01A028
-		jmp	(Smash_Object)				   ; Offset_0x00CD24
+		jmp	(Smash_Object).l				   ; Offset_0x00CD24
 Jmp_04_To_SolidObject:						   ; Offset_0x01A02E
-		jmp	(SolidObject)				   ; Offset_0x00F344
+		jmp	(SolidObject).l				   ; Offset_0x00F344
 Jmp_06_To_SpeedToPos:						   ; Offset_0x01A034
-		jmp	(SpeedToPos)				   ; Offset_0x00D1DA
+		jmp	(SpeedToPos).l				   ; Offset_0x00D1DA
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x48_Cannon:							   ; Offset_0x01A03C
-		include "data\objects\obj_0x48.asm"
+		include "data/objects/obj_0x48.asm"
 ;-------------------------------------------------------------------------------
 		nop
 Jmp_06_To_DisplaySprite:					   ; Offset_0x01A438
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_0B_To_MarkObjGone:						   ; Offset_0x01A43E
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_0B_To_ModifySpriteAttr_2P:				   ; Offset_0x01A444
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x22_Arrow_Shooter:						   ; Offset_0x01A44C
-		include "data\objects\obj_0x22.asm"
+		include "data/objects/obj_0x22.asm"
 ;-------------------------------------------------------------------------------
 Jmp_0A_To_DeleteObject:						   ; Offset_0x01A620
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_02_To_SingleObjectLoad:					   ; Offset_0x01A626
-		jmp	(SingleObjectLoad)			   ; Offset_0x00E6FE
+		jmp	(SingleObjectLoad).l			   ; Offset_0x00E6FE
 Jmp_0C_To_MarkObjGone:						   ; Offset_0x01A62C
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_01_To_AnimateSprite:					   ; Offset_0x01A632
-		jmp	(AnimateSprite)				   ; Offset_0x00D372
+		jmp	(AnimateSprite).l				   ; Offset_0x00D372
 Jmp_0C_To_ModifySpriteAttr_2P:				   ; Offset_0x01A638
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_07_To_SpeedToPos:						   ; Offset_0x01A63E
-		jmp	(SpeedToPos)				   ; Offset_0x00D1DA
+		jmp	(SpeedToPos).l				   ; Offset_0x00D1DA
 ;-------------------------------------------------------------------------------
 Obj_0x23_Pillar:							   ; Offset_0x01A644
-		include "data\objects\obj_0x23.asm"
+		include "data/objects/obj_0x23.asm"
 Obj_0x2B_Raising_Pillar:					   ; Offset_0x01A812
-		include "data\objects\obj_0x2B.asm"
+		include "data/objects/obj_0x2B.asm"
 ;-------------------------------------------------------------------------------
 Jmp_07_To_DisplaySprite:					   ; Offset_0x01AE8C
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_0B_To_DeleteObject:						   ; Offset_0x01AE92
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_0D_To_MarkObjGone:						   ; Offset_0x01AE98
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_07_To_SingleObjectLoad_2:				   ; Offset_0x01AE9E
-		jmp	(SingleObjectLoad_2)		   ; Offset_0x00E714
+		jmp	(SingleObjectLoad_2).l		   ; Offset_0x00E714
 Jmp_0D_To_ModifySpriteAttr_2P:				   ; Offset_0x01AEA4
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_05_To_SolidObject:						   ; Offset_0x01AEAA
-		jmp	(SolidObject)				   ; Offset_0x00F344
+		jmp	(SolidObject).l				   ; Offset_0x00F344
 Jmp_08_To_SpeedToPos:						   ; Offset_0x01AEB0
-		jmp	(SpeedToPos)				   ; Offset_0x00D1DA
+		jmp	(SpeedToPos).l				   ; Offset_0x00D1DA
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x2C_Leaves:							   ; Offset_0x01AEB8
-		include "data\objects\obj_0x2C.asm"
+		include "data/objects/obj_0x2C.asm"
 ;-------------------------------------------------------------------------------
 Jmp_08_To_DisplaySprite:					   ; Offset_0x01B10C
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_0C_To_DeleteObject:						   ; Offset_0x01B112
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_03_To_SingleObjectLoad:					   ; Offset_0x01B118
-		jmp	(SingleObjectLoad)			   ; Offset_0x00E6FE
+		jmp	(SingleObjectLoad).l			   ; Offset_0x00E6FE
 Jmp_00_To_PseudoRandomNumber:				   ; Offset_0x01B11E
 		jmp	(PseudoRandomNumber).l		   ; Offset_0x00325C
 Jmp_02_To_CalcSine:							   ; Offset_0x01B124
@@ -16510,436 +16510,436 @@ Jmp_02_To_CalcSine:							   ; Offset_0x01B124
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x40_Diagonal_Springs:					   ; Offset_0x01B12C
-		include "data\objects\obj_0x40.asm"
+		include "data/objects/obj_0x40.asm"
 ;-------------------------------------------------------------------------------
 		nop
 Jmp_0E_To_MarkObjGone:						   ; Offset_0x01B3D4
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_02_To_AnimateSprite:					   ; Offset_0x01B3DA
-		jmp	(AnimateSprite)				   ; Offset_0x00D372
+		jmp	(AnimateSprite).l				   ; Offset_0x00D372
 Jmp_0E_To_ModifySpriteAttr_2P:				   ; Offset_0x01B3E0
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_00_To_SolidObject_3_A1:					   ; Offset_0x01B3E6
-		jmp	(SolidObject_3_A1)			   ; Offset_0x00F406
+		jmp	(SolidObject_3_A1).l			   ; Offset_0x00F406
 ;-------------------------------------------------------------------------------
 Obj_0x42_Steam_Vent:						   ; Offset_0x01B3EC
-		include "data\objects\obj_0x42.asm"
+		include "data/objects/obj_0x42.asm"
 ;-------------------------------------------------------------------------------
 		nop
 Jmp_09_To_DisplaySprite:					   ; Offset_0x01B6B0
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_0D_To_DeleteObject:						   ; Offset_0x01B6B6
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_04_To_SingleObjectLoad:					   ; Offset_0x01B6BC
-		jmp	(SingleObjectLoad)			   ; Offset_0x00E6FE
+		jmp	(SingleObjectLoad).l			   ; Offset_0x00E6FE
 Jmp_0F_To_MarkObjGone:						   ; Offset_0x01B6C2
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_0F_To_ModifySpriteAttr_2P:				   ; Offset_0x01B6C8
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_01_To_SolidObject_2_A1:					   ; Offset_0x01B6CE
-		jmp	(SolidObject_2_A1)			   ; Offset_0x00F3B4
+		jmp	(SolidObject_2_A1).l			   ; Offset_0x00F3B4
 ;-------------------------------------------------------------------------------
 Obj_0x64_Pistons:							   ; Offset_0x01B6D4
-		include "data\objects\obj_0x64.asm"
+		include "data/objects/obj_0x64.asm"
 ;-------------------------------------------------------------------------------
 Jmp_10_To_ModifySpriteAttr_2P:				   ; Offset_0x01B888
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_06_To_SolidObject:						   ; Offset_0x01B88E
-		jmp	(SolidObject)				   ; Offset_0x00F344
+		jmp	(SolidObject).l				   ; Offset_0x00F344
 ;-------------------------------------------------------------------------------
 Obj_0x65_Platform_Over_Gear:				   ; Offset_0x01B894
-		include "data\objects\obj_0x65.asm"
+		include "data/objects/obj_0x65.asm"
 ;-------------------------------------------------------------------------------
 Jmp_10_To_MarkObjGone:						   ; Offset_0x01BCDC
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_08_To_SingleObjectLoad_2:				   ; Offset_0x01BCE2
-		jmp	(SingleObjectLoad_2)		   ; Offset_0x00E714
+		jmp	(SingleObjectLoad_2).l		   ; Offset_0x00E714
 Jmp_11_To_ModifySpriteAttr_2P:				   ; Offset_0x01BCE8
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_07_To_SolidObject:						   ; Offset_0x01BCEE
-		jmp	(SolidObject)				   ; Offset_0x00F344
+		jmp	(SolidObject).l				   ; Offset_0x00F344
 ;-------------------------------------------------------------------------------
 Obj_0x66_Springs_Wall:						   ; Offset_0x01BCF4
-		include "data\objects\obj_0x66.asm"
+		include "data/objects/obj_0x66.asm"
 ;-------------------------------------------------------------------------------
 Jmp_0A_To_DisplaySprite:					   ; Offset_0x01BEE4
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_0E_To_DeleteObject:						   ; Offset_0x01BEEA
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_12_To_ModifySpriteAttr_2P:				   ; Offset_0x01BEF0
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_02_To_SolidObject_2_A1:					   ; Offset_0x01BEF6
-		jmp	(SolidObject_2_A1)			   ; Offset_0x00F3B4
+		jmp	(SolidObject_2_A1).l			   ; Offset_0x00F3B4
 ;-------------------------------------------------------------------------------
 Obj_0x67_Teleport_Attributes:				   ; Offset_0x01BEFC
-		include "data\objects\obj_0x67.asm"
+		include "data/objects/obj_0x67.asm"
 ;-------------------------------------------------------------------------------
 Jmp_0B_To_DisplaySprite:					   ; Offset_0x01C320
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_03_To_AnimateSprite:					   ; Offset_0x01C326
-		jmp	(AnimateSprite)				   ; Offset_0x00D372
+		jmp	(AnimateSprite).l				   ; Offset_0x00D372
 Jmp_03_To_MarkObjGone_3:					   ; Offset_0x01C32C
-		jmp	(MarkObjGone_3)				   ; Offset_0x00D26C
+		jmp	(MarkObjGone_3).l				   ; Offset_0x00D26C
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x68_Block_Harpon:						   ; Offset_0x01C334
-		include "data\objects\obj_0x68.asm"
+		include "data/objects/obj_0x68.asm"
 Obj_0x6D_Harpoon:							   ; Offset_0x01C534
-		include "data\objects\obj_0x6D.asm"
+		include "data/objects/obj_0x6D.asm"
 ;-------------------------------------------------------------------------------
 Jmp_11_To_MarkObjGone:						   ; Offset_0x01C604
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_09_To_SingleObjectLoad_2:				   ; Offset_0x01C60A
-		jmp	(SingleObjectLoad_2)		   ; Offset_0x00E714
+		jmp	(SingleObjectLoad_2).l		   ; Offset_0x00E714
 Jmp_13_To_ModifySpriteAttr_2P:				   ; Offset_0x01C610
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_08_To_SolidObject:						   ; Offset_0x01C616
-		jmp	(SolidObject)				   ; Offset_0x00F344
+		jmp	(SolidObject).l				   ; Offset_0x00F344
 Jmp_01_To_MarkObjGone_2:					   ; Offset_0x01C61C
-		jmp	(MarkObjGone_2)				   ; Offset_0x00D238
+		jmp	(MarkObjGone_2).l				   ; Offset_0x00D238
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x69_Screw_Nut:							   ; Offset_0x01C624
-		include "data\objects\obj_0x69.asm"
+		include "data/objects/obj_0x69.asm"
 ;-------------------------------------------------------------------------------
 		nop
 Jmp_12_To_MarkObjGone:						   ; Offset_0x01C830
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_00_To_ObjHitFloor:						   ; Offset_0x01C836
-		jmp	(ObjHitFloor)				   ; Offset_0x014204
+		jmp	(ObjHitFloor).l				   ; Offset_0x014204
 Jmp_14_To_ModifySpriteAttr_2P:				   ; Offset_0x01C83C
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_09_To_SolidObject:						   ; Offset_0x01C842
-		jmp	(SolidObject)				   ; Offset_0x00F344
+		jmp	(SolidObject).l				   ; Offset_0x00F344
 Jmp_09_To_SpeedToPos:						   ; Offset_0x01C848
-		jmp	(SpeedToPos)				   ; Offset_0x00D1DA
+		jmp	(SpeedToPos).l				   ; Offset_0x00D1DA
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x6A_DHz_Three_Boxes_Mz_Ptfrm:					   ; Offset_0x01C850
-		include "data\objects\obj_0x6A.asm"
+		include "data/objects/obj_0x6A.asm"
 ;-------------------------------------------------------------------------------
 Jmp_0A_To_SingleObjectLoad_2:				   ; Offset_0x01CAF4
-		jmp	(SingleObjectLoad_2)		   ; Offset_0x00E714
+		jmp	(SingleObjectLoad_2).l		   ; Offset_0x00E714
 Jmp_15_To_ModifySpriteAttr_2P:				   ; Offset_0x01CAFA
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_0A_To_SolidObject:						   ; Offset_0x01CB00
-		jmp	(SolidObject)				   ; Offset_0x00F344
+		jmp	(SolidObject).l				   ; Offset_0x00F344
 Jmp_02_To_MarkObjGone_2:					   ; Offset_0x01CB06
-		jmp	(MarkObjGone_2)				   ; Offset_0x00D238
+		jmp	(MarkObjGone_2).l				   ; Offset_0x00D238
 ;-------------------------------------------------------------------------------
 Obj_0x6B_Mz_Platform:						   ; Offset_0x01CB0C
-		include "data\objects\obj_0x6B.asm"
+		include "data/objects/obj_0x6B.asm"
 ;-------------------------------------------------------------------------------
 		nop
 Jmp_16_To_ModifySpriteAttr_2P:				   ; Offset_0x01CDB0
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_0B_To_SolidObject:						   ; Offset_0x01CDB6
-		jmp	(SolidObject)				   ; Offset_0x00F344
+		jmp	(SolidObject).l				   ; Offset_0x00F344
 Jmp_03_To_MarkObjGone_2:					   ; Offset_0x01CDBC
-		jmp	(MarkObjGone_2)				   ; Offset_0x00D238
+		jmp	(MarkObjGone_2).l				   ; Offset_0x00D238
 Jmp_0A_To_SpeedToPos:						   ; Offset_0x01CDC2
-		jmp	(SpeedToPos)				   ; Offset_0x00D1DA
+		jmp	(SpeedToPos).l				   ; Offset_0x00D1DA
 ;-------------------------------------------------------------------------------
 Obj_0x6C_Mz_Moving_Platforms:				   ; Offset_0x01CDC8
-		include "data\objects\obj_0x6C.asm"
+		include "data/objects/obj_0x6C.asm"
 ;-------------------------------------------------------------------------------
 		nop
 Jmp_0C_To_DisplaySprite:					   ; Offset_0x01D11C
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_0F_To_DeleteObject:						   ; Offset_0x01D122
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_05_To_SingleObjectLoad:					   ; Offset_0x01D128
-		jmp	(SingleObjectLoad)			   ; Offset_0x00E6FE
+		jmp	(SingleObjectLoad).l			   ; Offset_0x00E6FE
 Jmp_17_To_ModifySpriteAttr_2P:				   ; Offset_0x01D12E
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_00_To_Platform_Object:					   ; Offset_0x01D134
-		jmp	(Platform_Object)			   ; Offset_0x00F82C
+		jmp	(Platform_Object).l			   ; Offset_0x00F82C
 Jmp_0B_To_SpeedToPos:						   ; Offset_0x01D13A
-		jmp	(SpeedToPos)				   ; Offset_0x00D1DA
+		jmp	(SpeedToPos).l				   ; Offset_0x00D1DA
 ;-------------------------------------------------------------------------------
 Obj_0x6E_Machine:							   ; Offset_0x01D140
-		include "data\objects\obj_0x6E.asm"
+		include "data/objects/obj_0x6E.asm"
 ;-------------------------------------------------------------------------------
 Jmp_18_To_ModifySpriteAttr_2P:				   ; Offset_0x01D348
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_0C_To_SolidObject:						   ; Offset_0x01D34E
-		jmp	(SolidObject)				   ; Offset_0x00F344
+		jmp	(SolidObject).l				   ; Offset_0x00F344
 ;-------------------------------------------------------------------------------
 Obj_Ox6F_Parallelogram_Elevator:					   ; Offset_0x01D354
-		include "data\objects\obj_0x6F.asm"
+		include "data/objects/obj_0x6F.asm"
 ;-------------------------------------------------------------------------------
 		nop
 Jmp_19_To_ModifySpriteAttr_2P:				   ; Offset_0x01D6A0
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Offset_0x01D6A6:
-		jmp	(Offset_0x00F442)
+		jmp	(Offset_0x00F442).l
 ;-------------------------------------------------------------------------------
 Obj_0x70_Rotating_Gears:					   ; Offset_0x01D6AC
-		include "data\objects\obj_0x70.asm"
+		include "data/objects/obj_0x70.asm"
 ;-------------------------------------------------------------------------------
 		nop
 Jmp_0B_To_SingleObjectLoad_2:				   ; Offset_0x01DA14
-		jmp	(SingleObjectLoad_2)		   ; Offset_0x00E714
+		jmp	(SingleObjectLoad_2).l		   ; Offset_0x00E714
 Jmp_01_To_ModifySpriteAttr_2P_A1:					   ; Offset_0x01DA1A
-		jmp	(ModifySpriteAttr_2P_A1)			   ; Offset_0x00DBDA
+		jmp	(ModifySpriteAttr_2P_A1).l			   ; Offset_0x00DBDA
 Jmp_0D_To_SolidObject:						   ; Offset_0x01DA20
-		jmp	(SolidObject)				   ; Offset_0x00F344
+		jmp	(SolidObject).l				   ; Offset_0x00F344
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x72_Conveyor_Belt_Attributes:					   ; Offset_0x01DA28
-		include "data\objects\obj_0x72.asm"
+		include "data/objects/obj_0x72.asm"
 ;-------------------------------------------------------------------------------
 		nop
 Jmp_04_To_MarkObjGone_3:					   ; Offset_0x01DAA8
-		jmp	(MarkObjGone_3)				   ; Offset_0x00D26C
+		jmp	(MarkObjGone_3).l				   ; Offset_0x00D26C
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x73_Rotating_Rings:					   ; Offset_0x01DAB0
-		include "data\objects\obj_0x73.asm"
+		include "data/objects/obj_0x73.asm"
 ;-------------------------------------------------------------------------------
 Jmp_0D_To_DisplaySprite:					   ; Offset_0x01DC84
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_06_To_SingleObjectLoad:					   ; Offset_0x01DC8A
-		jmp	(SingleObjectLoad)			   ; Offset_0x00E6FE
+		jmp	(SingleObjectLoad).l			   ; Offset_0x00E6FE
 Jmp_00_To_DeleteObject_A1:					   ; Offset_0x01DC90
-		jmp	(DeleteObject_A1)			   ; Offset_0x00D316
+		jmp	(DeleteObject_A1).l			   ; Offset_0x00D316
 Jmp_1A_To_ModifySpriteAttr_2P:				   ; Offset_0x01DC96
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_0E_To_SolidObject:						   ; Offset_0x01DC9C
-		jmp	(SolidObject)				   ; Offset_0x00F344
+		jmp	(SolidObject).l				   ; Offset_0x00F344
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x75_Spikeball_Chain:					   ; Offset_0x01DCA4
-		include "data\objects\obj_0x75.asm"
+		include "data/objects/obj_0x75.asm"
 ;-------------------------------------------------------------------------------
 		nop
 Jmp_00_To_DisplaySprite_Param:				   ; Offset_0x01DE9C
-		jmp	(DisplaySprite_Param)		   ; Offset_0x00D35E
+		jmp	(DisplaySprite_Param).l		   ; Offset_0x00D35E
 Jmp_0E_To_DisplaySprite:					   ; Offset_0x01DEA2
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_10_To_DeleteObject:						   ; Offset_0x01DEA8
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_13_To_MarkObjGone:						   ; Offset_0x01DEAE
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_01_To_DeleteObject_A1:					   ; Offset_0x01DEB4
-		jmp	(DeleteObject_A1)			   ; Offset_0x00D316
+		jmp	(DeleteObject_A1).l			   ; Offset_0x00D316
 Jmp_0C_To_SingleObjectLoad_2:				   ; Offset_0x01DEBA
-		jmp	(SingleObjectLoad_2)		   ; Offset_0x00E714
+		jmp	(SingleObjectLoad_2).l		   ; Offset_0x00E714
 Jmp_1B_To_ModifySpriteAttr_2P:				   ; Offset_0x01DEC0
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_03_To_CalcSine:							   ; Offset_0x01DEC6
 		jmp	(CalcSine).l					   ; Offset_0x003282
 Jmp_0F_To_SolidObject:						   ; Offset_0x01DECC
-		jmp	(SolidObject)				   ; Offset_0x00F344
+		jmp	(SolidObject).l				   ; Offset_0x00F344
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x76_Platform_Spikes:					   ; Offset_0x01DED4
-		include "data\objects\obj_0x76.asm"
+		include "data/objects/obj_0x76.asm"
 ;-------------------------------------------------------------------------------
 		nop
 Jmp_00_To_Hurt_Player_A1:					   ; Offset_0x01E04C
-		jmp	(Hurt_Player_A1)			   ; Offset_0x00C9A4
+		jmp	(Hurt_Player_A1).l			   ; Offset_0x00C9A4
 Jmp_1C_To_ModifySpriteAttr_2P:				   ; Offset_0x01E052
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_10_To_SolidObject:						   ; Offset_0x01E058
-		jmp	(SolidObject)				   ; Offset_0x00F344
+		jmp	(SolidObject).l				   ; Offset_0x00F344
 Jmp_04_To_MarkObjGone_2:					   ; Offset_0x01E05E
-		jmp	(MarkObjGone_2)				   ; Offset_0x00D238
+		jmp	(MarkObjGone_2).l				   ; Offset_0x00D238
 ;-------------------------------------------------------------------------------
 Obj_0x77_Bridge:							   ; Offset_0x01E064
-		include "data\objects\obj_0x77.asm"
+		include "data/objects/obj_0x77.asm"
 ;-------------------------------------------------------------------------------
 Jmp_14_To_MarkObjGone:						   ; Offset_0x01E294
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_1D_To_ModifySpriteAttr_2P:				   ; Offset_0x01E29A
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_11_To_SolidObject:						   ; Offset_0x01E2A0
-		jmp	(SolidObject)				   ; Offset_0x00F344
+		jmp	(SolidObject).l				   ; Offset_0x00F344
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x78_Stair_Case_Platforms:				   ; Offset_0x01E2A8
-		include "data\objects\obj_0x78.asm"
+		include "data/objects/obj_0x78.asm"
 ;-------------------------------------------------------------------------------
 Jmp_0D_To_SingleObjectLoad_2:				   ; Offset_0x01E464
-		jmp	(SingleObjectLoad_2)		   ; Offset_0x00E714
+		jmp	(SingleObjectLoad_2).l		   ; Offset_0x00E714
 Jmp_02_To_ModifySpriteAttr_2P_A1:					   ; Offset_0x01E46A
-		jmp	(ModifySpriteAttr_2P_A1)			   ; Offset_0x00DBDA
+		jmp	(ModifySpriteAttr_2P_A1).l			   ; Offset_0x00DBDA
 Jmp_12_To_SolidObject:						   ; Offset_0x01E470
-		jmp	(SolidObject)				   ; Offset_0x00F344
+		jmp	(SolidObject).l				   ; Offset_0x00F344
 Jmp_05_To_MarkObjGone_2:					   ; Offset_0x01E476
-		jmp	(MarkObjGone_2)				   ; Offset_0x00D238
+		jmp	(MarkObjGone_2).l				   ; Offset_0x00D238
 ;-------------------------------------------------------------------------------
 Obj_0x7A_Platform_Horizontal:				   ; Offset_0x01E47C
-		include "data\objects\obj_0x7A.asm"
+		include "data/objects/obj_0x7A.asm"
 ;-------------------------------------------------------------------------------
 Jmp_0F_To_DisplaySprite:					   ; Offset_0x01E654
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_0E_To_SingleObjectLoad_2:				   ; Offset_0x01E65A
-		jmp	(SingleObjectLoad_2)		   ; Offset_0x00E714
+		jmp	(SingleObjectLoad_2).l		   ; Offset_0x00E714
 Jmp_1E_To_ModifySpriteAttr_2P:				   ; Offset_0x01E660
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_01_To_Platform_Object:					   ; Offset_0x01E666
-		jmp	(Platform_Object)			   ; Offset_0x00F82C
+		jmp	(Platform_Object).l			   ; Offset_0x00F82C
 ;-------------------------------------------------------------------------------
 Obj_0x7B_Spring_Tubes:						   ; Offset_0x01E66C
-		include "data\objects\obj_0x7B.asm"
+		include "data/objects/obj_0x7B.asm"
 ;-------------------------------------------------------------------------------
 		nop
 Jmp_10_To_DisplaySprite:					   ; Offset_0x01E884
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_11_To_DeleteObject:						   ; Offset_0x01E88A
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_04_To_AnimateSprite:					   ; Offset_0x01E890
-		jmp	(AnimateSprite)				   ; Offset_0x00D372
+		jmp	(AnimateSprite).l				   ; Offset_0x00D372
 Jmp_1F_To_ModifySpriteAttr_2P:				   ; Offset_0x01E896
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_03_To_SolidObject_2_A1:					   ; Offset_0x01E89C
-		jmp	(SolidObject_2_A1)			   ; Offset_0x00F3B4
+		jmp	(SolidObject_2_A1).l			   ; Offset_0x00F3B4
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x7F_Vines_Switch:						   ; Offset_0x01E8A4
-		include "data\objects\obj_0x7F.asm"
+		include "data/objects/obj_0x7F.asm"
 ;-------------------------------------------------------------------------------
 Jmp_15_To_MarkObjGone:						   ; Offset_0x01EA24
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_20_To_ModifySpriteAttr_2P:				   ; Offset_0x01EA2A
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 ;-------------------------------------------------------------------------------
 Obj_0x80_Vines_Chain_Hook:					   ; Offset_0x01EA30
-		include "data\objects\obj_0x80.asm"
+		include "data/objects/obj_0x80.asm"
 ;-------------------------------------------------------------------------------
 Jmp_16_To_MarkObjGone:						   ; Offset_0x01ED80
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_21_To_ModifySpriteAttr_2P:				   ; Offset_0x01ED86
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 ;-------------------------------------------------------------------------------
 Obj_0x81_Vertical_Bridge:					   ; Offset_0x01ED8C
-		include "data\objects\obj_0x81.asm"
+		include "data/objects/obj_0x81.asm"
 ;-------------------------------------------------------------------------------
 		nop
 Jmp_01_To_DisplaySprite_Param:				   ; Offset_0x01EFE8
-		jmp	(DisplaySprite_Param)		   ; Offset_0x00D35E
+		jmp	(DisplaySprite_Param).l		   ; Offset_0x00D35E
 Jmp_11_To_DisplaySprite:					   ; Offset_0x01EFEE
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_12_To_DeleteObject:						   ; Offset_0x01EFF4
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_02_To_DeleteObject_A1:					   ; Offset_0x01EFFA
-		jmp	(DeleteObject_A1)			   ; Offset_0x00D316
+		jmp	(DeleteObject_A1).l			   ; Offset_0x00D316
 Jmp_0F_To_SingleObjectLoad_2:				   ; Offset_0x01F000
-		jmp	(SingleObjectLoad_2)		   ; Offset_0x00E714
+		jmp	(SingleObjectLoad_2).l		   ; Offset_0x00E714
 Jmp_22_To_ModifySpriteAttr_2P:				   ; Offset_0x01F006
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_04_To_CalcSine:							   ; Offset_0x01F00C
 		jmp	(CalcSine).l					   ; Offset_0x003282
 Jmp_13_To_SolidObject:						   ; Offset_0x01F012
-		jmp	(SolidObject)				   ; Offset_0x00F344
+		jmp	(SolidObject).l				   ; Offset_0x00F344
 ;-------------------------------------------------------------------------------
 Obj_0x82_Falling_Pillar:					   ; Offset_0x01F018
-		include "data\objects\obj_0x82.asm"
+		include "data/objects/obj_0x82.asm"
 ;-------------------------------------------------------------------------------
 		nop
 Jmp_01_To_ObjHitFloor:						   ; Offset_0x01F260
-		jmp	(ObjHitFloor)				   ; Offset_0x014204
+		jmp	(ObjHitFloor).l				   ; Offset_0x014204
 Jmp_23_To_ModifySpriteAttr_2P:				   ; Offset_0x01F266
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_00_To_Object_HitCeiling:				   ; Offset_0x01F26C
-		jmp	(Object_HitCeiling)			   ; Offset_0x0143C8
+		jmp	(Object_HitCeiling).l			   ; Offset_0x0143C8
 Jmp_14_To_SolidObject:						   ; Offset_0x01F272
-		jmp	(SolidObject)				   ; Offset_0x00F344
+		jmp	(SolidObject).l				   ; Offset_0x00F344
 Jmp_06_To_MarkObjGone_2:					   ; Offset_0x01F278
-		jmp	(MarkObjGone_2)				   ; Offset_0x00D238
+		jmp	(MarkObjGone_2).l				   ; Offset_0x00D238
 Jmp_0C_To_SpeedToPos:						   ; Offset_0x01F27E
-		jmp	(SpeedToPos)				   ; Offset_0x00D1DA
+		jmp	(SpeedToPos).l				   ; Offset_0x00D1DA
 ;-------------------------------------------------------------------------------
 Obj_0x83_Three_Rotating_Platforms:					   ; Offset_0x01F284
-		include "data\objects\obj_0x83.asm"
+		include "data/objects/obj_0x83.asm"
 ;-------------------------------------------------------------------------------
 		nop
 Jmp_02_To_DisplaySprite_Param:				   ; Offset_0x01F500
-		jmp	(DisplaySprite_Param)		   ; Offset_0x00D35E
+		jmp	(DisplaySprite_Param).l		   ; Offset_0x00D35E
 Jmp_12_To_DisplaySprite:					   ; Offset_0x01F506
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_13_To_DeleteObject:						   ; Offset_0x01F50C
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_03_To_DeleteObject_A1:					   ; Offset_0x01F512
-		jmp	(DeleteObject_A1)			   ; Offset_0x00D316
+		jmp	(DeleteObject_A1).l			   ; Offset_0x00D316
 Jmp_10_To_SingleObjectLoad_2:				   ; Offset_0x01F518
-		jmp	(SingleObjectLoad_2)		   ; Offset_0x00E714
+		jmp	(SingleObjectLoad_2).l		   ; Offset_0x00E714
 Jmp_24_To_ModifySpriteAttr_2P:				   ; Offset_0x01F51E
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_05_To_CalcSine:							   ; Offset_0x01F524
 		jmp	(CalcSine).l					   ; Offset_0x003282
 Jmp_02_To_Platform_Object:					   ; Offset_0x01F52A
-		jmp	(Platform_Object)			   ; Offset_0x00F82C
+		jmp	(Platform_Object).l			   ; Offset_0x00F82C
 Jmp_07_To_MarkObjGone_2:					   ; Offset_0x01F530
-		jmp	(MarkObjGone_2)				   ; Offset_0x00D238
+		jmp	(MarkObjGone_2).l				   ; Offset_0x00D238
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x3F_Fans:						   ; Offset_0x01F538
-		include "data\objects\obj_0x3F.asm"
+		include "data/objects/obj_0x3F.asm"
 ;-------------------------------------------------------------------------------
 		nop
 Jmp_17_To_MarkObjGone:						   ; Offset_0x01F8E4
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_25_To_ModifySpriteAttr_2P:				   ; Offset_0x01F8EA
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 ;-------------------------------------------------------------------------------
 Obj_Spinning_Ball:							   ; Offset_0x01F8F0
-		include "data\objects\obj_spbl.asm"
+		include "data/objects/obj_spbl.asm"
 ;-------------------------------------------------------------------------------
 Jmp_18_To_MarkObjGone:						   ; Offset_0x01F9EC
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_05_To_AnimateSprite:					   ; Offset_0x01F9F2
-		jmp	(AnimateSprite)				   ; Offset_0x00D372
+		jmp	(AnimateSprite).l				   ; Offset_0x00D372
 Jmp_02_To_ObjHitFloor:						   ; Offset_0x01F9F8
-		jmp	(ObjHitFloor)				   ; Offset_0x014204
+		jmp	(ObjHitFloor).l				   ; Offset_0x014204
 Jmp_00_To_Object_HitWall_Left:				   ; Offset_0x01F9FE
-		jmp	(Object_HitWall_Left)		   ; Offset_0x014490
+		jmp	(Object_HitWall_Left).l		   ; Offset_0x014490
 Jmp_26_To_ModifySpriteAttr_2P:				   ; Offset_0x01FA04
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_01_To_Object_HitWall_Right:				   ; Offset_0x01FA0A
-		jmp	(Object_HitWall_Right)		   ; Offset_0x01430A
+		jmp	(Object_HitWall_Right).l		   ; Offset_0x01430A
 Jmp_01_To_ObjectFall:						   ; Offset_0x01FA10
-		jmp	(ObjectFall)				   ; Offset_0x00D1AE
+		jmp	(ObjectFall).l				   ; Offset_0x00D1AE
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x4C_Batbot:							   ; Offset_0x01FA18
-		include "data\objects\obj_0x4C.asm"
+		include "data/objects/obj_0x4C.asm"
 ;-------------------------------------------------------------------------------
 		dc.w	$0000
 Jmp_19_To_MarkObjGone:						   ; Offset_0x01FE8C
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_06_To_AnimateSprite:					   ; Offset_0x01FE92
-		jmp	(AnimateSprite)				   ; Offset_0x00D372
+		jmp	(AnimateSprite).l				   ; Offset_0x00D372
 Jmp_0D_To_SpeedToPos:						   ; Offset_0x01FE98
-		jmp	(SpeedToPos)				   ; Offset_0x00D1DA
+		jmp	(SpeedToPos).l				   ; Offset_0x00D1DA
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Previus_Build_Obj_0x52_Piranha: ; Objeto 0z52 no Sonic 2 Beta  ; Offset_0x01FEA0
-		include "data\objects\objpb_52.asm"
+		include "data/objects/objpb_52.asm"
 ;-------------------------------------------------------------------------------
 		dc.w	$0000
 Jmp_1A_To_MarkObjGone:						   ; Offset_0x0200E4
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_07_To_AnimateSprite:					   ; Offset_0x0200EA
-		jmp	(AnimateSprite)				   ; Offset_0x00D372
+		jmp	(AnimateSprite).l				   ; Offset_0x00D372
 Jmp_0E_To_SpeedToPos:						   ; Offset_0x0200F0
-		jmp	(SpeedToPos)				   ; Offset_0x00D1DA
+		jmp	(SpeedToPos).l				   ; Offset_0x00D1DA
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x56_GHz_Boss:							   ; Offset_0x0200F8
-		include "data\objects\obj_0x56.asm"
+		include "data/objects/obj_0x56.asm"
 Obj_0x58_GHz_Boss:							   ; Offset_0x020372
-		include "data\objects\obj_0x58.asm"
+		include "data/objects/obj_0x58.asm"
 ;-------------------------------------------------------------------------------
 Jmp_13_To_DisplaySprite:					   ; Offset_0x0204FC
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_14_To_DeleteObject:						   ; Offset_0x020502
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_03_To_ModifySpriteAttr_2P_A1:					   ; Offset_0x020508
-		jmp	(ModifySpriteAttr_2P_A1)			   ; Offset_0x00DBDA
+		jmp	(ModifySpriteAttr_2P_A1).l			   ; Offset_0x00DBDA
 Jmp_27_To_ModifySpriteAttr_2P:				   ; Offset_0x02050E
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 ;===============================================================================
 ; Complemento do objeto 0x56 - Chefe na Green Hill
 ; ->>>
@@ -17143,13 +17143,13 @@ Offset_0x02076C:
 ; <<<-
 ;===============================================================================
 Obj_0x5B_GHz_Boss:							   ; Offset_0x020786
-		include "data\objects\obj_0x5B.asm"
+		include "data/objects/obj_0x5B.asm"
 ;===============================================================================
 ; Complemento do objeto 0x56 - Chefe na Green Hill
 ; ->>>
 ;===============================================================================
 Obj_0x56_GHz_Boss_Sub_3:					   ; Offset_0x020A32
-		jsr	(SingleObjectLoad_2)		   ; Offset_0x00E714
+		jsr	(SingleObjectLoad_2).l		   ; Offset_0x00E714
 		bne.s	Offset_0x020AAA
 		_move.b	#$5B, 0(A1)				 ; $0000
 		move.l	A0, Obj_Control_Var_08(A1)				 ; $0034
@@ -17171,7 +17171,7 @@ Obj_0x56_GHz_Boss_Sub_3:					   ; Offset_0x020A32
 		move.b	#$01, Obj_Ani_Number(A1)				 ; $001C
 		move.w	#$0016, Obj_Timer(A1)					 ; $002A
 Offset_0x020AAA:
-		jsr	(SingleObjectLoad_2)		   ; Offset_0x00E714
+		jsr	(SingleObjectLoad_2).l		   ; Offset_0x00E714
 		bne.s	Offset_0x020B22
 		_move.b	#$5B, 0(A1)				 ; $0000
 		move.l	A0, Obj_Control_Var_08(A1)				 ; $0034
@@ -17193,7 +17193,7 @@ Offset_0x020AAA:
 		move.b	#$01, Obj_Ani_Number(A1)				 ; $001C
 		move.w	#$004B, Obj_Timer(A1)					 ; $002A
 Offset_0x020B22:
-		jsr	(SingleObjectLoad_2)		   ; Offset_0x00E714
+		jsr	(SingleObjectLoad_2).l		   ; Offset_0x00E714
 		bne.s	Offset_0x020B9A
 		_move.b	#$5B, 0(A1)				 ; $0000
 		move.l	A0, Obj_Control_Var_08(A1)				 ; $0034
@@ -17215,7 +17215,7 @@ Offset_0x020B22:
 		move.b	#$02, Obj_Ani_Number(A1)				 ; $001C
 		move.w	#$0030, Obj_Timer(A1)					 ; $002A
 Offset_0x020B9A:
-		jsr	(SingleObjectLoad_2)		   ; Offset_0x00E714
+		jsr	(SingleObjectLoad_2).l		   ; Offset_0x00E714
 		bne.s	Offset_0x020BFA
 		_move.b	#$5B, 0(A1)				 ; $0000
 		move.l	A0, Obj_Control_Var_08(A1)				 ; $0034
@@ -17236,7 +17236,7 @@ Offset_0x020BFA:
 		rts
 ;-------------------------------------------------------------------------------
 Obj_0x56_GHz_Boss_Sub_4:					   ; Offset_0x020BFC
-		jsr	(SingleObjectLoad_2)		   ; Offset_0x00E714
+		jsr	(SingleObjectLoad_2).l		   ; Offset_0x00E714
 		bne.s	Offset_0x020C44
 		_move.b	#$5B, 0(A1)				 ; $0000
 		move.l	A0, Obj_Control_Var_08(A1)				 ; $0034
@@ -17254,7 +17254,7 @@ Offset_0x020C44:
 		subi.w	#$0008, Obj_Control_Var_0C(A0)			 ; $0038
 		move.w	#$2A00, Obj_X(A0)				 ; $0008
 		move.w	#$02C0, Obj_Y(A0)				 ; $000C
-		jsr	(SingleObjectLoad_2)		   ; Offset_0x00E714
+		jsr	(SingleObjectLoad_2).l		   ; Offset_0x00E714
 		bne.s	Offset_0x020CA8
 		_move.b	#$5B, 0(A1)				 ; $0000
 		move.l	A0, Obj_Control_Var_08(A1)				 ; $0034
@@ -17390,179 +17390,179 @@ Offset_0x020E3E:
 ; <<<-
 ;===============================================================================
 Jmp_14_To_DisplaySprite:					   ; Offset_0x020E58
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_15_To_DeleteObject:						   ; Offset_0x020E5E
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_1B_To_MarkObjGone:						   ; Offset_0x020E64
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_11_To_SingleObjectLoad_2:				   ; Offset_0x020E6A
-		jmp	(SingleObjectLoad_2)		   ; Offset_0x00E714
+		jmp	(SingleObjectLoad_2).l		   ; Offset_0x00E714
 Jmp_08_To_AnimateSprite:					   ; Offset_0x020E70
-		jmp	(AnimateSprite)				   ; Offset_0x00D372
+		jmp	(AnimateSprite).l				   ; Offset_0x00D372
 Jmp_04_To_ModifySpriteAttr_2P_A1:					   ; Offset_0x020E76
-		jmp	(ModifySpriteAttr_2P_A1)			   ; Offset_0x00DBDA
+		jmp	(ModifySpriteAttr_2P_A1).l			   ; Offset_0x00DBDA
 Jmp_03_To_ObjHitFloor:						   ; Offset_0x020E7C
-		jmp	(ObjHitFloor)				   ; Offset_0x014204
+		jmp	(ObjHitFloor).l				   ; Offset_0x014204
 Jmp_00_To_AddPoints:						   ; Offset_0x020E82
-		jmp	(AddPoints)					   ; Offset_0x02D2D4
+		jmp	(AddPoints).l					   ; Offset_0x02D2D4
 Jmp_02_To_ObjectFall:						   ; Offset_0x020E88
-		jmp	(ObjectFall)				   ; Offset_0x00D1AE
+		jmp	(ObjectFall).l				   ; Offset_0x00D1AE
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_Bubble_Monster:							   ; Offset_0x020E90
-		include "data\objects\obj_bbmn.asm"
+		include "data/objects/obj_bbmn.asm"
 ;-------------------------------------------------------------------------------
 Jmp_16_To_DeleteObject:						   ; Offset_0x02113C
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_07_To_SingleObjectLoad:					   ; Offset_0x021142
-		jmp	(SingleObjectLoad)			   ; Offset_0x00E6FE
+		jmp	(SingleObjectLoad).l			   ; Offset_0x00E6FE
 Jmp_1C_To_MarkObjGone:						   ; Offset_0x021148
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_09_To_AnimateSprite:					   ; Offset_0x02114E
-		jmp	(AnimateSprite)				   ; Offset_0x00D372
+		jmp	(AnimateSprite).l				   ; Offset_0x00D372
 Jmp_28_To_ModifySpriteAttr_2P:				   ; Offset_0x021154
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_0F_To_SpeedToPos:						   ; Offset_0x02115A
-		jmp	(SpeedToPos)				   ; Offset_0x00D1DA
+		jmp	(SpeedToPos).l				   ; Offset_0x00D1DA
 ;-------------------------------------------------------------------------------
 Obj_0x4E_Crocobot:							   ; Offset_0x021160
-		include "data\objects\obj_0x4E.asm"
+		include "data/objects/obj_0x4E.asm"
 ;-------------------------------------------------------------------------------
 Jmp_1D_To_MarkObjGone:						   ; Offset_0x021440
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_0A_To_AnimateSprite:					   ; Offset_0x021446
-		jmp	(AnimateSprite)				   ; Offset_0x00D372
+		jmp	(AnimateSprite).l				   ; Offset_0x00D372
 Jmp_03_To_ObjectFall:						   ; Offset_0x02144C
-		jmp	(ObjectFall)				   ; Offset_0x00D1AE
+		jmp	(ObjectFall).l				   ; Offset_0x00D1AE
 Jmp_10_To_SpeedToPos:						   ; Offset_0x021452
-		jmp	(SpeedToPos)				   ; Offset_0x00D1DA
+		jmp	(SpeedToPos).l				   ; Offset_0x00D1DA
 ;-------------------------------------------------------------------------------
 Obj_Blink:							   ; Offset_0x021458
-		include "data\objects\obj_blnk.asm"
+		include "data/objects/obj_blnk.asm"
 ;-------------------------------------------------------------------------------
 Jmp_17_To_DeleteObject:						   ; Offset_0x0216CC
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_08_To_SingleObjectLoad:					   ; Offset_0x0216D2
-		jmp	(SingleObjectLoad)			   ; Offset_0x00E6FE
+		jmp	(SingleObjectLoad).l			   ; Offset_0x00E6FE
 Jmp_1E_To_MarkObjGone:						   ; Offset_0x0216D8
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_0B_To_AnimateSprite:					   ; Offset_0x0216DE
-		jmp	(AnimateSprite)				   ; Offset_0x00D372
+		jmp	(AnimateSprite).l				   ; Offset_0x00D372
 Jmp_01_To_PseudoRandomNumber:				   ; Offset_0x0216E4
 		jmp	(PseudoRandomNumber).l		   ; Offset_0x00325C
 Jmp_04_To_ObjHitFloor:						   ; Offset_0x0216EA
-		jmp	(ObjHitFloor)				   ; Offset_0x014204
+		jmp	(ObjHitFloor).l				   ; Offset_0x014204
 Jmp_29_To_ModifySpriteAttr_2P:				   ; Offset_0x0216F0
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_04_To_ObjectFall:						   ; Offset_0x0216F6
-		jmp	(ObjectFall)				   ; Offset_0x00D1AE
+		jmp	(ObjectFall).l				   ; Offset_0x00D1AE
 Jmp_11_To_SpeedToPos:						   ; Offset_0x0216FC
-		jmp	(SpeedToPos)				   ; Offset_0x00D1DA
+		jmp	(SpeedToPos).l				   ; Offset_0x00D1DA
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x4A_Octus:						   ; Offset_0x021704
-		include "data\objects\obj_0x4A.asm"
+		include "data/objects/obj_0x4A.asm"
 ;-------------------------------------------------------------------------------
 Jmp_15_To_DisplaySprite:					   ; Offset_0x021994
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_18_To_DeleteObject:						   ; Offset_0x02199A
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_1F_To_MarkObjGone:						   ; Offset_0x0219A0
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_0C_To_AnimateSprite:					   ; Offset_0x0219A6
-		jmp	(AnimateSprite)				   ; Offset_0x00D372
+		jmp	(AnimateSprite).l				   ; Offset_0x00D372
 Jmp_05_To_ObjectFall:						   ; Offset_0x0219AC
-		jmp	(ObjectFall)				   ; Offset_0x00D1AE
+		jmp	(ObjectFall).l				   ; Offset_0x00D1AE
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x4F_Dinobot:							   ; Offset_0x0219B4
-		include "data\objects\obj_0x4F.asm"
+		include "data/objects/obj_0x4F.asm"
 ;-------------------------------------------------------------------------------
 		dc.w	$0000
 Jmp_16_To_DisplaySprite:					   ; Offset_0x021AF8
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_19_To_DeleteObject:						   ; Offset_0x021AFE
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_0D_To_AnimateSprite:					   ; Offset_0x021B04
-		jmp	(AnimateSprite)				   ; Offset_0x00D372
+		jmp	(AnimateSprite).l				   ; Offset_0x00D372
 Jmp_06_To_ObjectFall:						   ; Offset_0x021B0A
-		jmp	(ObjectFall)				   ; Offset_0x00D1AE
+		jmp	(ObjectFall).l				   ; Offset_0x00D1AE
 Jmp_12_To_SpeedToPos:						   ; Offset_0x021B10
-		jmp	(SpeedToPos)				   ; Offset_0x00D1DA
+		jmp	(SpeedToPos).l				   ; Offset_0x00D1DA
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x5A:							   ; Offset_0x021B18
-		include "data\objects\obj_0x5A.asm"
+		include "data/objects/obj_0x5A.asm"
 ;-------------------------------------------------------------------------------
 Jmp_09_To_SingleObjectLoad:					   ; Offset_0x021D98
-		jmp	(SingleObjectLoad)			   ; Offset_0x00E6FE
+		jmp	(SingleObjectLoad).l			   ; Offset_0x00E6FE
 Jmp_20_To_MarkObjGone:						   ; Offset_0x021D9E
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_0E_To_AnimateSprite:					   ; Offset_0x021DA4
-		jmp	(AnimateSprite)				   ; Offset_0x00D372
+		jmp	(AnimateSprite).l				   ; Offset_0x00D372
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x50_Aquis:						   ; Offset_0x021DAC
-		include "data\objects\obj_0x50.asm"
+		include "data/objects/obj_0x50.asm"
 Previus_Build_Obj_0x51_Aquis: ; Objeto 0z51 no Sonic 2 Beta	   ; Offset_0x0223C8
-		include "data\objects\objpb_51.asm"
+		include "data/objects/objpb_51.asm"
 ;-------------------------------------------------------------------------------
 Jmp_17_To_DisplaySprite:					   ; Offset_0x02260C
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_1A_To_DeleteObject:						   ; Offset_0x022612
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_0A_To_SingleObjectLoad:					   ; Offset_0x022618
-		jmp	(SingleObjectLoad)			   ; Offset_0x00E6FE
+		jmp	(SingleObjectLoad).l			   ; Offset_0x00E6FE
 Jmp_21_To_MarkObjGone:						   ; Offset_0x02261E
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_0F_To_AnimateSprite:					   ; Offset_0x022624
-		jmp	(AnimateSprite)				   ; Offset_0x00D372
+		jmp	(AnimateSprite).l				   ; Offset_0x00D372
 Jmp_07_To_ObjectFall:						   ; Offset_0x02262A
-		jmp	(ObjectFall)				   ; Offset_0x00D1AE
+		jmp	(ObjectFall).l				   ; Offset_0x00D1AE
 Jmp_13_To_SpeedToPos:						   ; Offset_0x022630
-		jmp	(SpeedToPos)				   ; Offset_0x00D1DA
+		jmp	(SpeedToPos).l				   ; Offset_0x00D1DA
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x59_Motobug:							   ; Offset_0x022638
-		include "data\objects\obj_0x59.asm"
+		include "data/objects/obj_0x59.asm"
 ;-------------------------------------------------------------------------------
 Jmp_1B_To_DeleteObject:						   ; Offset_0x0228BC
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_12_To_SingleObjectLoad_2:				   ; Offset_0x0228C2
-		jmp	(SingleObjectLoad_2)		   ; Offset_0x00E714
+		jmp	(SingleObjectLoad_2).l		   ; Offset_0x00E714
 Jmp_10_To_AnimateSprite:					   ; Offset_0x0228C8
-		jmp	(AnimateSprite)				   ; Offset_0x00D372
+		jmp	(AnimateSprite).l				   ; Offset_0x00D372
 Jmp_05_To_ModifySpriteAttr_2P_A1:					   ; Offset_0x0228CE
-		jmp	(ModifySpriteAttr_2P_A1)			   ; Offset_0x00DBDA
+		jmp	(ModifySpriteAttr_2P_A1).l			   ; Offset_0x00DBDA
 Jmp_00_To_MarkObjGone_4:					   ; Offset_0x0228D4
-		jmp	(MarkObjGone_4)				   ; Offset_0x00D2A0
+		jmp	(MarkObjGone_4).l				   ; Offset_0x00D2A0
 Jmp_2A_To_ModifySpriteAttr_2P:				   ; Offset_0x0228DA
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_08_To_ObjectFall:						   ; Offset_0x0228E0
-		jmp	(ObjectFall)				   ; Offset_0x00D1AE
+		jmp	(ObjectFall).l				   ; Offset_0x00D1AE
 Jmp_14_To_SpeedToPos:						   ; Offset_0x0228E6
-		jmp	(SpeedToPos)				   ; Offset_0x00D1DA
+		jmp	(SpeedToPos).l				   ; Offset_0x00D1DA
 ;-------------------------------------------------------------------------------
 Obj_0x4D_Rhinobot:							   ; Offset_0x0228EC
-		include "data\objects\obj_0x4D.asm"
+		include "data/objects/obj_0x4D.asm"
 ;-------------------------------------------------------------------------------
 		dc.w	$0000
 Jmp_22_To_MarkObjGone:						   ; Offset_0x022BA8
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_11_To_AnimateSprite:					   ; Offset_0x022BAE
-		jmp	(AnimateSprite)				   ; Offset_0x00D372
+		jmp	(AnimateSprite).l				   ; Offset_0x00D372
 Jmp_09_To_ObjectFall:						   ; Offset_0x022BB4
-		jmp	(ObjectFall)				   ; Offset_0x00D1AE
+		jmp	(ObjectFall).l				   ; Offset_0x00D1AE
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_CPz_Boss:						   ; Offset_0x022BBC
-		include "data\objects\obj_cpzb.asm"
+		include "data/objects/obj_cpzb.asm"
 ;===============================================================================
 ; Rotinas referenciadas pelo Chefe na Green Hill
 ; ->>>
 ;===============================================================================
 Offset_0x02385E:
-		jsr	(SingleObjectLoad_2)		   ; Offset_0x00E714
+		jsr	(SingleObjectLoad_2).l		   ; Offset_0x00E714
 		bne.s	Offset_0x0238A2
 		_move.b	#$57, 0(A1)				 ; $0000
 		move.l	A0, Obj_Control_Var_08(A1)				 ; $0034
@@ -17575,7 +17575,7 @@ Offset_0x02385E:
 		move.l	Obj_Y(A0), Obj_Y(A1)			  ; $000C, $000C
 		move.b	#$0E, Obj_Routine(A1)					 ; $0024
 Offset_0x0238A2:
-		jsr	(SingleObjectLoad_2)		   ; Offset_0x00E714
+		jsr	(SingleObjectLoad_2).l		   ; Offset_0x00E714
 		bne.s	Offset_0x0238FE
 		_move.b	#$57, 0(A1)				 ; $0000
 		move.l	A0, Obj_Control_Var_08(A1)				 ; $0034
@@ -17592,7 +17592,7 @@ Offset_0x0238A2:
 		addi.b	#$0C, Obj_Routine(A1)					 ; $0024
 		move.b	#$06, Obj_Ani_Number(A1)				 ; $001C
 Offset_0x0238FE:
-		jsr	(SingleObjectLoad_2)		   ; Offset_0x00E714
+		jsr	(SingleObjectLoad_2).l		   ; Offset_0x00E714
 		bne.s	Offset_0x02393C
 		_move.b	#$57, 0(A1)				 ; $0000
 		move.l	A0, Obj_Control_Var_08(A1)				 ; $0034
@@ -17695,7 +17695,7 @@ Offset_0x023A1A:
 		bra.w	Offset_0x023A46
 Offset_0x023A22:
 		addq.l	#$04, A7
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 ;-------------------------------------------------------------------------------
 Offset_0x023A2A:
 		move.w	#$0100, Obj_Speed_Y(A0)					 ; $0012
@@ -17765,7 +17765,7 @@ Boss_Defeated:						   ; Offset_0x023AEC
 		move.b	($FFFFFE0F).w, D0
 		andi.b	#$07, D0
 		bne.s	Exit_Boss_Defeated			   ; Offset_0x023B32
-		jsr	(SingleObjectLoad)			   ; Offset_0x00E6FE
+		jsr	(SingleObjectLoad).l			   ; Offset_0x00E6FE
 		bne.s	Exit_Boss_Defeated			   ; Offset_0x023B32
 		_move.b	#$58, 0(A1)				 ; $0000
 		move.w	Obj_X(A0), Obj_X(A1)			  ; $0008, $0008
@@ -17788,7 +17788,7 @@ Exit_Boss_Defeated:							   ; Offset_0x023B32
 ; <<<-
 ;-------------------------------------------------------------------------------
 Offset_0x023B34:
-		jsr	(SingleObjectLoad)			   ; Offset_0x00E6FE
+		jsr	(SingleObjectLoad).l			   ; Offset_0x00E6FE
 		bne.s	Offset_0x023B4E
 		_move.b	#$58, 0(A1)				 ; $0000
 		move.w	Obj_X(A0), Obj_X(A1)			  ; $0008, $0008
@@ -18137,151 +18137,151 @@ Offset_0x023F48:
 ;===============================================================================
 		dc.w	$0000
 Jmp_18_To_DisplaySprite:					   ; Offset_0x023F54
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_1C_To_DeleteObject:						   ; Offset_0x023F5A
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_23_To_MarkObjGone:						   ; Offset_0x023F60
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_01_To_AddPoints:						   ; Offset_0x023F66
-		jmp	(AddPoints)					   ; Offset_0x02D2D4
+		jmp	(AddPoints).l					   ; Offset_0x02D2D4
 Jmp_0A_To_ObjectFall:						   ; Offset_0x023F6C
-		jmp	(ObjectFall)				   ; Offset_0x00D1AE
+		jmp	(ObjectFall).l				   ; Offset_0x00D1AE
 Jmp_15_To_SpeedToPos:						   ; Offset_0x023F72
-		jmp	(SpeedToPos)				   ; Offset_0x00D1DA
+		jmp	(SpeedToPos).l				   ; Offset_0x00D1DA
 ;-------------------------------------------------------------------------------
 Obj_0x4B_Buzzer:							   ; Offset_0x023F78
-		include "data\objects\obj_0x4B.asm"
+		include "data/objects/obj_0x4B.asm"
 ;-------------------------------------------------------------------------------
 		dc.w	$0000
 Jmp_1D_To_DeleteObject:						   ; Offset_0x024268
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_13_To_SingleObjectLoad_2:				   ; Offset_0x02426E
-		jmp	(SingleObjectLoad_2)		   ; Offset_0x00E714
+		jmp	(SingleObjectLoad_2).l		   ; Offset_0x00E714
 Jmp_12_To_AnimateSprite:					   ; Offset_0x024274
-		jmp	(AnimateSprite)				   ; Offset_0x00D372
+		jmp	(AnimateSprite).l				   ; Offset_0x00D372
 Jmp_06_To_ModifySpriteAttr_2P_A1:					   ; Offset_0x02427A
-		jmp	(ModifySpriteAttr_2P_A1)			   ; Offset_0x00DBDA
+		jmp	(ModifySpriteAttr_2P_A1).l			   ; Offset_0x00DBDA
 Jmp_01_To_MarkObjGone_4:					   ; Offset_0x024280
-		jmp	(MarkObjGone_4)				   ; Offset_0x00D2A0
+		jmp	(MarkObjGone_4).l				   ; Offset_0x00D2A0
 Jmp_2B_To_ModifySpriteAttr_2P:				   ; Offset_0x024286
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_16_To_SpeedToPos:						   ; Offset_0x02428C
-		jmp	(SpeedToPos)				   ; Offset_0x00D1DA
+		jmp	(SpeedToPos).l				   ; Offset_0x00D1DA
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x5C_Masher:							   ; Offset_0x024294
-		include "data\objects\obj_0x5C.asm"
+		include "data/objects/obj_0x5C.asm"
 ;-------------------------------------------------------------------------------
 		dc.w	$0000
 Jmp_24_To_MarkObjGone:						   ; Offset_0x02437C
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_13_To_AnimateSprite:					   ; Offset_0x024382
-		jmp	(AnimateSprite)				   ; Offset_0x00D372
+		jmp	(AnimateSprite).l				   ; Offset_0x00D372
 Jmp_2C_To_ModifySpriteAttr_2P:				   ; Offset_0x024388
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_17_To_SpeedToPos:						   ; Offset_0x02438E
-		jmp	(SpeedToPos)				   ; Offset_0x00D1DA
+		jmp	(SpeedToPos).l				   ; Offset_0x00D1DA
 ;-------------------------------------------------------------------------------
 Obj_0x5D:							   ; Offset_0x024394
-		include "data\objects\obj_0x5D.asm"
+		include "data/objects/obj_0x5D.asm"
 ;-------------------------------------------------------------------------------
 		nop
 Jmp_19_To_DisplaySprite:					   ; Offset_0x025834
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_1E_To_DeleteObject:						   ; Offset_0x02583A
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_07_To_ModifySpriteAttr_2P_A1:					   ; Offset_0x025840
-		jmp	(ModifySpriteAttr_2P_A1)			   ; Offset_0x00DBDA
+		jmp	(ModifySpriteAttr_2P_A1).l			   ; Offset_0x00DBDA
 Jmp_02_To_AddPoints:						   ; Offset_0x025846
-		jmp	(AddPoints)					   ; Offset_0x02D2D4
+		jmp	(AddPoints).l					   ; Offset_0x02D2D4
 Jmp_2D_To_ModifySpriteAttr_2P:				   ; Offset_0x02584C
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_0B_To_ObjectFall:						   ; Offset_0x025852
-		jmp	(ObjectFall)				   ; Offset_0x00D1AE
+		jmp	(ObjectFall).l				   ; Offset_0x00D1AE
 Jmp_18_To_SpeedToPos:						   ; Offset_0x025858
-		jmp	(SpeedToPos)				   ; Offset_0x00D1DA
+		jmp	(SpeedToPos).l				   ; Offset_0x00D1DA
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x52_HTz_Boss:							   ; Offset_0x025860
-		include "data\objects\obj_0x52.asm"
+		include "data/objects/obj_0x52.asm"
 ;-------------------------------------------------------------------------------
 		dc.w	$0000
 Jmp_1A_To_DisplaySprite:					   ; Offset_0x025FB0
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_1F_To_DeleteObject:						   ; Offset_0x025FB6
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_0B_To_SingleObjectLoad:					   ; Offset_0x025FBC
-		jmp	(SingleObjectLoad)			   ; Offset_0x00E6FE
+		jmp	(SingleObjectLoad).l			   ; Offset_0x00E6FE
 Jmp_25_To_MarkObjGone:						   ; Offset_0x025FC2
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_14_To_AnimateSprite:					   ; Offset_0x025FC8
-		jmp	(AnimateSprite)				   ; Offset_0x00D372
+		jmp	(AnimateSprite).l				   ; Offset_0x00D372
 Jmp_05_To_ObjHitFloor:						   ; Offset_0x025FCE
-		jmp	(ObjHitFloor)				   ; Offset_0x014204
+		jmp	(ObjHitFloor).l				   ; Offset_0x014204
 Jmp_00_To_Obj_0x20_HTz_Boss_FireBall:				   ; Offset_0x025FD4
-		jmp	(Obj_0x20_HTz_Boss_FireBall)		   ; Offset_0x017E34
+		jmp	(Obj_0x20_HTz_Boss_FireBall).l		   ; Offset_0x017E34
 Jmp_2E_To_ModifySpriteAttr_2P:				   ; Offset_0x025FDA
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 ;-------------------------------------------------------------------------------
 Obj_0x89_NGHz_Boss:							   ; Offset_0x025FE0
-		include "data\objects\obj_0x89.asm"
+		include "data/objects/obj_0x89.asm"
 ;-------------------------------------------------------------------------------
 Jmp_1B_To_DisplaySprite:					   ; Offset_0x02696C
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_20_To_DeleteObject:						   ; Offset_0x026972
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_0C_To_SingleObjectLoad:					   ; Offset_0x026978
-		jmp	(SingleObjectLoad)			   ; Offset_0x00E6FE
+		jmp	(SingleObjectLoad).l			   ; Offset_0x00E6FE
 Jmp_15_To_AnimateSprite:					   ; Offset_0x02697E
-		jmp	(AnimateSprite)				   ; Offset_0x00D372
+		jmp	(AnimateSprite).l				   ; Offset_0x00D372
 Jmp_02_To_PseudoRandomNumber:				   ; Offset_0x026984
 		jmp	(PseudoRandomNumber).l		   ; Offset_0x00325C
 Jmp_15_To_SolidObject:						   ; Offset_0x02698A
-		jmp	(SolidObject)				   ; Offset_0x00F344
+		jmp	(SolidObject).l				   ; Offset_0x00F344
 ;-------------------------------------------------------------------------------
 Obj_0x57_DHz_Boss:							   ; Offset_0x026990
-		include "data\objects\obj_0x57.asm"
+		include "data/objects/obj_0x57.asm"
 ;-------------------------------------------------------------------------------
 Jmp_1C_To_DisplaySprite:					   ; Offset_0x0271AC
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_21_To_DeleteObject:						   ; Offset_0x0271B2
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_0D_To_SingleObjectLoad:					   ; Offset_0x0271B8
-		jmp	(SingleObjectLoad)			   ; Offset_0x00E6FE
+		jmp	(SingleObjectLoad).l			   ; Offset_0x00E6FE
 Jmp_03_To_PseudoRandomNumber:				   ; Offset_0x0271BE
 		jmp	(PseudoRandomNumber).l		   ; Offset_0x00325C
 Jmp_0C_To_ObjectFall:						   ; Offset_0x0271C4
-		jmp	(ObjectFall)				   ; Offset_0x00D1AE
+		jmp	(ObjectFall).l				   ; Offset_0x00D1AE
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x51_CNz_Boss:							   ; Offset_0x0271CC
-		include "data\objects\obj_0x51.asm"
+		include "data/objects/obj_0x51.asm"
 ;-------------------------------------------------------------------------------
 		dc.w	$0000
 Jmp_1D_To_DisplaySprite:					   ; Offset_0x027A78
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_22_To_DeleteObject:						   ; Offset_0x027A7E
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_0E_To_SingleObjectLoad:					   ; Offset_0x027A84
-		jmp	(SingleObjectLoad)			   ; Offset_0x00E6FE
+		jmp	(SingleObjectLoad).l			   ; Offset_0x00E6FE
 Jmp_04_To_PseudoRandomNumber:				   ; Offset_0x027A8A
 		jmp	(PseudoRandomNumber).l		   ; Offset_0x00325C
 ;-------------------------------------------------------------------------------
 Obj_0x54_Mz_Boss:							   ; Offset_0x027A90
 Obj_0x55_Mz_Boss:							   ; Offset_0x027A90
-		include "data\objects\obj_0x54.asm"
+		include "data/objects/obj_0x54.asm"
 Obj_0x53_Mz_Boss_Balls_Robotniks:					   ; Offset_0x027B80
-		include "data\objects\obj_0x53.asm"
+		include "data/objects/obj_0x53.asm"
 ;-------------------------------------------------------------------------------
 		dc.w	$0000
 Jmp_1E_To_DisplaySprite:					   ; Offset_0x027E8C
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_0F_To_SingleObjectLoad:					   ; Offset_0x027E92
-		jmp	(SingleObjectLoad)			   ; Offset_0x00E6FE
+		jmp	(SingleObjectLoad).l			   ; Offset_0x00E6FE
 Jmp_16_To_AnimateSprite:					   ; Offset_0x027E98
-		jmp	(AnimateSprite)				   ; Offset_0x00D372
+		jmp	(AnimateSprite).l				   ; Offset_0x00D372
 Jmp_0D_To_ObjectFall:						   ; Offset_0x027E9E
-		jmp	(ObjectFall)				   ; Offset_0x00D1AE
+		jmp	(ObjectFall).l				   ; Offset_0x00D1AE
 ;-------------------------------------------------------------------------------
 ; Rotina usada para inicializar o parâmetro de alguns objetos
 ; ->>>
@@ -18394,111 +18394,111 @@ Offset_0x027F78:
 ; <<<-
 ;-------------------------------------------------------------------------------
 Obj_0x8C_NGHz_Whisp:						   ; Offset_0x027F84
-		include "data\objects\obj_0x8C.asm"
+		include "data/objects/obj_0x8C.asm"
 Obj_0x8D_Hidden_Grounder:					   ; Offset_0x0280A0
 Obj_0x8E_Grounder:							   ; Offset_0x0280A0
-		include "data\objects\obj_0x8E.asm"
+		include "data/objects/obj_0x8E.asm"
 Obj_0x8F_Wall_Hidden_Grounder:				   ; Offset_0x02819E
-		include "data\objects\obj_0x8F.asm"
+		include "data/objects/obj_0x8F.asm"
 Obj_0x90_Rock_Hidden_Grounder:				   ; Offset_0x0281E4
-		include "data\objects\obj_0x90.asm"
+		include "data/objects/obj_0x90.asm"
 Obj_0x91_Chop_Chop:							   ; Offset_0x0283BC
-		include "data\objects\obj_0x91.asm"
+		include "data/objects/obj_0x91.asm"
 Obj_0x92_Spiker:							   ; Offset_0x02851E
-		include "data\objects\obj_0x92.asm"
+		include "data/objects/obj_0x92.asm"
 Obj_0x93_Spiker_Drill:						   ; Offset_0x0285F8
-		include "data\objects\obj_0x93.asm"
+		include "data/objects/obj_0x93.asm"
 Obj_0x95_Sol:						   ; Offset_0x0286FA
-		include "data\objects\obj_0x95.asm"
+		include "data/objects/obj_0x95.asm"
 Obj_0x94_Rexon_Body:						   ; Offset_0x02891E
 Obj_0x96_Rexon_Body:						   ; Offset_0x02891E
-		include "data\objects\obj_0x96.asm"
+		include "data/objects/obj_0x96.asm"
 Obj_0x97_Rexon_Head:						   ; Offset_0x0289CC
-		include "data\objects\obj_0x97.asm"
+		include "data/objects/obj_0x97.asm"
 Obj_0x98_Enemies_Weapons:					   ; Offset_0x028CE4
-		include "data\objects\obj_0x98.asm"
+		include "data/objects/obj_0x98.asm"
 Obj_0x99_Nebula:							   ; Offset_0x028DA2
-		include "data\objects\obj_0x99.asm"
+		include "data/objects/obj_0x99.asm"
 Obj_0x9A_Turtloid:							   ; Offset_0x028F08
-		include "data\objects\obj_0x9A.asm"
+		include "data/objects/obj_0x9A.asm"
 Obj_0x9B_Turtloid_Rider:					   ; Offset_0x028FE4
-		include "data\objects\obj_0x9B.asm"
+		include "data/objects/obj_0x9B.asm"
 Obj_0x9C_Enemy_Boost:						   ; Offset_0x029060
-		include "data\objects\obj_0x9C.asm"
+		include "data/objects/obj_0x9C.asm"
 Obj_0x9D_Coconuts:							   ; Offset_0x0291D8
-		include "data\objects\obj_0x9D.asm"
+		include "data/objects/obj_0x9D.asm"
 Obj_0x9E_Crawlton:							   ; Offset_0x0293F4
-		include "data\objects\obj_0x9E.asm"
+		include "data/objects/obj_0x9E.asm"
 Obj_0x9F_Shellcracker:						   ; Offset_0x0295B2
-		include "data\objects\obj_0x9F.asm"
+		include "data/objects/obj_0x9F.asm"
 Obj_0xA0_Shellcracker_Craw:					   ; Offset_0x0296DE
-		include "data\objects\obj_0xA0.asm"
+		include "data/objects/obj_0xA0.asm"
 Obj_0xA1_Slicer:							   ; Offset_0x029906
-		include "data\objects\obj_0xA1.asm"
+		include "data/objects/obj_0xA1.asm"
 Obj_0xA2_Slicer_Pincers:					   ; Offset_0x0299CE
-		include "data\objects\obj_0xA2.asm"
+		include "data/objects/obj_0xA2.asm"
 Obj_0xA3_Flasher:							   ; Offset_0x029C34
-		include "data\objects\obj_0xA3.asm"
+		include "data/objects/obj_0xA3.asm"
 Obj_0xA4_Asteron:							   ; Offset_0x029E94
-		include "data\objects\obj_0xA4.asm"
+		include "data/objects/obj_0xA4.asm"
 Obj_0xA5_Horizontal_Spiny:					   ; Offset_0x02A004
-		include "data\objects\obj_0xA5.asm"
+		include "data/objects/obj_0xA5.asm"
 Obj_0xA6_Vertical_Spiny:					   ; Offset_0x02A0A0
-		include "data\objects\obj_0xA6.asm"
+		include "data/objects/obj_0xA6.asm"
 Obj_0xA7_Grabber:							   ; Offset_0x02A2D4
-		include "data\objects\obj_0xA7.asm"
+		include "data/objects/obj_0xA7.asm"
 Obj_0xA8_Grabber_Sub:						   ; Offset_0x02A2EE
-		include "data\objects\obj_0xA8.asm"
+		include "data/objects/obj_0xA8.asm"
 Obj_0xA9_Grabber_Sub:						   ; Offset_0x02A308
-		include "data\objects\obj_0xA9.asm"
+		include "data/objects/obj_0xA9.asm"
 Obj_0xAA_Grabber_Sub:						   ; Offset_0x02A322
-		include "data\objects\obj_0xAA.asm"
+		include "data/objects/obj_0xAA.asm"
 Obj_0xAB_Grabber_Sub:						   ; Offset_0x02A33C
-		include "data\objects\obj_0xAB.asm"
+		include "data/objects/obj_0xAB.asm"
 Obj_0xAC_Balkiry:							   ; Offset_0x02A3F4
-		include "data\objects\obj_0xAC.asm"
+		include "data/objects/obj_0xAC.asm"
 Obj_0xAD_Clucker_Platform:					   ; Offset_0x02A47E
-		include "data\objects\obj_0xAD.asm"
+		include "data/objects/obj_0xAD.asm"
 Obj_0xAE_Clucker:							   ; Offset_0x02A4D0
-		include "data\objects\obj_0xAE.asm"
+		include "data/objects/obj_0xAE.asm"
 ;-------------------------------------------------------------------------------
 Jmp_03_To_DisplaySprite_Param:				   ; Offset_0x02A788
-		jmp	(DisplaySprite_Param)		   ; Offset_0x00D35E
+		jmp	(DisplaySprite_Param).l		   ; Offset_0x00D35E
 Jmp_1F_To_DisplaySprite:					   ; Offset_0x02A78E
-		jmp	(DisplaySprite)				   ; Offset_0x00D322
+		jmp	(DisplaySprite).l				   ; Offset_0x00D322
 Jmp_23_To_DeleteObject:						   ; Offset_0x02A794
-		jmp	(DeleteObject)				   ; Offset_0x00D314
+		jmp	(DeleteObject).l				   ; Offset_0x00D314
 Jmp_10_To_SingleObjectLoad:					   ; Offset_0x02A79A
-		jmp	(SingleObjectLoad)			   ; Offset_0x00E6FE
+		jmp	(SingleObjectLoad).l			   ; Offset_0x00E6FE
 Jmp_26_To_MarkObjGone:						   ; Offset_0x02A7A0
-		jmp	(MarkObjGone)				   ; Offset_0x00D200
+		jmp	(MarkObjGone).l				   ; Offset_0x00D200
 Jmp_14_To_SingleObjectLoad_2:				   ; Offset_0x02A7A6
-		jmp	(SingleObjectLoad_2)		   ; Offset_0x00E714
+		jmp	(SingleObjectLoad_2).l		   ; Offset_0x00E714
 Jmp_17_To_AnimateSprite:					   ; Offset_0x02A7AC
-		jmp	(AnimateSprite)				   ; Offset_0x00D372
+		jmp	(AnimateSprite).l				   ; Offset_0x00D372
 Jmp_2F_To_ModifySpriteAttr_2P:				   ; Offset_0x02A7B2
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 Jmp_16_To_SolidObject:						   ; Offset_0x02A7B8
-		jmp	(SolidObject)				   ; Offset_0x00F344
+		jmp	(SolidObject).l				   ; Offset_0x00F344
 Jmp_0E_To_ObjectFall:						   ; Offset_0x02A7BE
-		jmp	(ObjectFall)				   ; Offset_0x00D1AE
+		jmp	(ObjectFall).l				   ; Offset_0x00D1AE
 Jmp_19_To_SpeedToPos:						   ; Offset_0x02A7C4
-		jmp	(SpeedToPos)				   ; Offset_0x00D1DA
+		jmp	(SpeedToPos).l				   ; Offset_0x00D1DA
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x8A_S1_Credits:						   ; Offset_0x02A7CC
-		include "data\objects\obj_0x8A.asm"
+		include "data/objects/obj_0x8A.asm"
 ;-------------------------------------------------------------------------------
 		nop
 Jmp_30_To_ModifySpriteAttr_2P:				   ; Offset_0x02AEE0
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Obj_0x3E_Egg_Prison:						   ; Offset_0x02AEE8
-		include "data\objects\obj_0x3E.asm"
+		include "data/objects/obj_0x3E.asm"
 ;-------------------------------------------------------------------------------
 Jmp_31_To_ModifySpriteAttr_2P:				   ; Offset_0x02B1E4
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 		dc.w	$0000
 ;===============================================================================
 ; Rotina usada para responder quando o jogador tocar em algum objeto
@@ -18609,7 +18609,7 @@ Offset_0x02B324:
 		bsr.w	Offset_0x02B65C
 		andi.w	#$003F, D0
 		add.w	D0, D0
-		lea	$00(A3, D0), A2
+		lea	(A3, D0), A2
 		moveq	#$00, D1
 		move.b	(A2)+, D1
 		move.w	Obj_X(A1), D0					 ; $0008
@@ -18770,7 +18770,7 @@ Hurt_Player:						   ; Offset_0x02B4DE
 		bne.s	Hurt_Shield					   ; Offset_0x02B506
 		tst.w	(Ring_Count).w				 ; $FFFFFE20
 		beq.w	Hurt_NoRings				   ; Offset_0x02B574
-		jsr	(SingleObjectLoad)			   ; Offset_0x00E6FE
+		jsr	(SingleObjectLoad).l			   ; Offset_0x00E6FE
 		bne.s	Hurt_Shield					   ; Offset_0x02B506
 		_move.b	#$37, 0(A1)				 ; $0000
 		move.w	Obj_X(A0), Obj_X(A1)			  ; $0008, $0008
@@ -18982,9 +18982,9 @@ Offset_0x02B720:
 		nop
 ;-------------------------------------------------------------------------------
 Jmp_00_To_Sonic_ResetOnFloor:				   ; Offset_0x02B72C
-		jmp	(Sonic_ResetOnFloor)		   ; Offset_0x010A46
+		jmp	(Sonic_ResetOnFloor).l		   ; Offset_0x010A46
 Jmp_00_To_TouchRings:						   ; Offset_0x02B732
-		jmp	(TouchRings)				   ; Offset_0x00DEFC
+		jmp	(TouchRings).l				   ; Offset_0x00DEFC
 
 ;===============================================================================
 ; Rotina para mostrar o leiaute dos Estágios Especiais - Left over do Sonic 1
@@ -19043,7 +19043,7 @@ Offset_0x02B7AA:
 		addi.w	#$0018, D3
 		dbf	D7, Offset_0x02B788
 		move.w	(A7)+, D5
-		lea	(M68K_RAM_Start), A0				 ; $FFFF0000
+		lea	(M68K_RAM_Start).l, A0				 ; $FFFF0000
 		moveq	#$00, D0
 		move.w	(Camera_Y).w, D0					 ; $FFFFEE04
 		divu.w	#$0018, D0
@@ -19075,19 +19075,19 @@ Offset_0x02B7FA:
 		bcs.s	Offset_0x02B852
 		cmpi.w	#$0170, D2
 		bcc.s	Offset_0x02B852
-		lea	(SS_Ram_Layout_Address), A5			 ; $FFFF4000
+		lea	(SS_Ram_Layout_Address).l, A5			 ; $FFFF4000
 		lsl.w	#$03, D0
-		lea	$00(A5, D0), A5
+		lea	(A5, D0), A5
 		move.l	(A5)+, A1
 		move.w	(A5)+, D1
 		add.w	D1, D1
-		adda.w	$00(A1, D1), A1
+		adda.w	(A1, D1), A1
 		move.w	(A5)+, A3
 		moveq	#$00, D1
 		move.b	(A1)+, D1
 		subq.b	#$01, D1
 		bmi.s	Offset_0x02B852
-		jsr	(Build_Sprite_Right)		   ; Offset_0x00D66E
+		jsr	(Build_Sprite_Right).l		   ; Offset_0x00D66E
 Offset_0x02B852:
 		addq.w	#$04, A4
 		dbf	D6, Offset_0x02B7FA
@@ -19102,7 +19102,7 @@ Offset_0x02B872:
 		move.b	#$00, -5(A2)
 		rts
 Offset_0x02B87A:
-		lea	(SS_Ram_Layout_Address+$000C), A1			 ; $FFFF400C
+		lea	(SS_Ram_Layout_Address+$000C).l, A1			 ; $FFFF400C
 		moveq	#$00, D0
 		move.b	($FFFFF750).w, D0
 		lsr.b	#$02, D0
@@ -19112,7 +19112,7 @@ Offset_0x02B88E:
 		move.w	D0, (A1)
 		addq.w	#$08, A1
 		dbf	D1, Offset_0x02B88E
-		lea	(SS_Ram_Layout_Address+$0005), A1			 ; $FFFF4005
+		lea	(SS_Ram_Layout_Address+$0005).l, A1			 ; $FFFF4005
 		subq.b	#$01, (Object_Frame_Buffer+$0002).w			 ; $FFFFFEA2
 		bpl.s	Offset_0x02B8B2
 		move.b	#$07, (Object_Frame_Buffer+$0002).w			 ; $FFFFFEA2
@@ -19155,11 +19155,11 @@ Offset_0x02B910:
 		andi.b	#$07, (Object_Frame_Buffer+$0001).w			 ; $FFFFFEA1
 Offset_0x02B93A:
 		lea	(SS_Ram_Layout_Address+$0016), A1			 ; $FFFF4016
-		lea	(SS_WaRiVramSet), A0		   ; Offset_0x02BA24
+		lea	(SS_WaRiVramSet).l, A0		   ; Offset_0x02BA24
 		moveq	#$00, D0
 		move.b	(Object_Frame_Buffer+$0001).w, D0			 ; $FFFFFEA1
 		add.w	D0, D0
-		lea	$00(A0, D0), A0
+		lea	(A0, D0), A0
 		move.w	(A0), (A1)
 		move.w	$0002(A0), $0008(A1)
 		move.w	$0004(A0), $0010(A1)
@@ -19213,7 +19213,7 @@ SS_WaRiVramSet:						   ; Offset_0x02BA24
 		dc.w	$6142, $4142, $6142, $6142, $6142, $6142, $6142, $4142
 ;-------------------------------------------------------------------------------
 Offset_0x02BAA4:
-		lea	(SS_Ram_Layout_Address+$0400), A2			 ; $FFFF4400
+		lea	(SS_Ram_Layout_Address+$0400).l, A2			 ; $FFFF4400
 		move.w	#$001F, D0
 Offset_0x02BAAE:
 		tst.b	(A2)
@@ -19224,7 +19224,7 @@ Offset_0x02BAB8:
 		rts
 ;-------------------------------------------------------------------------------
 Offset_0x02BABA:
-		lea	(SS_Ram_Layout_Address+$0400), A0			 ; $FFFF4400
+		lea	(SS_Ram_Layout_Address+$0400).l, A0			 ; $FFFF4400
 		move.w	#$001F, D7
 Offset_0x02BAC4:
 		moveq	#$00, D0
@@ -19411,7 +19411,7 @@ Offset_0x02BC7E:
 		bcs.s	Offset_0x02BCA0
 		lea	(Emerald_Collected_Flag_List).w, A3			 ; $FFFFFE58
 Offset_0x02BC94:
-		cmp.b	$00(A3, D1), D0
+		cmp.b	(A3, D1), D0
 		bne.s	Offset_0x02BC9C
 		bra.s	Special_Stage_Load			   ; Offset_0x02BC66
 Offset_0x02BC9C:
@@ -19422,16 +19422,16 @@ Offset_0x02BCA0:
 		move.w	(A1)+, (Player_One_Position_X).w			 ; $FFFFB008
 		move.w	(A1)+, (Player_One_Position_Y).w			 ; $FFFFB00C
 		move.l	Special_Stage_Layout_Index(PC, D0), A0 ; Offset_0x02BC36
-		lea	(SS_Ram_Layout_Address), A1			 ; $FFFF4000
+		lea	(SS_Ram_Layout_Address).l, A1			 ; $FFFF4000
 		move.w	#$0000, D0
 		jsr	(EnigmaDec).l					   ; Offset_0x001932
-		lea	(M68K_RAM_Start), A1				 ; $FFFF0000
+		lea	(M68K_RAM_Start).l, A1				 ; $FFFF0000
 		move.w	#$0FFF, D0
 Offset_0x02BCCC:
 		clr.l	(A1)+
 		dbf	D0, Offset_0x02BCCC
-		lea	($FFFF1020), A1
-		lea	(SS_Ram_Layout_Address), A0			 ; $FFFF4000
+		lea	($FFFF1020).l, A1
+		lea	(SS_Ram_Layout_Address).l, A0			 ; $FFFF4000
 		moveq	#$3F, D1
 Offset_0x02BCE0:
 		moveq	#$3F, D2
@@ -19440,8 +19440,8 @@ Offset_0x02BCE2:
 		dbf	D2, Offset_0x02BCE2
 		lea	Obj_Size(A1), A1				 ; $0040
 		dbf	D1, Offset_0x02BCE0
-		lea	(SS_Ram_Layout_Address+$0008), A1			 ; $FFFF4008
-		lea	(SS_Obj_Mappings_Ptr), A0			   ; Offset_0x02BD22
+		lea	(SS_Ram_Layout_Address+$0008).l, A1			 ; $FFFF4008
+		lea	(SS_Obj_Mappings_Ptr).l, A0			   ; Offset_0x02BD22
 		moveq	#$4D, D1
 Offset_0x02BCFE:
 		move.l	(A0)+, (A1)+
@@ -19449,7 +19449,7 @@ Offset_0x02BCFE:
 		move.b	-4(A0), -1(A1)
 		move.w	(A0)+, (A1)+
 		dbf	D1, Offset_0x02BCFE
-		lea	(SS_Ram_Layout_Address+$0400), A1			 ; $FFFF4400
+		lea	(SS_Ram_Layout_Address+$0400).l, A1			 ; $FFFF4400
 		move.w	#$003F, D1
 Offset_0x02BD1A:
 		clr.l	(A1)+
@@ -19696,12 +19696,12 @@ Offset_0x02BF68:
 		nop
 ;-------------------------------------------------------------------------------
 Obj_0x09_Sonic_In_Special_Stage:					   ; Offset_0x02BF70
-		include "data\objects\obj_0x09.asm"
+		include "data/objects/obj_0x09.asm"
 ;-------------------------------------------------------------------------------
 Obj_Null_3:							   ; Offset_0x02C612
 		rts
 Jmp_32_To_ModifySpriteAttr_2P:				   ; Offset_0x02C614
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 		dc.w	$0000
 ;===============================================================================
 ; Rotina para carregar os gráficos dinamicamente para a VRAM
@@ -19838,8 +19838,8 @@ Offset_0x02C7B4:
 		neg.w	D2
 		asr.w	#$03, D2
 		move.l	A2, -(A7)
-		lea	(Art_Hill_Top_Background_Uncomp), A0   ; Offset_0x030C2A
-		lea	($FFFF7C00), A2
+		lea	(Art_Hill_Top_Background_Uncomp).l, A0   ; Offset_0x030C2A
+		lea	($FFFF7C00).l, A2
 		moveq	#$0F, D1
 Offset_0x02C7D0:
 		move.w	(A1)+, D0
@@ -19850,7 +19850,7 @@ Offset_0x02C7D0:
 		bcc.s	Offset_0x02C7E2
 		addi.w	#$0200, D0
 Offset_0x02C7E2:
-		lea	$00(A0, D0), A4
+		lea	(A0, D0), A4
 		lsr.w	#$01, D0
 		bcs.s	Offset_0x02C80C
 		move.l	(A4)+, (A2)+
@@ -20173,9 +20173,9 @@ Offset_0x02CBCA:
 		bpl.s	Offset_0x02CBC8
 		move.b	#$07, ($FFFFF721).w
 		move.b	#$01, (Refresh_Level_Layout).w		 ; $FFFFF720
-		lea	($FFFF7500), A1
+		lea	($FFFF7500).l, A1
 		bsr.s	Offset_0x02CBFA
-		lea	($FFFF7D00), A1
+		lea	($FFFF7D00).l, A1
 Offset_0x02CBFA:
 		move.w	#$0007, D1
 Offset_0x02CBFE:
@@ -20382,7 +20382,7 @@ Map16Delta_DEz:						   ; Offset_0x02D0BA
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Hill_Top_Init_Dyn_Sprites:					   ; Offset_0x02D0BC
-		lea	(Art_Hill_Top_Background), A0		   ; Offset_0x030300
+		lea	(Art_Hill_Top_Background).l, A0		   ; Offset_0x030300
 		lea	($FFFFB800).w, A4
 		bsr.w	Jmp_00_To_NemesisDecToRAM			   ; Offset_0x02D0F8
 		lea	($FFFFB800).w, A1
@@ -20418,7 +20418,7 @@ Jmp_00_To_NemesisDecToRAM:					   ; Offset_0x02D0F8
 ; <<<-
 ;===============================================================================
 Obj_0x21_Head_Up_Display:					   ; Offset_0x02D100
-		include "data\objects\obj_0x21.asm"
+		include "data/objects/obj_0x21.asm"
 ;-------------------------------------------------------------------------------
 AddPoints:							   ; Offset_0x02D2D4
 		move.b	#$01, (HUD_Score_Refresh_Flag).w			 ; $FFFFFE1F
@@ -20447,7 +20447,7 @@ Offset_0x02D314:
 ;===============================================================================
 HudUpdate:							   ; Offset_0x02D316
 		nop
-		lea	(VDP_Data_Port), A6					 ; $00C00000
+		lea	(VDP_Data_Port).l, A6					 ; $00C00000
 		tst.w	(Debug_Mode_Active_Flag).w			 ; $FFFFFFFA
 		bne.w	Offset_0x02D408
 		tst.b	(HUD_Score_Refresh_Flag).w			 ; $FFFFFE1F
@@ -20505,7 +20505,7 @@ Offset_0x02D3C8:
 		tst.b	($FFFFF7D6).w
 		beq.s	Offset_0x02D3F0
 		clr.b	($FFFFF7D6).w
-		move.l	#$6E000002, (VDP_Control_Port)		 ; $00C00004
+		move.l	#$6E000002, (VDP_Control_Port).l		 ; $00C00004
 		moveq	#$00, D1
 		move.w	($FFFFF7D2).w, D1
 		bsr.w	Offset_0x02D670
@@ -20548,7 +20548,7 @@ Offset_0x02D44A:
 		tst.b	($FFFFF7D6).w
 		beq.s	Offset_0x02D472
 		clr.b	($FFFFF7D6).w
-		move.l	#$6E000002, (VDP_Control_Port)		 ; $00C00004
+		move.l	#$6E000002, (VDP_Control_Port).l		 ; $00C00004
 		moveq	#$00, D1
 		move.w	($FFFFF7D2).w, D1
 		bsr.w	Offset_0x02D670
@@ -20558,7 +20558,7 @@ Offset_0x02D44A:
 Offset_0x02D472:
 		rts
 Offset_0x02D474:
-		move.l	#$5F400003, (VDP_Control_Port)		 ; $00C00004
+		move.l	#$5F400003, (VDP_Control_Port).l		 ; $00C00004
 		lea	HUD_Rings_Mask(PC), A2		   ; Offset_0x02D4DC
 		move.w	#$0002, D2
 		bra.s	Offset_0x02D4A4
@@ -20566,7 +20566,7 @@ Offset_0x02D474:
 Head_Up_Display_Base:						   ; Offset_0x02D488
 		lea	(VDP_Data_Port), A6					 ; $00C00000
 		bsr.w	Offset_0x02D6D0
-		move.l	#$5C400003, (VDP_Control_Port)		 ; $00C00004
+		move.l	#$5C400003, (VDP_Control_Port).l		 ; $00C00004
 		lea	HUD_ScoreTime_Mask(PC), A2			   ; Offset_0x02D4D0
 		move.w	#$000E, D2
 Offset_0x02D4A4:
@@ -20577,7 +20577,7 @@ Offset_0x02D4A8:
 		bmi.s	Offset_0x02D4C4
 		ext.w	D0
 		lsl.w	#$05, D0
-		lea	$00(A1, D0), A3
+		lea	(A1, D0), A3
 Offset_0x02D4B8:
 		move.l	(A3)+, (A6)
 		dbf	D1, Offset_0x02D4B8
@@ -20595,7 +20595,7 @@ HUD_Rings_Mask:						   ; Offset_0x02D4DC
 		dc.l	$FFFF0000
 ;-------------------------------------------------------------------------------
 Offset_0x02D4E0:
-		move.l	#$5C400003, (VDP_Control_Port)		 ; $00C00004
+		move.l	#$5C400003, (VDP_Control_Port).l		 ; $00C00004
 		move.w	(Camera_X).w, D1					 ; $FFFFEE00
 		swap	D1
 		move.w	(Player_One_Position_X).w, D1		 ; $FFFFB008
@@ -20605,7 +20605,7 @@ Offset_0x02D4E0:
 		move.w	(Player_One_Position_Y).w, D1		 ; $FFFFB00C
 Offset_0x02D500:
 		moveq	#$07, D6
-		lea	(HUD_Art_Debug_Numbers), A1			   ; Offset_0x02DB7A
+		lea	(HUD_Art_Debug_Numbers).l, A1			   ; Offset_0x02DB7A
 Offset_0x02D508:
 		rol.w	#$04, D1
 		move.w	D1, D2
@@ -20615,7 +20615,7 @@ Offset_0x02D508:
 		addi.w	#$0007, D2
 Offset_0x02D51A:
 		lsl.w	#$05, D2
-		lea	$00(A1, D2), A3
+		lea	(A1, D2), A3
 		move.l	(A3)+, (A6)
 		move.l	(A3)+, (A6)
 		move.l	(A3)+, (A6)
@@ -20629,11 +20629,11 @@ Offset_0x02D51A:
 		rts
 ;-------------------------------------------------------------------------------
 Offset_0x02D538:
-		lea	(HUD_Val_000100), A2		   ; Offset_0x02D604
+		lea	(HUD_Val_000100).l, A2		   ; Offset_0x02D604
 		moveq	#$02, D6
 		bra.s	Offset_0x02D54A
 Offset_0x02D542:
-		lea	(HUD_Val_100000), A2		   ; Offset_0x02D5F8
+		lea	(HUD_Val_100000).l, A2		   ; Offset_0x02D5F8
 		moveq	#$05, D6
 Offset_0x02D54A:
 		moveq	#$00, D4
@@ -20656,7 +20656,7 @@ Offset_0x02D566:
 		beq.s	Offset_0x02D594
 		lsl.w	#$06, D2
 		move.l	D0, $0004(A6)
-		lea	$00(A1, D2), A3
+		lea	(A1, D2), A3
 		move.l	(A3)+, (A6)
 		move.l	(A3)+, (A6)
 		move.l	(A3)+, (A6)
@@ -20679,9 +20679,9 @@ Offset_0x02D594:
 		rts
 ;-------------------------------------------------------------------------------
 Time_Count_Down:							   ; Offset_0x02D5A0
-		move.l	#$5F800003, (VDP_Control_Port)		 ; $00C00004
-		lea	(VDP_Data_Port), A6					 ; $00C00000
-		lea	(HUD_Val_000010), A2		   ; Offset_0x02D608
+		move.l	#$5F800003, (VDP_Control_Port).l		 ; $00C00004
+		lea	(VDP_Data_Port).l, A6					 ; $00C00000
+		lea	(HUD_Val_000010).l, A2		   ; Offset_0x02D608
 		moveq	#$01, D6
 		moveq	#$00, D4
 		lea	HUD_Art_Numbers(PC), A1		   ; Offset_0x02D73A
@@ -20696,7 +20696,7 @@ Offset_0x02D5C2:
 Offset_0x02D5CA:
 		add.l	D3, D1
 		lsl.w	#$06, D2
-		lea	$00(A1, D2), A3
+		lea	(A1, D2), A3
 		move.l	(A3)+, (A6)
 		move.l	(A3)+, (A6)
 		move.l	(A3)+, (A6)
@@ -20755,7 +20755,7 @@ Offset_0x02D630:
 Offset_0x02D63A:
 		lsl.w	#$06, D2
 		move.l	D0, $0004(A6)
-		lea	$00(A1, D2), A3
+		lea	(A1, D2), A3
 		move.l	(A3)+, (A6)
 		move.l	(A3)+, (A6)
 		move.l	(A3)+, (A6)
@@ -20798,7 +20798,7 @@ Offset_0x02D692:
 		tst.w	D4
 		beq.s	Offset_0x02D6C2
 		lsl.w	#$06, D2
-		lea	$00(A1, D2), A3
+		lea	(A1, D2), A3
 		move.l	(A3)+, (A6)
 		move.l	(A3)+, (A6)
 		move.l	(A3)+, (A6)
@@ -20851,7 +20851,7 @@ Offset_0x02D702:
 		beq.s	Offset_0x02D728
 Offset_0x02D706:
 		lsl.w	#$05, D2
-		lea	$00(A1, D2), A3
+		lea	(A1, D2), A3
 		move.l	(A3)+, (A6)
 		move.l	(A3)+, (A6)
 		move.l	(A3)+, (A6)
@@ -20874,18 +20874,18 @@ Offset_0x02D72E:
 		bra.s	Offset_0x02D71C
 ;-------------------------------------------------------------------------------
 HUD_Art_Numbers:							   ; Offset_0x02D73A
-		binclude	"data\art\hud_numb.dat"
+		binclude	"data/art/hud_numb.dat"
 HUD_Art_Life_Numbers:						   ; Offset_0x02DA3A
-		binclude	"data\art\hud_num2.dat"
+		binclude	"data/art/hud_num2.dat"
 HUD_Art_Debug_Numbers:						   ; Offset_0x02DB7A
-		binclude	"data\art\hud_debg.dat"
+		binclude	"data/art/hud_debg.dat"
 ;===============================================================================
 ; Rotina para atualizar os contadores na tela (Pontos, Tempo, Vidas...).
 ; <<<-
 ;===============================================================================
 		nop
 Jmp_33_To_ModifySpriteAttr_2P:				   ; Offset_0x02DE5C
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 		dc.w	$0000
 ;===============================================================================
 ; Modo de depuração
@@ -20918,9 +20918,9 @@ Offset_0x02DEB0:
 		moveq	#$00, D0
 		move.b	(Level_Id).w, D0					 ; $FFFFFE10
 Offset_0x02DEB6:
-		lea	(Debug_Mode_Object_List), A2		   ; Offset_0x02E0B2
+		lea	(Debug_Mode_Object_List).l, A2		   ; Offset_0x02E0B2
 		add.w	D0, D0
-		adda.w	$00(A2, D0), A2
+		adda.w	(A2, D0), A2
 		move.w	(A2)+, D6
 		cmp.b	($FFFFFE06).w, D6
 		bhi.s	Offset_0x02DED0
@@ -20937,9 +20937,9 @@ Offset_0x02DEE0:
 		moveq	#$00, D0
 		move.b	(Level_Id).w, D0					 ; $FFFFFE10
 Offset_0x02DEF0:
-		lea	(Debug_Mode_Object_List), A2		   ; Offset_0x02E0B2
+		lea	(Debug_Mode_Object_List).l, A2		   ; Offset_0x02E0B2
 		add.w	D0, D0
-		adda.w	$00(A2, D0), A2
+		adda.w	(A2, D0), A2
 		move.w	(A2)+, D6
 		bsr.w	Offset_0x02DF08
 		jmp	(DisplaySprite)				   ; Offset_0x00D322
@@ -21026,7 +21026,7 @@ Offset_0x02DFE2:
 Offset_0x02DFE6:
 		btst	#$05, (Control_Ports_Buffer_Data+$0001).w	 ; $FFFFF605
 		beq.s	Offset_0x02E02A
-		jsr	(SingleObjectLoad)			   ; Offset_0x00E6FE
+		jsr	(SingleObjectLoad).l			   ; Offset_0x00E6FE
 		bne.s	Offset_0x02E02A
 		move.w	Obj_X(A0), Obj_X(A1)			  ; $0008, $0008
 		move.w	Obj_Y(A0), Obj_Y(A1)			  ; $000C, $000C
@@ -21068,7 +21068,7 @@ Offset_0x02E092:
 		moveq	#$00, D0
 		move.b	($FFFFFE06).w, D0
 		lsl.w	#$03, D0
-		move.l	$00(A2, D0), Obj_Map(A0)				 ; $0004
+		move.l	(A2, D0), Obj_Map(A0)				 ; $0004
 		move.w	$06(A2, D0), Obj_Art_VRAM(A0)			 ; $0002
 		move.b	$05(A2, D0), Obj_Map_Id(A0)				 ; $001A
 		bsr.w	Jmp_34_To_ModifySpriteAttr_2P		   ; Offset_0x02E700
@@ -21737,7 +21737,7 @@ DOL_09: ; DOL - Debug Object List
 DOL_09_End:
 ;-------------------------------------------------------------------------------
 Jmp_34_To_ModifySpriteAttr_2P:				   ; Offset_0x02E700
-		jmp	(ModifySpriteAttr_2P)		   ; Offset_0x00DBBE
+		jmp	(ModifySpriteAttr_2P).l		   ; Offset_0x00DBBE
 		dc.w	$0000
 ;===============================================================================
 ; Modo de depuração
@@ -22590,115 +22590,115 @@ PLC_3C_End:
 ; <<<-
 ;===============================================================================
 Previous_Build_Colision_Array_2_Overwrite_Data:		   ; Offset_0x02EDFE
-		binclude	"data\all\pb_c_ar2.dat"
+		binclude	"data/all/pb_c_ar2.dat"
 Previous_Build_Green_Hill_Colision_Data_1:			   ; Offset_0x02F2EA
 Previous_Build_Hill_Top_Colision_Data_1:			   ; Offset_0x02F2EA
-		binclude	"data\ghz\ghz_col1.dat"
+		binclude	"data/ghz/ghz_col1.dat"
 Previous_Build_Green_Hill_Colision_Data_2:			   ; Offset_0x02F5EA
 Previous_Build_Hill_Top_Colision_Data_2:			   ; Offset_0x02F5EA
-		binclude	"data\ghz\ghz_col2.dat"
+		binclude	"data/ghz/ghz_col2.dat"
 Previous_Build_Wood_Colision_Data_1:				   ; Offset_0x02F8EA
 Previous_Build_Wood_Colision_Data_2:				   ; Offset_0x02F8EA
-		binclude	"data\wz\wz_col.dat"
+		binclude	"data/wz/wz_col.dat"
 Previous_Build_Metropolis_Colision_Data_1:			   ; Offset_0x02FBEA
 Previous_Build_Metropolis_Colision_Data_2:			   ; Offset_0x02FBEA
-		binclude	"data\mz\mz_col.dat"
+		binclude	"data/mz/mz_col.dat"
 Previous_Build_Hidden_Palace_Colision_Data_1_Overwrite_Data:   ; Offset_0x02FEEA
-		binclude	"data\hpz\pb_col1.dat"
+		binclude	"data/hpz/pb_col1.dat"
 ;-------------------------------------------------------------------------------
 Art_GHz_Flower_1:							   ; Offset_0x030000
 Art_HTz_Flower_1:							   ; Offset_0x030000
-		binclude	"data\ghz\flower_1.dat"
+		binclude	"data/ghz/flower_1.dat"
 Art_GHz_Flower_2:							   ; Offset_0x030080
 Art_HTz_Flower_2:							   ; Offset_0x030080
-		binclude	"data\ghz\flower_2.dat"
+		binclude	"data/ghz/flower_2.dat"
 Art_GHz_Flower_3:							   ; Offset_0x030100
 Art_HTz_Flower_3:							   ; Offset_0x030100
-		binclude	"data\ghz\flower_3.dat"
+		binclude	"data/ghz/flower_3.dat"
 Art_GHz_Flower_4:							   ; Offset_0x030180
 Art_HTz_Flower_4:							   ; Offset_0x030180
-		binclude	"data\ghz\flower_4.dat"
+		binclude	"data/ghz/flower_4.dat"
 Art_GHz_Dyn_Wall:							   ; Offset_0x030200
 Art_HTz_Dyn_Wall:							   ; Offset_0x030200
-		binclude	"data\ghz\dyn_wall.dat"
+		binclude	"data/ghz/dyn_wall.dat"
 Art_Hill_Top_Background:					   ; Offset_0x030300
-		binclude	"data\htz\backgnd.nem"
+		binclude	"data/htz/backgnd.nem"
 Art_Hill_Top_Background_Uncomp:				   ; Offset_0x030C2A
-		binclude	"data\htz\backgnd.dat"
+		binclude	"data/htz/backgnd.dat"
 Art_Mz_Spinnig_Cylinder:					   ; Offset_0x03102A
-		binclude	"data\mz\spin_cyl.dat"
+		binclude	"data/mz/spin_cyl.dat"
 Art_Mz_Lava:						   ; Offset_0x03202A
-		binclude	"data\mz\lava.dat"
+		binclude	"data/mz/lava.dat"
 Art_Mz_Pistons:						   ; Offset_0x03262A
-		binclude	"data\mz\pistons.dat"
+		binclude	"data/mz/pistons.dat"
 Art_HPz_Background: ; Não usado ( Left over )		   ; Offset_0x03286A
-		binclude	"data\hpz\backgnd.dat"
+		binclude	"data/hpz/backgnd.dat"
 Art_HPz_Orbs:						   ; Offset_0x032C6A
-		binclude	"data\hpz\orbs.dat"
+		binclude	"data/hpz/orbs.dat"
 Art_OOz_Red_Balls:							   ; Offset_0x032F6A
-		binclude	"data\ooz\red_ball.dat"
+		binclude	"data/ooz/red_ball.dat"
 Art_OOz_Rotating_Square_1:					   ; Offset_0x0330EA
-		binclude	"data\ooz\r_squar1.dat"
+		binclude	"data/ooz/r_squar1.dat"
 Art_OOz_Rotating_Square_2:					   ; Offset_0x0332EA
-		binclude	"data\ooz\r_squar2.dat"
+		binclude	"data/ooz/r_squar2.dat"
 Art_OOz_Oil_1:						   ; Offset_0x0334EA
-		binclude	"data\ooz\oil_1.dat"
+		binclude	"data/ooz/oil_1.dat"
 Art_OOz_Oil_2:						   ; Offset_0x033CEA
-		binclude	"data\ooz\oil_2.dat"
+		binclude	"data/ooz/oil_2.dat"
 Art_CNz_Blue_Cards:							   ; Offset_0x0344EA
-		binclude	"data\cnz\bluecard.dat"
+		binclude	"data/cnz/bluecard.dat"
 Art_CNz_Pink_Cards:							   ; Offset_0x034DEA
-		binclude	"data\cnz\pinkcard.dat"
+		binclude	"data/cnz/pinkcard.dat"
 Art_CNz_Slot_Machine_Checks:				   ; Offset_0x0357EA
-		binclude	"data\cnz\sm_check.dat"
+		binclude	"data/cnz/sm_check.dat"
 Art_CPz_Dyn_Background:						   ; Offset_0x0363EA
-		binclude	"data\cpz\backgnd.dat"
+		binclude	"data/cpz/backgnd.dat"
 Art_NGHz_Water_Falls_1:						   ; Offset_0x0365EA
-		binclude	"data\nghz\water_f1.dat"
+		binclude	"data/nghz/water_f1.dat"
 Art_NGHz_Water_Falls_2:						   ; Offset_0x0366EA
-		binclude	"data\nghz\water_f2.dat"
+		binclude	"data/nghz/water_f2.dat"
 Art_NGHz_Water_Falls_3:						   ; Offset_0x0367EA
-		binclude	"data\nghz\water_f3.dat"
+		binclude	"data/nghz/water_f3.dat"
 AngleMap:							   ; Offset_0x0368EA
-		binclude	"data\all\anglemap.dat"
+		binclude	"data/all/anglemap.dat"
 Colision_Array_1:							   ; Offset_0x0369EA
-		binclude	"data\all\c_array1.dat"
+		binclude	"data/all/c_array1.dat"
 Colision_Array_2:							   ; Offset_0x0379EA
-		binclude	"data\all\c_array2.dat"
+		binclude	"data/all/c_array2.dat"
 Green_Hill_Colision_Data_1:					   ; Offset_0x0389EA
 Hill_Top_Colision_Data_1:					   ; Offset_0x0389EA
-		binclude	"data\ghz\ghz_col1.dat"
+		binclude	"data/ghz/ghz_col1.dat"
 Green_Hill_Colision_Data_2:					   ; Offset_0x038CEA
 Hill_Top_Colision_Data_2:					   ; Offset_0x038CEA
-		binclude	"data\ghz\ghz_col2.dat"
+		binclude	"data/ghz/ghz_col2.dat"
 Wood_Colision_Data_1:						   ; Offset_0x038FEA
 Wood_Colision_Data_2:						   ; Offset_0x038FEA
-		binclude	"data\wz\wz_col.dat"
+		binclude	"data/wz/wz_col.dat"
 Metropolis_Colision_Data_1:					   ; Offset_0x0392EA
 Metropolis_Colision_Data_2:					   ; Offset_0x0392EA
-		binclude	"data\mz\mz_col.dat"
+		binclude	"data/mz/mz_col.dat"
 Hidden_Palace_Colision_Data_1:				   ; Offset_0x0395EA
-		binclude	"data\hpz\hpz_col1.dat"
+		binclude	"data/hpz/hpz_col1.dat"
 Hidden_Palace_Colision_Data_2:				   ; Offset_0x0398EA
-		binclude	"data\hpz\hpz_col2.dat"
+		binclude	"data/hpz/hpz_col2.dat"
 Oil_Ocean_Colision_Data_1:					   ; Offset_0x039BEA
 Oil_Ocean_Colision_Data_2:					   ; Offset_0x039BEA
-		binclude	"data\ooz\ooz_col.dat"
+		binclude	"data/ooz/ooz_col.dat"
 Dust_Hill_Colision_Data_1:					   ; Offset_0x039EEA
 Dust_Hill_Colision_Data_2:					   ; Offset_0x039EEA
-		binclude	"data\dhz\dhz_col.dat"
+		binclude	"data/dhz/dhz_col.dat"
 Casino_Night_Colision_Data_1:				   ; Offset_0x03A1EA
-		binclude	"data\cnz\cnz_col1.dat"
+		binclude	"data/cnz/cnz_col1.dat"
 Casino_Night_Colision_Data_2:				   ; Offset_0x03A4EA
-		binclude	"data\cnz\cnz_col2.dat"
+		binclude	"data/cnz/cnz_col2.dat"
 Chemical_Plant_Colision_Data_1:				   ; Offset_0x03A7EA
-		binclude	"data\cpz\cpz_col1.dat"
+		binclude	"data/cpz/cpz_col1.dat"
 Chemical_Plant_Colision_Data_2:				   ; Offset_0x03AAEA
-		binclude	"data\cpz\cpz_col2.dat"
+		binclude	"data/cpz/cpz_col2.dat"
 Neo_Green_Hill_Colision_Data_1:				   ; Offset_0x03ADEA
-		binclude	"data\nghz\nghzcol1.dat"
+		binclude	"data/nghz/nghzcol1.dat"
 Neo_Green_Hill_Colision_Data_2:				   ; Offset_0x03B0EA
-		binclude	"data\nghz\nghzcol2.dat"
+		binclude	"data/nghz/nghzcol2.dat"
 Lvl1_Colision_Data_1:						   ; Offset_0x03B3EA
 Lvl1_Colision_Data_2:						   ; Offset_0x03B3EA
 Lvl3_Colision_Data_1:						   ; Offset_0x03B3EA
@@ -22713,17 +22713,17 @@ Death_Egg_Colision_Data_1:					   ; Offset_0x03B3EA
 Death_Egg_Colision_Data_2:					   ; Offset_0x03B3EA
 
 Special_Stage_1:							   ; Offset_0x03B3EA
-		binclude	"data\ss\stage_1.eni"
+		binclude	"data/ss/stage_1.eni"
 Special_Stage_2:							   ; Offset_0x03B664
-		binclude	"data\ss\stage_2.eni"
+		binclude	"data/ss/stage_2.eni"
 Special_Stage_3:							   ; Offset_0x03BA76
-		binclude	"data\ss\stage_3.eni"
+		binclude	"data/ss/stage_3.eni"
 Special_Stage_4:							   ; Offset_0x03BDD2
-		binclude	"data\ss\stage_4.eni"
+		binclude	"data/ss/stage_4.eni"
 Special_Stage_5:							   ; Offset_0x03C2AC
-		binclude	"data\ss\stage_5.eni"
+		binclude	"data/ss/stage_5.eni"
 Special_Stage_6:							   ; Offset_0x03C75C
-		binclude	"data\ss\stage_6.eni"
+		binclude	"data/ss/stage_6.eni"
 ;===============================================================================
 ; Leiaute das fases
 ; ->>>
@@ -22816,12 +22816,12 @@ Level_Layout:						   ; Offset_0x03CA4E
 		dc.w	DEz_Background_Map_Act_2-Level_Layout  ; Offset_0x049C36
 ;-------------------------------------------------------------------------------
 GHz_Foreground_Map_Act_1:					   ; Offset_0x03CAD6
-		binclude	"data\ghz\fg_map1.dat"
+		binclude	"data/ghz/fg_map1.dat"
 GHz_Foreground_Map_Act_2:					   ; Offset_0x03D2D8
-		binclude	"data\ghz\fg_map2.dat"
+		binclude	"data/ghz/fg_map2.dat"
 GHz_Background_Map_Act_1:					   ; Offset_0x03DADA
 GHz_Background_Map_Act_2:					   ; Offset_0x03DADA
-		binclude	"data\ghz\bg_map.dat"
+		binclude	"data/ghz/bg_map.dat"
 Lvl1_Foreground_Map_Act_1:					   ; Offset_0x03DAE4
 Lvl1_Background_Map_Act_1:					   ; Offset_0x03DAE4
 Lvl1_Foreground_Map_Act_2:					   ; Offset_0x03DAE4
@@ -22830,13 +22830,13 @@ Lvl1_Background_Map_Act_2:					   ; Offset_0x03DAE4
 		dc.b	$00		 ; Tamanho Y
 		dc.b	$00, $00 ; Dados
 Wz_Foreground_Map_Act_1:					   ; Offset_0x03DAE8
-		binclude	"data\wz\fg_map1.dat"
+		binclude	"data/wz/fg_map1.dat"
 Wz_Foreground_Map_Act_2:					   ; Offset_0x03E2EA
-		binclude	"data\wz\fg_map2.dat"
+		binclude	"data/wz/fg_map2.dat"
 Wz_Background_Map_Act_1:					   ; Offset_0x03EAEC
-		binclude	"data\wz\bg_map1.dat"
+		binclude	"data/wz/bg_map1.dat"
 Wz_Background_Map_Act_2:					   ; Offset_0x03F2EE
-		binclude	"data\wz\bg_map2.dat"
+		binclude	"data/wz/bg_map2.dat"
 Lvl3_Foreground_Map_Act_1:					   ; Offset_0x03FAF0
 Lvl3_Background_Map_Act_1:					   ; Offset_0x03FAF0
 Lvl3_Foreground_Map_Act_2:					   ; Offset_0x03FAF0
@@ -22845,17 +22845,17 @@ Lvl3_Background_Map_Act_2:					   ; Offset_0x03FAF0
 		dc.b	$00		 ; Tamanho Y
 		dc.b	$00, $00 ; Dados
 Mz_Foreground_Map_Act_1:					   ; Offset_0x03FAF4
-		binclude	"data\mz\fg_map1.dat"
+		binclude	"data/mz/fg_map1.dat"
 Mz_Foreground_Map_Act_2:					   ; Offset_0x0402F6
-		binclude	"data\mz\fg_map2.dat"
+		binclude	"data/mz/fg_map2.dat"
 Mz_Background_Map_Act_1:					   ; Offset_0x040AF8
 Mz_Background_Map_Act_2:					   ; Offset_0x040AF8
 Mz_Background_Map_Act_3:					   ; Offset_0x040AF8
 Mz_Background_Map_Act_4:					   ; Offset_0x040AF8
-		binclude	"data\mz\bg_map.dat"
+		binclude	"data/mz/bg_map.dat"
 Mz_Foreground_Map_Act_3:					   ; Offset_0x040B5A
 Mz_Foreground_Map_Act_4:					   ; Offset_0x040B5A
-		binclude	"data\mz\fg_map3.dat"
+		binclude	"data/mz/fg_map3.dat"
 Lvl6_Foreground_Map_Act_1:					   ; Offset_0x04135C
 Lvl6_Background_Map_Act_1:					   ; Offset_0x04135C
 Lvl6_Foreground_Map_Act_2:					   ; Offset_0x04135C
@@ -22864,19 +22864,19 @@ Lvl6_Background_Map_Act_2:					   ; Offset_0x04135C
 		dc.b	$00		 ; Tamanho Y
 		dc.b	$00, $00 ; Dados
 HTz_Foreground_Map_Act_1:					   ; Offset_0x041360
-		binclude	"data\htz\fg_map1.dat"
+		binclude	"data/htz/fg_map1.dat"
 HTz_Foreground_Map_Act_2:					   ; Offset_0x041B62
-		binclude	"data\htz\fg_map2.dat"
+		binclude	"data/htz/fg_map2.dat"
 HTz_Background_Map_Act_1:					   ; Offset_0x042364
-		binclude	"data\htz\bg_map1.dat"
+		binclude	"data/htz/bg_map1.dat"
 HTz_Background_Map_Act_2:					   ; Offset_0x042B66
-		binclude	"data\htz\bg_map2.dat"
+		binclude	"data/htz/bg_map2.dat"
 HPz_Foreground_Map_Act_1:					   ; Offset_0x043368
 HPz_Foreground_Map_Act_2:					   ; Offset_0x043368
-		binclude	"data\hpz\fg_map.dat"
+		binclude	"data/hpz/fg_map.dat"
 HPz_Background_Map_Act_1:					   ; Offset_0x043B6A
 HPz_Background_Map_Act_2:					   ; Offset_0x043B6A
-		binclude	"data\hpz\bg_map.dat"
+		binclude	"data/hpz/bg_map.dat"
 Lvl9_Foreground_Map_Act_1:					   ; Offset_0x043BB4
 Lvl9_Background_Map_Act_1:					   ; Offset_0x043BB4
 Lvl9_Foreground_Map_Act_2:					   ; Offset_0x043BB4
@@ -22885,33 +22885,33 @@ Lvl9_Background_Map_Act_2:					   ; Offset_0x043BB4
 		dc.b	$00		 ; Tamanho Y
 		dc.b	$00, $00 ; Dados
 OOz_Foreground_Map_Act_1:					   ; Offset_0x043BB8
-		binclude	"data\ooz\fg_map1.dat"
+		binclude	"data/ooz/fg_map1.dat"
 OOz_Foreground_Map_Act_2:					   ; Offset_0x0443BA
-		binclude	"data\ooz\fg_map2.dat"
+		binclude	"data/ooz/fg_map2.dat"
 OOz_Background_Map_Act_1:					   ; Offset_0x044BBC
 OOz_Background_Map_Act_2:					   ; Offset_0x044BBC
-		binclude	"data\ooz\bg_map.dat"
+		binclude	"data/ooz/bg_map.dat"
 DHz_Foreground_Map_Act_1:					   ; Offset_0x044BD6
-		binclude	"data\dhz\fg_map1.dat"
+		binclude	"data/dhz/fg_map1.dat"
 DHz_Foreground_Map_Act_2:					   ; Offset_0x0453D8
-		binclude	"data\dhz\fg_map2.dat"
+		binclude	"data/dhz/fg_map2.dat"
 DHz_Background_Map_Act_1:					   ; Offset_0x045BDA
 DHz_Background_Map_Act_2:					   ; Offset_0x045BDA
-		binclude	"data\dhz\bg_map.dat"
+		binclude	"data/dhz/bg_map.dat"
 CNz_Foreground_Map_Act_1:					   ; Offset_0x045BEC
-		binclude	"data\cnz\fg_map1.dat"
+		binclude	"data/cnz/fg_map1.dat"
 CNz_Foreground_Map_Act_2:					   ; Offset_0x0463EE
-		binclude	"data\cnz\fg_map2.dat"
+		binclude	"data/cnz/fg_map2.dat"
 CNz_Background_Map_Act_1:					   ; Offset_0x046BF0
 CNz_Background_Map_Act_2:					   ; Offset_0x046BF0
-		binclude	"data\cnz\bg_map.dat"
+		binclude	"data/cnz/bg_map.dat"
 CPz_Foreground_Map_Act_1:					   ; Offset_0x046BFA
-		binclude	"data\cpz\fg_map1.dat"
+		binclude	"data/cpz/fg_map1.dat"
 CPz_Foreground_Map_Act_2:					   ; Offset_0x0473FC
-		binclude	"data\cpz\fg_map2.dat"
+		binclude	"data/cpz/fg_map2.dat"
 CPz_Background_Map_Act_1:					   ; Offset_0x047BFE
 CPz_Background_Map_Act_2:					   ; Offset_0x047BFE
-		binclude	"data\cpz\bg_map.dat"
+		binclude	"data/cpz/bg_map.dat"
 GCz_Foreground_Map_Act_1:					   ; Offset_0x047C2A
 GCz_Background_Map_Act_1:					   ; Offset_0x047C2A
 GCz_Foreground_Map_Act_2:					   ; Offset_0x047C2A
@@ -22920,13 +22920,13 @@ GCz_Background_Map_Act_2:					   ; Offset_0x047C2A
 		dc.b	$00		 ; Tamanho Y
 		dc.b	$00, $00 ; Dados
 NGHz_Foreground_Map_Act_1:					   ; Offset_0x047C2E
-		binclude	"data\nghz\fg_map1.dat"
+		binclude	"data/nghz/fg_map1.dat"
 NGHz_Foreground_Map_Act_2:					   ; Offset_0x048430
-		binclude	"data\nghz\fg_map2.dat"
+		binclude	"data/nghz/fg_map2.dat"
 NGHz_Background_Map_Act_1:					   ; Offset_0x048C32
-		binclude	"data\nghz\bg_map1.dat"
+		binclude	"data/nghz/bg_map1.dat"
 NGHz_Background_Map_Act_2:					   ; Offset_0x049434
-		binclude	"data\nghz\bg_map2.dat"
+		binclude	"data/nghz/bg_map2.dat"
 DEz_Foreground_Map_Act_1:					   ; Offset_0x049C36
 DEz_Background_Map_Act_1:					   ; Offset_0x049C36
 DEz_Foreground_Map_Act_2:					   ; Offset_0x049C36
@@ -22941,23 +22941,23 @@ DEz_Background_Map_Act_2:					   ; Offset_0x049C36
 ; Anel gigante para acesso aos estágios especiais.
 ; Não usado, left over do Sonic 1.
 Art_Big_Ring:						   ; Offset_0x049C3A
-		binclude	"data\art\big_ring.dat"
+		binclude	"data/art/big_ring.dat"
 Previous_Build_Art_Big_Ring_Overwrite:				   ; Offset_0x04A87A
-		binclude	"data\art\pbigring.dat"
+		binclude	"data/art/pbigring.dat"
 ;-------------------------------------------------------------------------------
 ; Dados no formato nemesis sobrescritos.
 ; Tiles 8x8 da fase Star Light do Sonic 1.
 ; No disassembly do Sonic 1J estes dados são os mesmos presentes no arquivo
-; "Sonic_1_Jap\Data\SLz\Tiles.nem" (0x0BF4 á 0x1377)
+; "Sonic_1_Jap/Data/SLz/Tiles.nem" (0x0BF4 á 0x1377)
 ; ->>>
 ;-------------------------------------------------------------------------------
 Star_Light_Tiles_Overwrite:					   ; Offset_0x04A87C
-		binclude	"data\slz\tiles.dat"
+		binclude	"data/slz/tiles.dat"
 ;-------------------------------------------------------------------------------
 ; Dados no formato nemesis sobrescritos.
 ; Tiles 8x8 da fase Star Light do Sonic 1.
 ; No disassembly do Sonic 1J estes dados são os mesmos presentes no arquivo
-; "Sonic_1_Jap\Data\SLz\Tiles.nem" (0x0BF4 á 0x1377)
+; "Sonic_1_Jap/Data/SLz/Tiles.nem" (0x0BF4 á 0x1377)
 ; <<<-
 ;-------------------------------------------------------------------------------
 ;===============================================================================
@@ -23002,41 +23002,41 @@ Objects_Layout:						   ; Offset_0x04C000
 ;-------------------------------------------------------------------------------
 		dc.w	$FFFF, $0000, $0000
 GHz_Obj_Act1:						   ; Offset_0x04C04A
-		binclude	"data\ghz\obj_act1.dat"
+		binclude	"data/ghz/obj_act1.dat"
 GHz_Obj_Act2:						   ; Offset_0x04C302
-		binclude	"data\ghz\obj_act2.dat"
+		binclude	"data/ghz/obj_act2.dat"
 Mz_Obj_Act1:						   ; Offset_0x04C638
-		binclude	"data\mz\obj_act1.dat"
+		binclude	"data/mz/obj_act1.dat"
 Mz_Obj_Act2:						   ; Offset_0x04CA04
-		binclude	"data\mz\obj_act2.dat"
+		binclude	"data/mz/obj_act2.dat"
 Mz_Obj_Act3:						   ; Offset_0x04CDD0
 Mz_Obj_Act4:						   ; Offset_0x04CDD0
-		binclude	"data\mz\obj_act3.dat"
+		binclude	"data/mz/obj_act3.dat"
 HTz_Obj_Act1:						   ; Offset_0x04D214
-		binclude	"data\htz\obj_act1.dat"
+		binclude	"data/htz/obj_act1.dat"
 HTz_Obj_Act2:						   ; Offset_0x04D4A2
-		binclude	"data\htz\obj_act2.dat"
+		binclude	"data/htz/obj_act2.dat"
 HPz_Obj_Act1:						   ; Offset_0x04D958
-		binclude	"data\hpz\obj_act.dat"
+		binclude	"data/hpz/obj_act.dat"
 HPz_Obj_Act2:						   ; Offset_0x04DA60
 		dc.w	$FFFF, $0000, $0000
 		dc.w	$FFFF, $0000, $0000
 OOz_Obj_Act1:						   ; Offset_0x04DA6C
-		binclude	"data\ooz\obj_act1.dat"
+		binclude	"data/ooz/obj_act1.dat"
 OOz_Obj_Act2:						   ; Offset_0x04DBCE
-		binclude	"data\ooz\obj_act2.dat"
+		binclude	"data/ooz/obj_act2.dat"
 DHz_Obj_Act1:						   ; Offset_0x04DDBA
-		binclude	"data\dhz\obj_act1.dat"
+		binclude	"data/dhz/obj_act1.dat"
 DHz_Obj_Act2:						   ; Offset_0x04E06C
-		binclude	"data\dhz\obj_act2.dat"
+		binclude	"data/dhz/obj_act2.dat"
 CPz_Obj_Act1:						   ; Offset_0x04E384
-		binclude	"data\cpz\obj_act1.dat"
+		binclude	"data/cpz/obj_act1.dat"
 CPz_Obj_Act2:						   ; Offset_0x04E61E
-		binclude	"data\cpz\obj_act2.dat"
+		binclude	"data/cpz/obj_act2.dat"
 NGHz_Obj_Act1:						   ; Offset_0x04E9BA
-		binclude	"data\nghz\obj_act1.dat"
+		binclude	"data/nghz/obj_act1.dat"
 NGHz_Obj_Act2:						   ; Offset_0x04EB8E
-		binclude	"data\nghz\obj_act2.dat"
+		binclude	"data/nghz/obj_act2.dat"
 GCz_Obj_Act1:						   ; Offset_0x04ED20
 GCz_Obj_Act2:						   ; Offset_0x04ED20
 CNz_Obj_Act1:						   ; Offset_0x04ED20
@@ -23059,16 +23059,16 @@ DEz_Obj_Act2:						   ; Offset_0x04ED20
 ; Dados no formato kosinski sobrescritos.
 ; Tiles 8x8 da fase Star Light do Sonic 1.
 ; No disassembly do Sonic 1J estes dados são os mesmos presentes no arquivo
-; "Sonic_1_Jap\Data\SLz\Chunks.kos" (0x054C á 0x1377)
+; "Sonic_1_Jap/Data/SLz/Chunks.kos" (0x054C á 0x1377)
 ; ->>>
 ;-------------------------------------------------------------------------------
 Star_Light_Chunks_Overwrite:				   ; Offset_0x04ED28
-		binclude	"data\slz\chunks.dat"
+		binclude	"data/slz/chunks.dat"
 ;-------------------------------------------------------------------------------
 ; Dados no formato kosinski sobrescritos.
 ; Tiles 8x8 da fase Star Light do Sonic 1.
 ; No disassembly do Sonic 1J estes dados são os mesmos presentes no arquivo
-; "Sonic_1_Jap\Data\SLz\Chunks.kos" (0x054C á 0x1377)
+; "Sonic_1_Jap/Data/SLz/Chunks.kos" (0x054C á 0x1377)
 ; <<<-
 ;-------------------------------------------------------------------------------
 
@@ -23077,9 +23077,9 @@ Star_Light_Chunks_Overwrite:				   ; Offset_0x04ED28
 ; <<<-
 ;===============================================================================
 Art_Sonic:							   ; Offset_0x050000
-		binclude	"data\art\sonic.dat"
+		binclude	"data/art/sonic.dat"
 Art_Miles:							   ; Offset_0x064320
-		binclude	"data\art\miles.dat"
+		binclude	"data/art/miles.dat"
 ;-------------------------------------------------------------------------------
 Sonic_Mappings:						   ; Offset_0x06FBE0
 		dc.w	Offset_0x06FD8C-Sonic_Mappings
@@ -25270,13 +25270,13 @@ Offset_0x071D88:
 		dc.w	$5A06, $BA0C
 ;-------------------------------------------------------------------------------
 Art_Shield:							   ; Offset_0x071D8E
-		binclude	"data\art\shield.nem"
+		binclude	"data/art/shield.nem"
 Art_Invencibility_Stars:					   ; Offset_0x071F14
-		binclude	"data\art\invstars.nem"
+		binclude	"data/art/invstars.nem"
 Art_Water_Splash_Dust:						   ; Offset_0x071FFC
-		binclude	"data\art\spshdust.dat"
+		binclude	"data/art/spshdust.dat"
 Art_Water_Splash:							   ; Offset_0x07393C
-		binclude	"data\art\w_splash.nem"
+		binclude	"data/art/w_splash.nem"
 ;-------------------------------------------------------------------------------
 Miles_Mappings:						   ; Offset_0x0739E2
 		dc.w	Offset_0x073AF8-Miles_Mappings
@@ -26482,414 +26482,414 @@ Offset_0x074870:
 		dc.w	$55A8, $75B6
 ;-------------------------------------------------------------------------------
 Art_SEGA:							   ; Offset_0x074876
-		binclude	"data\art\sega.nem"
+		binclude	"data/art/sega.nem"
 Sega_Mappings:						   ; Offset_0x074CE6
-		binclude	"data\all\sega.eni"
+		binclude	"data/all/sega.eni"
 TS_Wings_Sonic_Mappings:					   ; Offset_0x074DE2
-		binclude	"data\mappings\titlescr.eni"
+		binclude	"data/mappings/titlescr.eni"
 Title_Screen_Bg_Mappings:					   ; Offset_0x074F3A
-		binclude	"data\mappings\titscrbg.eni"
+		binclude	"data/mappings/titscrbg.eni"
 Title_Screen_R_Bg_Mappings:					   ; Offset_0x0751EE
-		binclude	"data\mappings\titscrb2.eni"
+		binclude	"data/mappings/titscrb2.eni"
 Art_Title_Screen_Bg_Wings:					   ; Offset_0x075436
-		binclude	"data\art\titlescr.nem" ; Title Screen Wings and background
+		binclude	"data/art/titlescr.nem" ; Title Screen Wings and background
 Art_Title_Screen_Sonic_Miles:				   ; Offset_0x076D98
-		binclude	"data\art\sncmlscr.nem" ; Sonic And Miles in Title Screen
+		binclude	"data/art/sncmlscr.nem" ; Sonic And Miles in Title Screen
 Art_FireBall:						   ; Offset_0x0778DC
-		binclude	"data\art\fireball.nem"
+		binclude	"data/art/fireball.nem"
 Art_GHz_Waterfall:							   ; Offset_0x077A52
-		binclude	"data\ghz\watrfall.nem"
+		binclude	"data/ghz/watrfall.nem"
 Art_HTz_Lava_Bubble:						   ; Offset_0x077B58
-		binclude	"data\htz\lvbubble.nem"
+		binclude	"data/htz/lvbubble.nem"
 Art_GHz_Bridge:						   ; Offset_0x077CA6
-		binclude	"data\ghz\bridge.nem"
+		binclude	"data/ghz/bridge.nem"
 Art_HTz_Teleferic:							   ; Offset_0x077D7E
-		binclude	"data\htz\telefrcs.nem"
+		binclude	"data/htz/telefrcs.nem"
 Art_HTz_Automatic_Door:						   ; Offset_0x078072
-		binclude	"data\htz\autodoor.nem"
+		binclude	"data/htz/autodoor.nem"
 Art_HTz_See_saw:							   ; Offset_0x0780EA
-		binclude	"data\htz\see-saw.nem"
+		binclude	"data/htz/see-saw.nem"
 Art_Unk_Fireball: ; Não usado				   ; Offset_0x078282
-		binclude	"data\art\unkfball.nem"
+		binclude	"data/art/unkfball.nem"
 Art_HTz_Rock:						   ; Offset_0x078390
-		binclude	"data\htz\rock.nem"
+		binclude	"data/htz/rock.nem"
 Art_HTz_See_saw_badnick:					   ; Offset_0x0784C6
-		binclude	"data\htz\see-sawb.nem"
+		binclude	"data/htz/see-sawb.nem"
 Art_Mz_Rotating_Gear:						   ; Offset_0x078532
-		binclude	"data\mz\gear.nem"
+		binclude	"data/mz/gear.nem"
 Art_Mz_Gear_Holes:							   ; Offset_0x07898A
-		binclude	"data\mz\gearhole.nem"
+		binclude	"data/mz/gearhole.nem"
 Art_Mz_Harpon_Platform:						   ; Offset_0x078A32
-		binclude	"data\mz\harp_ptf.nem"
+		binclude	"data/mz/harp_ptf.nem"
 Art_Mz_Steam:						   ; Offset_0x078B00
-		binclude	"data\mz\steam.nem"
+		binclude	"data/mz/steam.nem"
 Art_Mz_Harpon:						   ; Offset_0x078C0A
-		binclude	"data\mz\harpoon.nem"
+		binclude	"data/mz/harpoon.nem"
 Art_Mz_Screw_Nut:							   ; Offset_0x078CCC
-		binclude	"data\mz\screwnut.nem"
+		binclude	"data/mz/screwnut.nem"
 Art_Mz_Lava_Bubble:							   ; Offset_0x078D42
-		binclude	"data\mz\lvbubble.nem"
+		binclude	"data/mz/lvbubble.nem"
 Art_Mz_Elevator:							   ; Offset_0x078DF8
-		binclude	"data\mz\elevator.nem"
+		binclude	"data/mz/elevator.nem"
 Art_Mz_Parallelogram_Elevator:				   ; Offset_0x078E68
-		binclude	"data\mz\parallel.nem"
+		binclude	"data/mz/parallel.nem"
 Art_Mz_Miscellaneous:						   ; Offset_0x079114
-		binclude	"data\mz\miscelns.nem"
+		binclude	"data/mz/miscelns.nem"
 Art_Mz_Mini_Gear:							   ; Offset_0x0791B6
-		binclude	"data\mz\minigear.nem"
+		binclude	"data/mz/minigear.nem"
 Art_Mz_Teleport_Flash:						   ; Offset_0x079298
-		binclude	"data\mz\tlpflash.nem"
+		binclude	"data/mz/tlpflash.nem"
 Art_HPz_Bridge:						   ; Offset_0x0792A4
-		binclude	"data\hpz\bridge.nem"
+		binclude	"data/hpz/bridge.nem"
 Art_HPz_Waterfall:							   ; Offset_0x07941C
-		binclude	"data\hpz\watrfall.nem"
+		binclude	"data/hpz/watrfall.nem"
 Art_HPz_Emerald:							   ; Offset_0x07977E
-		binclude	"data\hpz\emerald.nem"
+		binclude	"data/hpz/emerald.nem"
 Art_HPz_Platform:							   ; Offset_0x0799F0
-		binclude	"data\hpz\platform.nem"
+		binclude	"data/hpz/platform.nem"
 Art_HPz_Orbs_2:						   ; Offset_0x079AB0
-		binclude	"data\hpz\orbs.nem"
+		binclude	"data/hpz/orbs.nem"
 Art_HPz_Unknow_Platform:					   ; Offset_0x079CEC
-		binclude	"data\hpz\unkptfm.nem"
+		binclude	"data/hpz/unkptfm.nem"
 Art_OOz_Giant_Spikeball:					   ; Offset_0x079E86
-		binclude	"data\ooz\gspkball.nem"
+		binclude	"data/ooz/gspkball.nem"
 Art_OOz_Touch_Boost_Up:						   ; Offset_0x07A07E
-		binclude	"data\ooz\boost_up.nem"
+		binclude	"data/ooz/boost_up.nem"
 Art_OOz_Break_To_Boost_Horizontal:					   ; Offset_0x07A114
-		binclude	"data\ooz\brkbst_h.nem"
+		binclude	"data/ooz/brkbst_h.nem"
 Art_OOz_Oil:						   ; Offset_0x07A180
-		binclude	"data\ooz\oil.nem"
+		binclude	"data/ooz/oil.nem"
 Art_OOz_Oil_01:						   ; Offset_0x07A2FC
-		binclude	"data\ooz\oil_01.nem"
+		binclude	"data/ooz/oil_01.nem"
 Art_OOz_Ball:						   ; Offset_0x07A428
-		binclude	"data\ooz\ball.nem"
+		binclude	"data/ooz/ball.nem"
 Art_OOz_Cannon:						   ; Offset_0x07A548
-		binclude	"data\ooz\cannon.nem"
+		binclude	"data/ooz/cannon.nem"
 Art_OOz_Collapsing_Platform:				   ; Offset_0x07A838
-		binclude	"data\ooz\platform.nem"
+		binclude	"data/ooz/platform.nem"
 Art_OOz_Spring_Push_Boost:					   ; Offset_0x07AACC
-		binclude	"data\ooz\spngpush.nem"
+		binclude	"data/ooz/spngpush.nem"
 Art_OOz_Swing_Platform:						   ; Offset_0x07AC8E
-		binclude	"data\ooz\swngptfm.nem"
+		binclude	"data/ooz/swngptfm.nem"
 Art_OOz_Break_To_Boost_Vertical:					   ; Offset_0x07AEB0
-		binclude	"data\ooz\brkbst_v.nem"
+		binclude	"data/ooz/brkbst_v.nem"
 Art_OOz_Elevator:							   ; Offset_0x07AF20
-		binclude	"data\ooz\elevator.nem"
+		binclude	"data/ooz/elevator.nem"
 Art_OOz_Fans:						   ; Offset_0x07B0BC
-		binclude	"data\ooz\fans.nem"
+		binclude	"data/ooz/fans.nem"
 Art_OOz_Fire_Booster:						   ; Offset_0x07B37C
-		binclude	"data\ooz\fire_bst.nem"
+		binclude	"data/ooz/fire_bst.nem"
 Art_DHz_Box:						   ; Offset_0x07B468
-		binclude	"data\dhz\box.nem"
+		binclude	"data/dhz/box.nem"
 Art_DHz_Collapsing_Platform:				   ; Offset_0x07B6A6
-		binclude	"data\dhz\clp_ptfm.nem"
+		binclude	"data/dhz/clp_ptfm.nem"
 Art_DHz_Vines:						   ; Offset_0x07B850
-		binclude	"data\dhz\vines.nem"
+		binclude	"data/dhz/vines.nem"
 Art_DHz_Vines_01:							   ; Offset_0x07B948
-		binclude	"data\dhz\vines_1.nem"
+		binclude	"data/dhz/vines_1.nem"
 Art_DHz_Bridge:						   ; Offset_0x07B9F2
-		binclude	"data\dhz\bridge.nem"
+		binclude	"data/dhz/bridge.nem"
 Art_CNz_Green_Platforms:					   ; Offset_0x07BA62
-		binclude	"data\cnz\greenptf.nem"
+		binclude	"data/cnz/greenptf.nem"
 Art_CNz_Spikeball_Slot_Machine:				   ; Offset_0x07BACA
-		binclude	"data\cnz\spikball.nem"
+		binclude	"data/cnz/spikball.nem"
 Art_CNz_Box:						   ; Offset_0x07BB2A
-		binclude	"data\cnz\box.nem"
+		binclude	"data/cnz/box.nem"
 Art_CNz_Elevator:							   ; Offset_0x07BBA4
-		binclude	"data\cnz\elevator.nem"
+		binclude	"data/cnz/elevator.nem"
 Art_CNz_Slot_Machine_Starter:				   ; Offset_0x07BC16
-		binclude	"data\cnz\slotmach.nem"
+		binclude	"data/cnz/slotmach.nem"
 Art_CNz_Blue_Bumper:						   ; Offset_0x07BC84
-		binclude	"data\cnz\bbumpers.nem"
+		binclude	"data/cnz/bbumpers.nem"
 Art_CNz_Bumpers:							   ; Offset_0x07BD0E
-		binclude	"data\cnz\bumpers.nem"
+		binclude	"data/cnz/bumpers.nem"
 Art_CNz_Diagonal_Launcher:					   ; Offset_0x07BEA0
-		binclude	"data\cnz\d_launch.nem"
+		binclude	"data/cnz/d_launch.nem"
 Art_CNz_Vertical_Launcher:					   ; Offset_0x07C086
-		binclude	"data\cnz\v_launch.nem"
+		binclude	"data/cnz/v_launch.nem"
 Art_CNz_Green_Bumpers:						   ; Offset_0x07C1BC
-		binclude	"data\cnz\gbumpers.nem"
+		binclude	"data/cnz/gbumpers.nem"
 Art_CNz_Flippers:							   ; Offset_0x07C2E2
-		binclude	"data\cnz\flippers.nem"
+		binclude	"data/cnz/flippers.nem"
 Art_CPz_Triangle_Platform:					   ; Offset_0x07C606
-		binclude	"data\cpz\tri_ptfm.nem"
+		binclude	"data/cpz/tri_ptfm.nem"
 Art_Water_Surface:							   ; Offset_0x07C754
-		binclude	"data\art\watrsurf.nem"
+		binclude	"data/art/watrsurf.nem"
 Art_CPz_Speed_Booster:						   ; Offset_0x07C8C4
-		binclude	"data\cpz\speedbst.nem"
+		binclude	"data/cpz/speedbst.nem"
 Art_CPz_Worms:						   ; Offset_0x07C92C
-		binclude	"data\cpz\worms.nem"
+		binclude	"data/cpz/worms.nem"
 Art_CPz_Metal_Structure:					   ; Offset_0x07C99E
-		binclude	"data\cpz\metal_st.nem"
+		binclude	"data/cpz/metal_st.nem"
 Art_CPz_Breakable_Block:					   ; Offset_0x07CBA8
-		binclude	"data\cpz\brkblock.nem"
+		binclude	"data/cpz/brkblock.nem"
 Art_CPz_Automatic_Door:						   ; Offset_0x07CBE8
-		binclude	"data\cpz\autodoor.nem"
+		binclude	"data/cpz/autodoor.nem"
 Art_CPz_Open_Close_Platform:				   ; Offset_0x07CC54
-		binclude	"data\cpz\oc_ptfrm.nem"
+		binclude	"data/cpz/oc_ptfrm.nem"
 Art_CPz_Platforms:							   ; Offset_0x07CE36
-		binclude	"data\cpz\platform.nem"
+		binclude	"data/cpz/platform.nem"
 Art_CPz_Spring_Tubes:						   ; Offset_0x07CFF6
-		binclude	"data\cpz\spgtubes.nem"
+		binclude	"data/cpz/spgtubes.nem"
 Art_NGHz_Water_Surface:						   ; Offset_0x07D1F2
-		binclude	"data\nghz\watrsurf.nem"
+		binclude	"data/nghz/watrsurf.nem"
 Art_NGHz_Leaves:							   ; Offset_0x07D2D8
-		binclude	"data\nghz\leaves.nem"
+		binclude	"data/nghz/leaves.nem"
 Art_NGHz_Arrow_Shooter:						   ; Offset_0x07D364
-		binclude	"data\nghz\arrow_s.nem"
+		binclude	"data/nghz/arrow_s.nem"
 Art_NGHz_Automatic_Door:					   ; Offset_0x07D4C2
-		binclude	"data\nghz\autodoor.nem"
+		binclude	"data/nghz/autodoor.nem"
 Art_Switch:							   ; Offset_0x07D55A
-		binclude	"data\art\switch.nem"
+		binclude	"data/art/switch.nem"
 Art_Vertical_Spring:						   ; Offset_0x07D632
-		binclude	"data\art\v_spring.nem"
+		binclude	"data/art/v_spring.nem"
 Art_Horizontal_Spring:						   ; Offset_0x07D74E
-		binclude	"data\art\h_spring.nem"
+		binclude	"data/art/h_spring.nem"
 Art_Diagonal_Spring:						   ; Offset_0x07D818
-		binclude	"data\art\d_spring.nem"
+		binclude	"data/art/d_spring.nem"
 Art_Head_Up_Display:						   ; Offset_0x07D9EC
-		binclude	"data\art\hud.nem"
+		binclude	"data/art/hud.nem"
 Art_Head_Up_Display_Sonic:					   ; Offset_0x07DAF4
-		binclude	"data\art\hudsonic.nem"
+		binclude	"data/art/hudsonic.nem"
 Art_Rings:							   ; Offset_0x07DC0A
-		binclude	"data\art\rings.nem"
+		binclude	"data/art/rings.nem"
 Art_Monitors:						   ; Offset_0x07DCFE
-		binclude	"data\art\monitors.nem"
+		binclude	"data/art/monitors.nem"
 Art_Spikes:							   ; Offset_0x07E128
-		binclude	"data\art\spikes.nem"
+		binclude	"data/art/spikes.nem"
 Art_Hit_Enemy_Points:						   ; Offset_0x07E178
-		binclude	"data\art\points.nem"
+		binclude	"data/art/points.nem"
 Art_LampPost:						   ; Offset_0x07E252
-		binclude	"data\art\lamppost.nem"
+		binclude	"data/art/lamppost.nem"
 Art_End_Panel:						   ; Offset_0x07E2F8
-		binclude	"data\art\endpanel.nem"
+		binclude	"data/art/endpanel.nem"
 Art_Diagonal_Spring_01:						   ; Offset_0x07E8CE
-		binclude	"data\art\dspring1.nem"
+		binclude	"data/art/dspring1.nem"
 Art_DHz_Horizontal_Spikes:					   ; Offset_0x07EA1E
-		binclude	"data\dhz\h_spikes.nem"
+		binclude	"data/dhz/h_spikes.nem"
 Art_Oxygen_Bubbles:							   ; Offset_0x07EA9A
-		binclude	"data\art\oxygen.nem"
+		binclude	"data/art/oxygen.nem"
 Art_Bubbles:						   ; Offset_0x07EC66
-		binclude	"data\art\bubbles.nem"
+		binclude	"data/art/bubbles.nem"
 Art_Oxygen_Numbers:							   ; Offset_0x07ED04
-		binclude	"data\art\oxygnumb.dat"
+		binclude	"data/art/oxygnumb.dat"
 Art_Game_Over_Time_Over:					   ; Offset_0x07F184
-		binclude	"data\art\gt_over.nem"
+		binclude	"data/art/gt_over.nem"
 Art_Explosion:						   ; Offset_0x07F316
-		binclude	"data\art\explosn.nem"
+		binclude	"data/art/explosn.nem"
 Art_Blue_Bird:						   ; Offset_0x07F6CA
-		binclude	"data\art\bluebird.nem"
+		binclude	"data/art/bluebird.nem"
 Art_Squirrel:						   ; Offset_0x07F80C
-		binclude	"data\art\squirrel.nem"
+		binclude	"data/art/squirrel.nem"
 Art_Mouse:							   ; Offset_0x07F970
-		binclude	"data\art\mouse.nem"
+		binclude	"data/art/mouse.nem"
 Art_Chicken:						   ; Offset_0x07FAAA
-		binclude	"data\art\chicken.nem"
+		binclude	"data/art/chicken.nem"
 Art_Monkey:							   ; Offset_0x07FC0C
-		binclude	"data\art\monkey.nem"
+		binclude	"data/art/monkey.nem"
 Art_Pigeon:							   ; Offset_0x07FD4C
-		binclude	"data\art\pigeon.nem"
+		binclude	"data/art/pigeon.nem"
 Art_Pig:							   ; Offset_0x07FE7A
-		binclude	"data\art\pig.nem"
+		binclude	"data/art/pig.nem"
 Art_Seal:							   ; Offset_0x07FFB0
-		binclude	"data\art\seal.nem"
+		binclude	"data/art/seal.nem"
 Art_Penguin:						   ; Offset_0x0800CC
-		binclude	"data\art\penguin.nem"
+		binclude	"data/art/penguin.nem"
 Art_Turtle:							   ; Offset_0x080248
-		binclude	"data\art\turtle.nem"
+		binclude	"data/art/turtle.nem"
 Art_Bear:							   ; Offset_0x0803FA
-		binclude	"data\art\bear.nem"
+		binclude	"data/art/bear.nem"
 Art_Rabbit:							   ; Offset_0x08053C
-		binclude	"data\art\rabbit.nem"
+		binclude	"data/art/rabbit.nem"
 Art_HPz_Crocobot: ; Não usado				   ; Offset_0x080694
-		binclude	"data\hpz\crocobot.nem"
+		binclude	"data/hpz/crocobot.nem"
 Art_GHz_Buzzer:						   ; Offset_0x080A36
-		binclude	"data\ghz\buzzer.nem"
+		binclude	"data/ghz/buzzer.nem"
 Art_Batbot:							   ; Offset_0x080C36
-		binclude	"data\hpz\batbot.nem"
+		binclude	"data/hpz/batbot.nem"
 Art_Octus:							   ; Offset_0x080F8C
-		binclude	"data\ooz\octus.nem"
+		binclude	"data/ooz/octus.nem"
 Art_Rhinobot:						   ; Offset_0x0812AC
-		binclude	"data\hpz\rhinobot.nem"
+		binclude	"data/hpz/rhinobot.nem"
 Art_Dinobot:						   ; Offset_0x081674
-		binclude	"data\hpz\dinobot.nem"
+		binclude	"data/hpz/dinobot.nem"
 Art_Hpz_Piranha: ; Não usado				   ; Offset_0x081A4A
-		binclude	"data\hpz\piranha.nem"
+		binclude	"data/hpz/piranha.nem"
 Art_Aquis:							   ; Offset_0x081F42
-		binclude	"data\ooz\aquis.nem"
+		binclude	"data/ooz/aquis.nem"
 Art_Spinning_Ball: ; Não usado				   ; Offset_0x0822A2
-		binclude	"data\art\spinball.nem"
+		binclude	"data/art/spinball.nem"
 Art_Blink:	  ; Não usado					   ; Offset_0x082538
-		binclude	"data\art\blink.nem"
+		binclude	"data/art/blink.nem"
 Art_Bubble_Monster: ; Não usado				   ; Offset_0x082764
-		binclude	"data\art\bmonster.nem"
+		binclude	"data/art/bmonster.nem"
 Art_Ghz_Motobug: ; Não usado				   ; Offset_0x082986
-		binclude	"data\ghz\motobug.nem"
+		binclude	"data/ghz/motobug.nem"
 Art_CNz_Crawl: ; Não usado					   ; Offset_0x082B82
-		binclude	"data\cnz\crawl.nem"
+		binclude	"data/cnz/crawl.nem"
 Art_GHz_Masher:						   ; Offset_0x082EE0
-		binclude	"data\ghz\masher.nem"
+		binclude	"data/ghz/masher.nem"
 Art_Robotnik_Ship:							   ; Offset_0x0830EC
-		binclude	"data\art\robotnik.nem"
+		binclude	"data/art/robotnik.nem"
 Art_CPz_Boss:						   ; Offset_0x083828
-		binclude	"data\cpz\boss.nem"
+		binclude	"data/cpz/boss.nem"
 Art_Boss_Explosions:						   ; Offset_0x083D86
-		binclude	"data\art\explosns.nem"
+		binclude	"data/art/explosns.nem"
 Art_Ship_Boost:						   ; Offset_0x08440E
-		binclude	"data\art\shpboost.nem"
+		binclude	"data/art/shpboost.nem"
 Art_Boss_Smokes:							   ; Offset_0x08448C
-		binclude	"data\art\boss_smk.nem"
+		binclude	"data/art/boss_smk.nem"
 Art_GHz_Boss_Car:							   ; Offset_0x084572
-		binclude	"data\ghz\boss_car.nem"
+		binclude	"data/ghz/boss_car.nem"
 Art_GHz_Boss_Blades:						   ; Offset_0x084D5E
-		binclude	"data\ghz\b_blades.nem"
+		binclude	"data/ghz/b_blades.nem"
 Art_HTz_Boss_Fire_Cannon:					   ; Offset_0x084E52
-		binclude	"data\htz\bossfire.nem"
+		binclude	"data/htz/bossfire.nem"
 Art_NGHz_Boss:						   ; Offset_0x08561E
-		binclude	"data\nghz\boss.nem"
+		binclude	"data/nghz/boss.nem"
 Art_DHz_Boss:						   ; Offset_0x086678
-		binclude	"data\dhz\boss.nem"
+		binclude	"data/dhz/boss.nem"
 Art_CNz_Boss:						   ; Offset_0x0875B6
-		binclude	"data\cnz\boss.nem"
+		binclude	"data/cnz/boss.nem"
 Art_OOz_Boss:						   ; Offset_0x087DE0
-		binclude	"data\ooz\boss.nem"
+		binclude	"data/ooz/boss.nem"
 Art_Mz_Boss_Balls_And_Robotniks:					   ; Offset_0x08884E
-		binclude	"data\mz\bossball.nem"
+		binclude	"data/mz/bossball.nem"
 Art_DHz_Boss_Rocks:							   ; Offset_0x088F8C
-		binclude	"data\dhz\bossrock.dat"
+		binclude	"data/dhz/bossrock.dat"
 Art_Whisp:							   ; Offset_0x08900C
-		binclude	"data\nghz\whisp.nem"
+		binclude	"data/nghz/whisp.nem"
 Art_Grounder:						   ; Offset_0x089136
-		binclude	"data\nghz\grounder.nem"
+		binclude	"data/nghz/grounder.nem"
 Art_Chop_Chop:						   ; Offset_0x0895C2
-		binclude	"data\nghz\chopchop.nem"
+		binclude	"data/nghz/chopchop.nem"
 Art_Rexon:							   ; Offset_0x089814
-		binclude	"data\htz\rexon.nem"
+		binclude	"data/htz/rexon.nem"
 Art_Spiker:							   ; Offset_0x0899D2
-		binclude	"data\htz\spiker.nem"
+		binclude	"data/htz/spiker.nem"
 Art_Nebula:							   ; Offset_0x089B6A
-		binclude	"data\art\nebula.nem"
+		binclude	"data/art/nebula.nem"
 Art_Turtloid:						   ; Offset_0x089D8A
-		binclude	"data\art\turtloid.nem"
+		binclude	"data/art/turtloid.nem"
 Art_GHz_Coconuts:							   ; Offset_0x08A2A2
-		binclude	"data\ghz\coconuts.nem"
+		binclude	"data/ghz/coconuts.nem"
 Art_Crawlton:						   ; Offset_0x08A55E
-		binclude	"data\dhz\crawlton.nem"
+		binclude	"data/dhz/crawlton.nem"
 Art_Flasher:						   ; Offset_0x08A686
-		binclude	"data\dhz\flasher.nem"
+		binclude	"data/dhz/flasher.nem"
 Art_Slicer:							   ; Offset_0x08A7CC
-		binclude	"data\mz\slicer.nem"
+		binclude	"data/mz/slicer.nem"
 Art_Shellcracker:							   ; Offset_0x08AAA4
-		binclude	"data\mz\shellcrc.nem"
+		binclude	"data/mz/shellcrc.nem"
 Art_Asteron:						   ; Offset_0x08AD4C
-		binclude	"data\mz\asteron.nem"
+		binclude	"data/mz/asteron.nem"
 Art_Lander:							   ; Offset_0x08AE7C
-		binclude	"data\cpz\lander.nem"
+		binclude	"data/cpz/lander.nem"
 Art_Grabber:						   ; Offset_0x08B100
-		binclude	"data\cpz\grabber.nem"
+		binclude	"data/cpz/grabber.nem"
 Art_Clucker:						   ; Offset_0x08B428
-		binclude	"data\art\clucker.nem"
+		binclude	"data/art/clucker.nem"
 Art_Balkiry:						   ; Offset_0x08B662
-		binclude	"data\art\balkiry.nem"
+		binclude	"data/art/balkiry.nem"
 Green_Hill_Blocks:							   ; Offset_0x08B85E
-		binclude	"data\ghz\blocks.dat"
+		binclude	"data/ghz/blocks.dat"
 Green_Hill_Tiles:							   ; Offset_0x08C7FE
-		binclude	"data\ghz\tiles.nem"
+		binclude	"data/ghz/tiles.nem"
 Hill_Top_Blocks:							   ; Offset_0x08F64E
-		binclude	"data\htz\blocks.dat"
+		binclude	"data/htz/blocks.dat"
 Hill_Top_Tiles:						   ; Offset_0x08FDFE
-		binclude	"data\htz\tiles.nem"
+		binclude	"data/htz/tiles.nem"
 Art_Hill_Top_Dynamic_Init:					   ; Offset_0x091224
-		binclude	"data\htz\dyn_init.nem"
+		binclude	"data/htz/dyn_init.nem"
 Green_Hill_Chunks:							   ; Offset_0x09152C
-		binclude	"data\ghz\chunks.kos"
+		binclude	"data/ghz/chunks.kos"
 		dc.w	$0000, $0000
 Wood_Blocks:						   ; Offset_0x09478C
-		binclude	"data\wz\blocks.dat"
+		binclude	"data/wz/blocks.dat"
 Wood_Tiles:							   ; Offset_0x09572C
-		binclude	"data\wz\tiles.nem"
+		binclude	"data/wz/tiles.nem"
 Wood_Chunks:						   ; Offset_0x099424
-		binclude	"data\wz\chunks.kos"
+		binclude	"data/wz/chunks.kos"
 		dc.w	$0000, $0000, $0000, $0000, $0000, $0000
 Metropolis_Blocks:							   ; Offset_0x09B054
-		binclude	"data\mz\blocks.dat"
+		binclude	"data/mz/blocks.dat"
 Metropolis_Tiles:							   ; Offset_0x09C314
-		binclude	"data\mz\tiles.nem"
+		binclude	"data/mz/tiles.nem"
 Art_Metropolis_Dynamic_Init:				   ; Offset_0x091224
-		binclude	"data\mz\dyn_init.nem"
+		binclude	"data/mz/dyn_init.nem"
 Metropolis_Chunks:							   ; Offset_0x09F854
-		binclude	"data\mz\chunks.kos"
+		binclude	"data/mz/chunks.kos"
 Hidden_Palace_Blocks:						   ; Offset_0x0A24D4
-		binclude	"data\hpz\blocks.dat"
+		binclude	"data/hpz/blocks.dat"
 Hidden_Palace_Tiles:						   ; Offset_0x0A3AB4
-		binclude	"data\hpz\tiles.nem"
+		binclude	"data/hpz/tiles.nem"
 Art_Hidden_Palace_Dynamic_Init:				   ; Offset_0x0A67C2
-		binclude	"data\hpz\dyn_init.nem"
+		binclude	"data/hpz/dyn_init.nem"
 Hidden_Palace_Chunks:						   ; Offset_0x0A6936
-		binclude	"data\hpz\chunks.kos"
+		binclude	"data/hpz/chunks.kos"
 		dc.w	$0000, $0000, $0000
 Oil_Ocean_Blocks:							   ; Offset_0x0A86B6
-		binclude	"data\ooz\blocks.dat"
+		binclude	"data/ooz/blocks.dat"
 Oil_Ocean_Tiles:							   ; Offset_0x0A9C96
-		binclude	"data\ooz\tiles.nem"
+		binclude	"data/ooz/tiles.nem"
 Art_Oil_Ocean_Dynamic_Init:					   ; Offset_0x0AC7A8
-		binclude	"data\ooz\dyn_init.nem"
+		binclude	"data/ooz/dyn_init.nem"
 Oil_Ocean_Chunks:							   ; Offset_0x0AC996
-		binclude	"data\ooz\chunks.kos"
+		binclude	"data/ooz/chunks.kos"
 Dust_Hill_Blocks:							   ; Offset_0x0AEE86
-		binclude	"data\dhz\blocks.dat"
+		binclude	"data/dhz/blocks.dat"
 Dust_Hill_Tiles:							   ; Offset_0x0B0146
-		binclude	"data\dhz\tiles.nem"
+		binclude	"data/dhz/tiles.nem"
 Dust_Hill_Chunks:							   ; Offset_0x0B3A68
-		binclude	"data\dhz\chunks.kos"
+		binclude	"data/dhz/chunks.kos"
 		dc.w	$0000, $0000, $0000
 Casino_Night_Blocks:						   ; Offset_0x0B65B8
-		binclude	"data\cnz\blocks.dat"
+		binclude	"data/cnz/blocks.dat"
 Casino_Night_Tiles:							   ; Offset_0x0B6F18
-		binclude	"data\cnz\tiles.nem"
+		binclude	"data/cnz/tiles.nem"
 Art_Casino_Night_Dynamic_Init:				   ; Offset_0x0B9E78
-		binclude	"data\cnz\dyn_init.nem"
+		binclude	"data/cnz/dyn_init.nem"
 Casino_Night_Chunks:						   ; Offset_0x0B9F62
-		binclude	"data\cnz\chunks.kos"
+		binclude	"data/cnz/chunks.kos"
 		dc.w	$0000, $0000, $0000
 Chemical_Plant_Blocks:						   ; Offset_0x0BBE72
-		binclude	"data\cpz\blocks.dat"
+		binclude	"data/cpz/blocks.dat"
 Chemical_Plant_Tiles:						   ; Offset_0x0BD452
-		binclude	"data\cpz\tiles.nem"
+		binclude	"data/cpz/tiles.nem"
 Art_Chemical_Plant_Dynamic_Init:					   ; Offset_0x0C0F7A
-		binclude	"data\cpz\dyn_init.nem"
+		binclude	"data/cpz/dyn_init.nem"
 Chemical_Plant_Chunks:						   ; Offset_0x0C0FA4
-		binclude	"data\cpz\chunks.kos"
+		binclude	"data/cpz/chunks.kos"
 		dc.w	$0000, $0000, $0000
 Neo_Green_Hill_Blocks:						   ; Offset_0x0C34A4
-		binclude	"data\nghz\blocks.dat"
+		binclude	"data/nghz/blocks.dat"
 Neo_Green_Hill_Tiles:						   ; Offset_0x0C4DA4
-		binclude	"data\nghz\tiles.nem"
+		binclude	"data/nghz/tiles.nem"
 Art_Neo_Green_Hill_Dynamic_Init:					   ; Offset_0x0CA426
-		binclude	"data\nghz\dyn_init.nem"
+		binclude	"data/nghz/dyn_init.nem"
 Neo_Green_Hill_Chunks:						   ; Offset_0x0CA586
-		binclude	"data\nghz\chunks.kos"
+		binclude	"data/nghz/chunks.kos"
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
 Previous_Build_Chemical_Plant_Tiles_Overwrite:		   ; Offset_0x0CD158
-		binclude	"data\cpz\pb_tiles.dat"
+		binclude	"data/cpz/pb_tiles.dat"
 Previous_Build_Art_Chemical_Plant_Dynamic_Init:		   ; Offset_0x0CDFC6
-		binclude	"data\cpz\dyninit2.nem"
+		binclude	"data/cpz/dyninit2.nem"
 Previous_Build_Chemical_Plant_Chunks:				   ; Offset_0x0CE03A
-		binclude	"data\cpz\chunks.dat"
+		binclude	"data/cpz/chunks.dat"
 Previous_Build_Neo_Green_Hill_Blocks:				   ; Offset_0x0D603A
-		binclude	"data\nghz\pb_blcks.dat"
+		binclude	"data/nghz/pb_blcks.dat"
 Previous_Build_Neo_Green_Hill_Tiles:				   ; Offset_0x0D793A
-		binclude	"data\nghz\pb_tiles.nem"
+		binclude	"data/nghz/pb_tiles.nem"
 Previous_Build_Art_Neo_Green_Hill_Dynamic_Init:		   ; Offset_0x0DCEEA
-		binclude	"data\nghz\dyn_init.nem"
+		binclude	"data/nghz/dyn_init.nem"
 Previous_Build_Neo_Green_Hill_Chunks:				   ; Offset_0x0DD04A
-		binclude	"data\nghz\pb_chnks.dat"
+		binclude	"data/nghz/pb_chnks.dat"
 		dc.w	 $0000
 Previous_Build_Neo_Green_Hill_Tiles_Overwrite:		   ; Offset_0x0E504C
-		binclude	"data\nghz\pb_tiles.dat"
+		binclude	"data/nghz/pb_tiles.dat"
 Previous_Build_Art_Neo_Green_Hill_Dynamic_Init_2:			   ; Offset_0x0E57E6
-		binclude	"data\nghz\dyn_init.nem"
+		binclude	"data/nghz/dyn_init.nem"
 Uncompiled_Asm:						   ; Offset_0x0E5946
 Cr		equ		$0D
 Lf		equ		$0A
@@ -27079,9 +27079,9 @@ Rings_Layout:						   ; Offset_0x0E8000
 		dc.w	DEz_Rng_Act2-Rings_Layout			   ; Offset_0x0E973E
 ;-------------------------------------------------------------------------------
 GHz_Rng_Act1:						   ; Offset_0x0E8044
-		binclude	"data\ghz\rng_act1.dat"
+		binclude	"data/ghz/rng_act1.dat"
 GHz_Rng_Act2:						   ; Offset_0x0E81DE
-		binclude	"data\ghz\rng_act2.dat"
+		binclude	"data/ghz/rng_act2.dat"
 Lvl1_Rng_Act1:						   ; Offset_0x0E83FC
 		dc.w	$FFFF
 Lvl1_Rng_Act2:						   ; Offset_0x0E83FE
@@ -27095,11 +27095,11 @@ Lvl3_Rng_Act1:						   ; Offset_0x0E8404
 Lvl3_Rng_Act2:						   ; Offset_0x0E8406
 		dc.w	$FFFF
 Mz_Rng_Act1:						   ; Offset_0x0E8408
-		binclude	"data\mz\rng_act1.dat"
+		binclude	"data/mz/rng_act1.dat"
 Mz_Rng_Act2:						   ; Offset_0x0E8696
-		binclude	"data\mz\rng_act2.dat"
+		binclude	"data/mz/rng_act2.dat"
 Mz_Rng_Act3:						   ; Offset_0x0E88E4
-		binclude	"data\mz\rng_act3.dat"
+		binclude	"data/mz/rng_act3.dat"
 Mz_Rng_Act4:						   ; Offset_0x0E89CE
 		dc.w	$FFFF
 Lvl6_Rng_Act1:						   ; Offset_0x0E89D0
@@ -27107,11 +27107,11 @@ Lvl6_Rng_Act1:						   ; Offset_0x0E89D0
 Lvl6_Rng_Act2:						   ; Offset_0x0E89D2
 		dc.w	$FFFF
 HTz_Rng_Act1:						   ; Offset_0x0E89D4
-		binclude	"data\htz\rng_act1.dat"
+		binclude	"data/htz/rng_act1.dat"
 HTz_Rng_Act2:						   ; Offset_0x0E8ACA
-		binclude	"data\htz\rng_act2.dat"
+		binclude	"data/htz/rng_act2.dat"
 HPz_Rng_Act1:						   ; Offset_0x0E8C2C
-		binclude	"data\hpz\rng_act.dat"
+		binclude	"data/hpz/rng_act.dat"
 HPz_Rng_Act2:						   ; Offset_0x0E8D9E
 		dc.w	$FFFF
 Lvl9_Rng_Act1:						   ; Offset_0x0E8DA0
@@ -27119,35 +27119,35 @@ Lvl9_Rng_Act1:						   ; Offset_0x0E8DA0
 Lvl9_Rng_Act2:						   ; Offset_0x0E8DA2
 		dc.w	$FFFF
 OOz_Rng_Act1:						   ; Offset_0x0E8DA4
-		binclude	"data\ooz\rng_act1.dat"
+		binclude	"data/ooz/rng_act1.dat"
 OOz_Rng_Act2:						   ; Offset_0x0E8E76
-		binclude	"data\ooz\rng_act2.dat"
+		binclude	"data/ooz/rng_act2.dat"
 DHz_Rng_Act1:						   ; Offset_0x0E8F40
-		binclude	"data\dhz\rng_act1.dat"
+		binclude	"data/dhz/rng_act1.dat"
 DHz_Rng_Act2:						   ; Offset_0x0E912E
-		binclude	"data\dhz\rng_act2.dat"
+		binclude	"data/dhz/rng_act2.dat"
 CNz_Rng_Act1:						   ; Offset_0x0E92F8
 		dc.w	$FFFF
 CNz_Rng_Act2:						   ; Offset_0x0E92FA
 		dc.w	$FFFF
 CPz_Rng_Act1:						   ; Offset_0x0E92FC
-		binclude	"data\cpz\rng_act1.dat"
+		binclude	"data/cpz/rng_act1.dat"
 CPz_Rng_Act2:						   ; Offset_0x0E93CA
-		binclude	"data\cpz\rng_act2.dat"
+		binclude	"data/cpz/rng_act2.dat"
 GCz_Rng_Act1:						   ; Offset_0x0E9520
 		dc.w	$FFFF
 GCz_Rng_Act2:						   ; Offset_0x0E9522
 		dc.w	$FFFF
 NGHz_Rng_Act1:						   ; Offset_0x0E9524
-		binclude	"data\nghz\rng_act1.dat"
+		binclude	"data/nghz/rng_act1.dat"
 NGHz_Rng_Act2:						   ; Offset_0x0E9602
-		binclude	"data\nghz\rng_act2.dat"
+		binclude	"data/nghz/rng_act2.dat"
 DEz_Rng_Act1:						   ; Offset_0x0E973C
 		dc.w	$FFFF
 DEz_Rng_Act2:						   ; Offset_0x0E973E
 		dc.w	$FFFF
 Previous_Build_NGHz_Rng_Act2:				   ; Offset_0x0E9740
-		binclude	"data\nghz\pb_rng_2.dat"
+		binclude	"data/nghz/pb_rng_2.dat"
 		dc.w	$FFFF
 		dc.w	$FFFF
 ;===============================================================================
@@ -27156,18 +27156,18 @@ Previous_Build_NGHz_Rng_Act2:				   ; Offset_0x0E9740
 ;===============================================================================
 PBDACSamples_Start:
 Previous_Build_DAC_Sample_01_Overwrite:				   ; Offset_0x0E978C
-		binclude	"sound\DAC\PB_DAC01.bin"
+		binclude	"misc/leftovers/sound/DAC/PB_DAC01.bin"
 Previous_Build_DAC_Sample_02:				   ; Offset_0x0E99B7
-		binclude	"sound\DAC\DAC_02.bin"
+		binclude	"sound/DAC/DAC_02.bin"
 Previous_Build_DAC_Sample_06: ; Sonic 2 Beta		   ; Offset_0x0EA56C
-		binclude	"sound\DAC\PB_DAC06.bin"
+		binclude	"misc/leftovers/sound/DAC/PB_DAC06.bin"
 Previous_Build_DAC_Sample_03: ; Sonic 2 Beta		   ; Offset_0x0EAA6B
-		binclude	"sound\DAC\PB_DAC03.bin"
+		binclude	"misc/leftovers/sound/DAC/PB_DAC03.bin"
 Previous_Build_DAC_Sample_04: ; Sonic 2 Beta		   ; Offset_0x0EACD3
-		binclude	"sound\DAC\PB_DAC04.bin"
+		binclude	"misc/leftovers/sound/DAC/PB_DAC04.bin"
 PBDACSamples_End:
 ;-------------------------------------------------------------------------------
-		cnop	$00000000, $000EC000, $00000000
+		align	$4000
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Subroutine to load the sound driver
@@ -27335,33 +27335,33 @@ Snd_Driver_End:
 ; ---------------------------------------------------------------------------
 DACSamples_Start:
 DAC_Sample01:						   ; Offset_0x0ED000
-		binclude	"sound\DAC\DAC_00.bin"
+		binclude	"sound/DAC/DAC_00.bin"
 DAC_Sample01_End:
 DAC_Sample02:						   ; Offset_0x0ED294
-		binclude	"sound\DAC\DAC_01.bin"
+		binclude	"sound/DAC/DAC_01.bin"
 DAC_Sample02_End:
 DAC_Sample03:						   ; Offset_0x0ED9B7
-		binclude	"sound\DAC\DAC_02.bin"
+		binclude	"sound/DAC/DAC_02.bin"
 DAC_Sample03_End:
 DAC_Sample04:						   ; Offset_0x0EE56C
-		binclude	"sound\DAC\DAC_03.bin"
+		binclude	"sound/DAC/DAC_03.bin"
 DAC_Sample04_End:
 DAC_Sample05:						   ; Offset_0x0EED7A
-		binclude	"sound\DAC\DAC_04.bin"
+		binclude	"sound/DAC/DAC_04.bin"
 DAC_Sample05_End:
 DAC_Sample06:						   ; Offset_0x0EF2F0
-		binclude	"sound\DAC\DAC_05.bin"
+		binclude	"sound/DAC/DAC_05.bin"
 DAC_Sample06_End:
 DAC_Sample07:						   ; Offset_0x0EFA3C
-		binclude	"sound\DAC\DAC_06.bin"
+		binclude	"sound/DAC/DAC_06.bin"
 DAC_Sample07_End:
 DACSamples_End:
 
 	if DACSamples_End - DACSamples_Start > $8000
-		fatal "DAC samples must fit within $8000 bytes,but you have $\{DACSamples_End-DACSamples_Start } bytes of DAC samples."
+		fatal "DAC samples must fit within $8000 bytes,but you have $/{DACSamples_End-DACSamples_Start } bytes of DAC samples."
 	endif
 	if DACSamples_End - DACSamples_Start > Size_of_DAC_samples
-		fatal "Size_of_DAC_samples = $\{Size_of_DAC_samples},but you have $\{DACSamples_End-DACSamples_Start} bytes of DAC samples."
+		fatal "Size_of_DAC_samples = $/{Size_of_DAC_samples},but you have $/{DACSamples_End-DACSamples_Start} bytes of DAC samples."
 	endif
 
 ; ---------------------------------------------------------------------------
@@ -27385,22 +27385,22 @@ MusicPoint1:	startBank
 		music_ptr	Mus_HPZ_Dup		; $9E
 
 Mus_Invinc:						   ; Offset_0x0F0012
-		include	"sound\music\97 - Invincible.asm"
+		include	"sound/music/97 - Invincible.asm"
 Mus_ExtraLife:							   ; Offset_0x0F023D
-		include	"sound\music\98 - Extra Life.asm"
+		include	"sound/music/98 - Extra Life.asm"
 Mus_Title:							   ; Offset_0x0F032A
-		include	"sound\music\99 - Title Screen.asm"
+		include	"sound/music/99 - Title Screen.asm"
 Mus_ActClear:						   ; Offset_0x0F04FF
-		include	"sound\music\9A - End of Act.asm"
+		include	"sound/music/9A - End of Act.asm"
 Mus_GameOver:					   ; Offset_0x0F0654
-		include	"sound\music\9B - Game Over.asm"
+		include	"sound/music/9B - Game Over.asm"
 Mus_Continue:						   ; Offset_0x0F07A3
-		include	"sound\music\9C - Continue.asm"
+		include	"sound/music/9C - Continue.asm"
 Mus_Emerald:							   ; Offset_0x0F0900
-		include	"sound\music\9D - Got Emerald.asm"
+		include	"sound/music/9D - Got Emerald.asm"
 Mus_HPZ:					   ; Offset_0x0F09CE
 Mus_HPZ_Dup:
-		include	"sound\music\90 - HPZ.asm"
+		include	"sound/music/90 - HPZ.asm"
 
 	finishBank
 ; ----------------------------------------------------------------------------------
@@ -27413,14 +27413,14 @@ Mus_HPZ_Dup:
 ; 8-bit unsigned raw audio at 16Khz
 ; -------------------------------------------------------------------------------
 Sega_Snd:							   ; Offset_0x0F1E8C
-		binclude	"sound\sega.snd"
+		binclude	"sound/sega.snd"
 Sega_Snd_End:
 
 	if Sega_Snd_End - Sega_Snd > $8000
-		fatal "Sega sound must fit within $8000 bytes,but you have a $\{Sega_Snd_End-Sega_Snd} byte Sega sound."
+		fatal "Sega sound must fit within $8000 bytes,but you have a $/{Sega_Snd_End-Sega_Snd} byte Sega sound."
 	endif
 	if Sega_Snd_End - Sega_Snd > Size_of_SEGA_sound
-		fatal "Size_of_SEGA_sound = $\{Size_of_SEGA_sound},but you have a $\{Sega_Snd_End-Sega_Snd} byte Sega sound."
+		fatal "Size_of_SEGA_sound = $/{Size_of_SEGA_sound},but you have a $/{Sega_Snd_End-Sega_Snd} byte Sega sound."
 	endif
 
 ; ------------------------------------------------------------------------------
@@ -27450,47 +27450,47 @@ MusicPoint2:	startBank
 		music_ptr	Mus_HTZ		; $86
 
 Mus_OOZ:						   ; Offset_0x0F802A
-		include	"sound\music\88 - CNZ 2P.asm"
+		include	"sound/music/88 - CNZ 2P.asm"
 Mus_GHZ:							   ; Offset_0x0F85AC
-		include	"sound\music\82 - EHZ.asm"
+		include	"sound/music/82 - EHZ.asm"
 Mus_MTZ:							   ; Offset_0x0F8D1E
-		include	"sound\music\85 - MTZ.asm"
+		include	"sound/music/85 - MTZ.asm"
 Mus_CNZ:							   ; Offset_0x0F9299
-		include	"sound\music\89 - CNZ.asm"
+		include	"sound/music/89 - CNZ.asm"
 Mus_DHZ:							   ; Offset_0x0F99B6
-		include	"sound\music\8B - MCZ.asm"
+		include	"sound/music/8B - MCZ.asm"
 Mus_DHZ2P:					   ; Offset_0x0FA056
-		include	"sound\music\83 - MCZ 2P.asm"
+		include	"sound/music/83 - MCZ 2P.asm"
 Mus_NGHZ:						   ; Offset_0x0FA54F
-		include	"sound\music\87 - ARZ.asm"
+		include	"sound/music/87 - ARZ.asm"
 Mus_DEZ:							   ; Offset_0x0FACDC
-		include	"sound\music\8A - DEZ.asm"
+		include	"sound/music/8A - DEZ.asm"
 Mus_SpecStg:						   ; Offset_0x0FB1C3
-		include	"sound\music\92 - Special Stage.asm"
+		include	"sound/music/92 - Special Stage.asm"
 Mus_LevelSel:					   ; Offset_0x0FB7CA
-		include	"sound\music\91 - Options.asm"
+		include	"sound/music/91 - Options.asm"
 Mus_Ending:							   ; Offset_0x0FB945
-		include	"sound\music\95 - Ending.asm"
+		include	"sound/music/95 - Ending.asm"
 Mus_FinalBoss:							   ; Offset_0x0FBF3E
-		include	"sound\music\94 - Final Boss.asm"
+		include	"sound/music/94 - Final Boss.asm"
 Mus_CPZ:						   ; Offset_0x0FC276
-		include	"sound\music\8E - CPZ.asm"
+		include	"sound/music/8E - CPZ.asm"
 Mus_Boss:							   ; Offset_0x0FC8C1
-		include	"sound\music\93 - Boss.asm"
+		include	"sound/music/93 - Boss.asm"
 Mus_SCZ:							   ; Offset_0x0FCB93
-		include	"sound\music\8D - SCZ.asm"
+		include	"sound/music/8D - SCZ.asm"
 Mus_OOZ2:						   ; Offset_0x0FCF96
-		include	"sound\music\84 - OOZ.asm"
+		include	"sound/music/84 - OOZ.asm"
 Mus_SFZ:							   ; Offset_0x0FD41A
-		include	"sound\music\8F - WFZ.asm"
+		include	"sound/music/8F - WFZ.asm"
 Mus_GHZ2P:				   ; Offset_0x0FD847
-		include	"sound\music\8C - EHZ 2P.asm"
+		include	"sound/music/8C - EHZ 2P.asm"
 Mus_2PResults:					   ; Offset_0x0FDD60
-		include	"sound\music\81 - 2 Player Menu.asm"
+		include	"sound/music/81 - 2 Player Menu.asm"
 Mus_SuperSonic:							   ; Offset_0x0FE1C3
-		include	"sound\music\96 - Super Sonic.asm"
+		include	"sound/music/96 - Super Sonic.asm"
 Mus_HTZ:						   ; Offset_0x0FE4B6
-		include	"sound\music\86 - HTZ.asm"
+		include	"sound/music/86 - HTZ.asm"
 
 		cnop	0,$FEE00
 ;-------------------------------------------------------------------------------
@@ -27569,154 +27569,80 @@ SoundIndex:						   ; Offset_0x0FEE00
 		rom_ptr_z80 Sfx_E7
 		rom_ptr_z80 Sfx_E8
 		rom_ptr_z80 Sfx_E9
-Sfx_A0:								   ; Offset_0x0FEE94
-		binclude	"sound\SFX\sfx_A0.snd"
-Sfx_A1:								   ; Offset_0x0FEEAA
-		binclude	"sound\SFX\sfx_A1.snd"
-Sfx_A2:								   ; Offset_0x0FEED4
-		binclude	"sound\SFX\sfx_A2.snd"
-Sfx_A3:								   ; Offset_0x0FEEF3
-		binclude	"sound\SFX\sfx_A3.snd"
-Sfx_A4:								   ; Offset_0x0FEF25
-		binclude	"sound\SFX\sfx_A4.snd"
-Sfx_A5:								   ; Offset_0x0FEF5A
-		binclude	"sound\SFX\sfx_A5.snd"
-Sfx_A6:								   ; Offset_0x0FEF86
-		binclude	"sound\SFX\sfx_A6.snd"
-Sfx_A7:								   ; Offset_0x0FEFB5
-		binclude	"sound\SFX\sfx_A7.snd"
-Sfx_A8:								   ; Offset_0x0FEFE4
-		binclude	"sound\SFX\sfx_A8.snd"
-Sfx_A9:								   ; Offset_0x0FEFFE
-		binclude	"sound\SFX\sfx_A9.snd"
-Sfx_AA:								   ; Offset_0x0FF010
-		binclude	"sound\SFX\sfx_AA.snd"
-Sfx_AB:								   ; Offset_0x0FF051
-		binclude	"sound\SFX\sfx_AB.snd"
-Sfx_AC:								   ; Offset_0x0FF070
-		binclude	"sound\SFX\sfx_AC.snd"
-Sfx_AD:								   ; Offset_0x0FF0A4
-		binclude	"sound\SFX\sfx_AD.snd"
-Sfx_AE:								   ; Offset_0x0FF0DA
-		binclude	"sound\SFX\sfx_AE.snd"
-Sfx_AF:								   ; Offset_0x0FF124
-		binclude	"sound\SFX\sfx_AF.snd"
-Sfx_B0:								   ; Offset_0x0FF151
-		binclude	"sound\SFX\sfx_B0.snd"
-Sfx_B1:								   ; Offset_0x0FF182
-		binclude	"sound\SFX\sfx_B1.snd"
-Sfx_B2:								   ; Offset_0x0FF1AE
-		binclude	"sound\SFX\sfx_B2.snd"
-Sfx_B3:								   ; Offset_0x0FF1FD
-		binclude	"sound\SFX\sfx_B3.snd"
-Sfx_B4:								   ; Offset_0x0FF22E
-		binclude	"sound\SFX\sfx_B4.snd"
-Sfx_B5:								   ; Offset_0x0FF289
-		binclude	"sound\SFX\sfx_B5.snd"
-Sfx_B6:								   ; Offset_0x0FF29E
-		binclude	"sound\SFX\sfx_B6.snd"
-Sfx_B7:								   ; Offset_0x0FF2BB
-		binclude	"sound\SFX\sfx_B7.snd"
-Sfx_B8:								   ; Offset_0x0FF2F6
-		binclude	"sound\SFX\sfx_B8.snd"
-Sfx_B9:								   ; Offset_0x0FF313
-		binclude	"sound\SFX\sfx_B9.snd"
-Sfx_BA:								   ; Offset_0x0FF35D
-		binclude	"sound\SFX\sfx_BA.snd"
-Sfx_BB:								   ; Offset_0x0FF385
-		binclude	"sound\SFX\sfx_BB.snd"
-Sfx_BC:								   ; Offset_0x0FF3B0
-		binclude	"sound\SFX\sfx_BC.snd"
-Sfx_BD:								   ; Offset_0x0FF3F1
-		binclude	"sound\SFX\sfx_BD.snd"
-Sfx_BE:								   ; Offset_0x0FF444
-		binclude	"sound\SFX\sfx_BE.snd"
-Sfx_BF:								   ; Offset_0x0FF47E
-		binclude	"sound\SFX\sfx_BF.snd"
-Sfx_C0:								   ; Offset_0x0FF4F0
-		binclude	"sound\SFX\sfx_C0.snd"
-Sfx_C1:								   ; Offset_0x0FF51E
-		binclude	"sound\SFX\sfx_C1.snd"
-Sfx_C2:								   ; Offset_0x0FF558
-		binclude	"sound\SFX\sfx_C2.snd"
-Sfx_C3:								   ; Offset_0x0FF569
-		binclude	"sound\SFX\sfx_C3.snd"
-Sfx_C4:								   ; Offset_0x0FF5E3
-		binclude	"sound\SFX\sfx_C4.snd"
-Sfx_C5:								   ; Offset_0x0FF60B
-		binclude	"sound\SFX\sfx_C5.snd"
-Sfx_C6:								   ; Offset_0x0FF672
-		binclude	"sound\SFX\sfx_C6.snd"
-Sfx_C7:								   ; Offset_0x0FF69A
-		binclude	"sound\SFX\sfx_C7.snd"
-Sfx_C8:								   ; Offset_0x0FF6C8
-		binclude	"sound\SFX\sfx_C8.snd"
-Sfx_C9:								   ; Offset_0x0FF6D9
-		binclude	"sound\SFX\sfx_C9.snd"
-Sfx_CA:								   ; Offset_0x0FF706
-		binclude	"sound\SFX\sfx_CA.snd"
-Sfx_CB:								   ; Offset_0x0FF733
-		binclude	"sound\SFX\sfx_CB.snd"
-Sfx_CC:								   ; Offset_0x0FF766
-		binclude	"sound\SFX\sfx_CC.snd"
-Sfx_CD:								   ; Offset_0x0FF7A0
-		binclude	"sound\SFX\sfx_CD.snd"
-Sfx_CE:								   ; Offset_0x0FF7AD
-		binclude	"sound\SFX\sfx_CE.snd"
-Sfx_CF:								   ; Offset_0x0FF7C2
-		binclude	"sound\SFX\sfx_CF.snd"
-Sfx_D0:								   ; Offset_0x0FF7F9
-		binclude	"sound\SFX\sfx_D0.snd"
-Sfx_D1:								   ; Offset_0x0FF82C
-		binclude	"sound\SFX\sfx_D1.snd"
-Sfx_D2:								   ; Offset_0x0FF865
-		binclude	"sound\SFX\sfx_D2.snd"
-Sfx_D3:								   ; Offset_0x0FF8A2
-		binclude	"sound\SFX\sfx_D3.snd"
-Sfx_D4:								   ; Offset_0x0FF8E1
-		binclude	"sound\SFX\sfx_D4.snd"
-Sfx_D5:								   ; Offset_0x0FF909
-		binclude	"sound\SFX\sfx_D5.snd"
-Sfx_D6:								   ; Offset_0x0FF933
-		binclude	"sound\SFX\sfx_D6.snd"
-Sfx_D7:								   ; Offset_0x0FF978
-		include	"sound\SFX\D7 - Platform Knock.asm"
-Sfx_D8:								   ; Offset_0x0FF9A0
-		binclude	"sound\SFX\sfx_D8.snd"
-Sfx_D9:								   ; Offset_0x0FF9CA
-		binclude	"sound\SFX\sfx_D9.snd"
-Sfx_DA:								   ; Offset_0x0FF9F7
-		binclude	"sound\SFX\sfx_DA.snd"
-Sfx_DB:								   ; Offset_0x0FFA24
-		binclude	"sound\SFX\sfx_DB.snd"
-Sfx_DC:								   ; Offset_0x0FFA58
-		binclude	"sound\SFX\sfx_DC.snd"
-Sfx_DD:								   ; Offset_0x0FFA9F
-		binclude	"sound\SFX\sfx_DD.snd"
-Sfx_DE:								   ; Offset_0x0FFAC7
-		binclude	"sound\SFX\sfx_DE.snd"
-Sfx_DF:								   ; Offset_0x0FFB01
-		binclude	"sound\SFX\sfx_DF.snd"
-Sfx_E0:								   ; Offset_0x0FFB9D
-		binclude	"sound\SFX\sfx_E0.snd"
-Sfx_E1:								   ; Offset_0x0FFBD8
-		binclude	"sound\SFX\sfx_E1.snd"
-Sfx_E2:								   ; Offset_0x0FFC3F
-		binclude	"sound\SFX\sfx_E2.snd"
-Sfx_E3:								   ; Offset_0x0FFC76
-		binclude	"sound\SFX\sfx_E3.snd"
-Sfx_E4:								   ; Offset_0x0FFCA5
-		binclude	"sound\SFX\sfx_E4.snd"
-Sfx_E5:								   ; Offset_0x0FFCCD
-		binclude	"sound\SFX\sfx_E5.snd"
-Sfx_E6:								   ; Offset_0x0FFCEE
-		binclude	"sound\SFX\sfx_E6.snd"
-Sfx_E7:								   ; Offset_0x0FFD28
-		binclude	"sound\SFX\sfx_E7.snd"
-Sfx_E8:								   ; Offset_0x0FFD84
-		binclude	"sound\SFX\sfx_E8.snd"
-Sfx_E9:								   ; Offset_0x0FFDAE
-		binclude	"sound\SFX\sfx_E9.snd"
+Sfx_A0:		include	"sound/SFX/A0 - Jump.asm"
+Sfx_A1:		include	"sound/SFX/A1 - Lamppost.asm"
+Sfx_A2:		include	"sound/SFX/A2 - Spike Switch.asm"
+Sfx_A3:		include	"sound/SFX/A3 - Death.asm"
+Sfx_A4:		include	"sound/SFX/A4 - Skid.asm"
+Sfx_A5:		include	"sound/SFX/A5 - Block Push.asm"
+Sfx_A6:		include	"sound/SFX/A6 - Hit Spikes.asm"
+Sfx_A7:		include	"sound/SFX/A7 - Push Block.asm"
+Sfx_A8:		include	"sound/SFX/A8 - SS Goal.asm"
+Sfx_A9: 	include	"sound/SFX/A9 - SS Item.asm"
+Sfx_AA: 	include	"sound/SFX/AA - Splash.asm"
+Sfx_AB:		include	"sound/SFX/AB.asm"
+Sfx_AC:		include	"sound/SFX/AC - Hit Boss.asm"
+Sfx_AD:		include	"sound/SFX/AD - Get Bubble.asm"
+Sfx_AE: 	include	"sound/SFX/AE - Fireball.asm"
+Sfx_AF: 	include	"sound/SFX/AF - Shield.asm"
+Sfx_B0: 	include	"sound/SFX/B0 - Saw.asm"
+Sfx_B1: 	include	"sound/SFX/B1 - Electric.asm"
+Sfx_B2: 	include	"sound/SFX/B2 - Drown Death.asm"
+Sfx_B3: 	include	"sound/SFX/B3 - Flamethrower.asm"
+Sfx_B4: 	include	"sound/SFX/B4 - Bumper.asm"
+Sfx_B5: 	include	"sound/SFX/B5 - Ring.asm"
+Sfx_B6: 	include	"sound/SFX/B6 - Spikes Move.asm"
+Sfx_B7: 	include	"sound/SFX/B7 - Rumbling.asm"
+Sfx_B8: 	include	"sound/SFX/B8.asm"
+Sfx_B9: 	include	"sound/SFX/B9 - Collapse.asm"
+Sfx_BA: 	include	"sound/SFX/BA - SS Glass.asm"
+Sfx_BB: 	include	"sound/SFX/BB - Door.asm"
+Sfx_BC: 	include	"sound/SFX/BC - Teleport.asm"
+Sfx_BD: 	include	"sound/SFX/BD - ChainStomp.asm"
+Sfx_BE: 	include	"sound/SFX/BE - Roll.asm"
+Sfx_BF: 	include	"sound/SFX/BF - Get Continue.asm"
+Sfx_C0: 	include	"sound/SFX/C0 - Basaran Flap.asm"
+Sfx_C1: 	include	"sound/SFX/C1 - Break Item.asm"
+Sfx_C2: 	include	"sound/SFX/C2 - Drown Warning.asm"
+Sfx_C3: 	include	"sound/SFX/C3 - Giant Ring.asm"
+Sfx_C4: 	include	"sound/SFX/C4 - Bomb.asm"
+Sfx_C5: 	include	"sound/SFX/C5 - Cash Register.asm"
+Sfx_C6: 	include	"sound/SFX/C6 - Ring Loss.asm"
+Sfx_C7: 	include	"sound/SFX/C7 - Chain Rising.asm"
+Sfx_C8: 	include	"sound/SFX/C8 - Burning.asm"
+Sfx_C9: 	include	"sound/SFX/C9 - Hidden Bonus.asm"
+Sfx_CA: 	include	"sound/SFX/CA - Enter SS.asm"
+Sfx_CB: 	include	"sound/SFX/CB - Wall Smash.asm"
+Sfx_CC: 	include	"sound/SFX/CC - Spring.asm"
+Sfx_CD: 	include	"sound/SFX/CD - Switch.asm"
+Sfx_CE: 	include	"sound/SFX/CE - Ring Left Speaker.asm"
+Sfx_CF: 	include	"sound/SFX/CF - Signpost.asm"
+Sfx_D0:		include	"sound/SFX/D0 - CNZ Boss Zap.asm"
+Sfx_D1:		include	"sound/SFX/D1 - Unknown (Unused).asm"
+Sfx_D2:		include	"sound/SFX/D2 - Unknown (Unused).asm"
+Sfx_D3:		include	"sound/SFX/D3 - Signpost 2P.asm"
+Sfx_D4:		include	"sound/SFX/D4 - OOZ Lid Pop.asm"
+Sfx_D5:		include	"sound/SFX/D5 - Sliding Spike.asm"
+Sfx_D6:		include	"sound/SFX/D6 - CNZ Elevator.asm"
+Sfx_D7:		include	"sound/SFX/D7 - Platform Knock.asm"
+Sfx_D8:		binclude	"sound/SFX/sfx_D8.snd"
+Sfx_D9:		binclude	"sound/SFX/sfx_D9.snd"
+Sfx_DA:		binclude	"sound/SFX/sfx_DA.snd"
+Sfx_DB:		binclude	"sound/SFX/sfx_DB.snd"
+Sfx_DC:		binclude	"sound/SFX/sfx_DC.snd"
+Sfx_DD:		binclude	"sound/SFX/sfx_DD.snd"
+Sfx_DE:		binclude	"sound/SFX/sfx_DE.snd"
+Sfx_DF:		binclude	"sound/SFX/sfx_DF.snd"
+Sfx_E0:		binclude	"sound/SFX/sfx_E0.snd"
+Sfx_E1:		binclude	"sound/SFX/sfx_E1.snd"
+Sfx_E2:		binclude	"sound/SFX/sfx_E2.snd"
+Sfx_E3:		binclude	"sound/SFX/sfx_E3.snd"
+Sfx_E4:		binclude	"sound/SFX/sfx_E4.snd"
+Sfx_E5:		binclude	"sound/SFX/sfx_E5.snd"
+Sfx_E6:		binclude	"sound/SFX/sfx_E6.snd"
+Sfx_E7:		binclude	"sound/SFX/sfx_E7.snd"
+Sfx_E8:		binclude	"sound/SFX/sfx_E8.snd"
+Sfx_E9:		binclude	"sound/SFX/sfx_E9.snd"
 
 	finishBank
 
