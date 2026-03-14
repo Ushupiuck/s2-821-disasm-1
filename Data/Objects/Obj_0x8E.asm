@@ -20,7 +20,7 @@ Offset_0x0280BA:
                 bsr.w   Object_Settings                        ; Offset_0x027EA4
                 move.b  #$14, Obj_Height_2(A0)                           ; $0016
                 move.b  #$10, Obj_Width_2(A0)                            ; $0017
-                jsr     (ObjHitFloor)                          ; Offset_0x014204
+                jsr     (ObjHitFloor).l                          ; Offset_0x014204
                 tst.w   D1
                 bpl.s   Offset_0x0280DE
                 add.w   D1, Obj_Y(A0)                                    ; $000C
@@ -48,7 +48,7 @@ Offset_0x028106:
                 bra.w   Jmp_26_To_MarkObjGone                  ; Offset_0x02A7A0 
 ;-------------------------------------------------------------------------------
 Offset_0x028116:
-                lea     (Grounder_AnimateData_01), A1          ; Offset_0x0282FA
+                lea     (Grounder_AnimateData_01).l, A1          ; Offset_0x0282FA
                 bsr.w   Jmp_17_To_AnimateSprite                ; Offset_0x02A7AC
                 bra.w   Jmp_26_To_MarkObjGone                  ; Offset_0x02A7A0 
 ;-------------------------------------------------------------------------------
@@ -68,13 +68,13 @@ Offset_0x028146:
 ;-------------------------------------------------------------------------------
 Offset_0x02814A:
                 bsr.w   Jmp_19_To_SpeedToPos                   ; Offset_0x02A7C4
-                jsr     (ObjHitFloor)                          ; Offset_0x014204
+                jsr     (ObjHitFloor).l                          ; Offset_0x014204
                 cmpi.w  #$FFFE, D1
                 blt.s   Offset_0x028172
                 cmpi.w  #$000C, D1
                 bge.s   Offset_0x028172
                 add.w   D1, Obj_Y(A0)                                    ; $000C
-                lea     (Grounder_AnimateData), A1             ; Offset_0x0282F2
+                lea     (Grounder_AnimateData).l, A1             ; Offset_0x0282F2
                 bsr.w   Jmp_17_To_AnimateSprite                ; Offset_0x02A7AC
                 bra.w   Jmp_26_To_MarkObjGone                  ; Offset_0x02A7A0
 Offset_0x028172:

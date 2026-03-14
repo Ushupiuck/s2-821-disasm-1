@@ -76,10 +76,10 @@ Offset_0x013288:
                 bcs.s   Offset_0x0132A6  
 ;-------------------------------------------------------------------------------
 Offset_0x013290:
-                lea     (Dust_Water_Splash_AnimateData), A1    ; Offset_0x01339A
-                jsr     (AnimateSprite)                        ; Offset_0x00D372
+                lea     (Dust_Water_Splash_AnimateData).l, A1    ; Offset_0x01339A
+                jsr     (AnimateSprite).l                        ; Offset_0x00D372
                 bsr.w   Load_Dust_Water_Splash_Dynamic_PLC     ; Offset_0x013346
-                jmp     (DisplaySprite)                        ; Offset_0x00D322
+                jmp     (DisplaySprite).l                        ; Offset_0x00D322
 Offset_0x0132A6:
                 move.b  #$00, Obj_Ani_Number(A0)                         ; $001C
                 rts   
@@ -130,7 +130,7 @@ Load_Dust_Water_Splash_Dynamic_PLC:                            ; Offset_0x013346
                 cmp.b   Obj_Control_Var_04(A0), D0                       ; $0030
                 beq.s   Offset_0x013398
                 move.b  D0, Obj_Control_Var_04(A0)                       ; $0030
-                lea     (Dust_Water_Splash_Dyn_Script), A2     ; Offset_0x0134D6
+                lea     (Dust_Water_Splash_Dyn_Script).l, A2     ; Offset_0x0134D6
                 add.w   D0, D0
                 adda.w  $00(A2, D0), A2
                 move.w  (A2)+, D5

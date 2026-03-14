@@ -23,7 +23,7 @@ Offset_0x027F9A:
 Offset_0x027FAC:
                 subq.b  #$01, Obj_Timer(A0)                              ; $002A
                 bmi.s   Offset_0x027FC0
-                lea     (Whisp_Animate_Data), A1               ; Offset_0x028072
+                lea     (Whisp_Animate_Data).l, A1               ; Offset_0x028072
                 bsr.w   Jmp_17_To_AnimateSprite                ; Offset_0x02A7AC
                 bra.w   Jmp_26_To_MarkObjGone                  ; Offset_0x02A7A0
 Offset_0x027FC0:
@@ -56,7 +56,7 @@ Offset_0x02800A:
                 move.w  D0, D1
                 bsr.w   Offset_0x027F3E
                 bsr.w   Jmp_19_To_SpeedToPos                   ; Offset_0x02A7C4
-                lea     (Whisp_Animate_Data), A1               ; Offset_0x028072
+                lea     (Whisp_Animate_Data).l, A1               ; Offset_0x028072
                 bsr.w   Jmp_17_To_AnimateSprite                ; Offset_0x02A7AC
                 bra.w   Jmp_26_To_MarkObjGone                  ; Offset_0x02A7A0  
 ;------------------------------------------------------------------------------- 
@@ -67,13 +67,13 @@ Offset_0x02803A:
                 subq.b  #$02, Obj_Routine(A0)                            ; $0024
                 move.b  #$10, Obj_Timer(A0)                              ; $002A
                 bsr.w   Offset_0x027F78
-                lea     (Whisp_Animate_Data), A1               ; Offset_0x028072
+                lea     (Whisp_Animate_Data).l, A1               ; Offset_0x028072
                 bsr.w   Jmp_17_To_AnimateSprite                ; Offset_0x02A7AC
                 bra.w   Jmp_26_To_MarkObjGone                  ; Offset_0x02A7A0 
 ;-------------------------------------------------------------------------------
 Offset_0x028056:
                 bsr.w   Jmp_19_To_SpeedToPos                   ; Offset_0x02A7C4
-                lea     (Whisp_Animate_Data), A1               ; Offset_0x028072
+                lea     (Whisp_Animate_Data).l, A1               ; Offset_0x028072
                 bsr.w   Jmp_17_To_AnimateSprite                ; Offset_0x02A7AC
                 bra.w   Jmp_26_To_MarkObjGone                  ; Offset_0x02A7A0  
 ;-------------------------------------------------------------------------------

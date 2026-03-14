@@ -130,7 +130,7 @@ Offset_0x0182CE:
 Offset_0x0182D4:
                 move.w  Obj_Control_Var_0C(A0), ($FFFFF7D0).w            ; $0038
                 andi.b  #$E7, Obj_Status(A0)                             ; $0022
-                lea     (Offset_0x018322), A4
+                lea     (Offset_0x018322).l, A4
                 moveq   #$00, D0
                 move.b  Obj_Map_Id(A0), D0                               ; $001A
                 addq.b  #$01, Obj_Map_Id(A0)                             ; $001A

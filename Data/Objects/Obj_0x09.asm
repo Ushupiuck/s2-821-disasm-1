@@ -46,8 +46,8 @@ Offset_0x02BFE8:
 				andi.w	#$0002, D0
 				move.w	Player_In_SS_Modes(PC, D0), D1		   ; Offset_0x02C00C
 				jsr		Player_In_SS_Modes(PC, D1)			   ; Offset_0x02C00C
-				jsr		(Load_Sonic_Dynamic_PLC)			   ; Offset_0x0110D4
-				jmp		(DisplaySprite)						   ; Offset_0x00D322
+				jsr		(Load_Sonic_Dynamic_PLC).l			   ; Offset_0x0110D4
+				jmp		(DisplaySprite).l						   ; Offset_0x00D322
 ;-------------------------------------------------------------------------------
 Player_In_SS_Modes:											   ; Offset_0x02C00C
 				dc.w	Player_In_SS_OnWall-Player_In_SS_Modes ; Offset_0x02C010
@@ -67,12 +67,12 @@ Player_In_SS_InAir											   ; Offset_0x02C01E
 Player_In_SS_Display:										   ; Offset_0x02C02A
 				bsr.w	Player_In_SS_ChkItems				   ; Offset_0x02C342
 				bsr.w	Player_In_SS_ChkItems2				   ; Offset_0x02C47E
-				jsr		(SpeedToPos)						   ; Offset_0x00D1DA
+				jsr		(SpeedToPos).l						   ; Offset_0x00D1DA
 				bsr.w	S1SS_FixCamera						   ; Offset_0x02C1A6
 				move.w	(Boss_Move_Buffer).w, D0					 ; $FFFFF750
 				add.w	(Boss_Move_Buffer+$02).w, D0				 ; $FFFFF752
 				move.w	D0, (Boss_Move_Buffer).w					 ; $FFFFF750
-				jsr		(Sonic_Animate)						   ; Offset_0x010BF2
+				jsr		(Sonic_Animate).l						   ; Offset_0x010BF2
 				rts
 ;-------------------------------------------------------------------------------
 Player_In_SS_Move:											   ; Offset_0x02C050
@@ -234,20 +234,20 @@ Offset_0x02C202:
 				move.w	(Boss_Move_Buffer).w, D0					 ; $FFFFF750
 				add.w	(Boss_Move_Buffer+$02).w, D0				 ; $FFFFF752
 				move.w	D0, (Boss_Move_Buffer).w					 ; $FFFFF750
-				jsr		(Sonic_Animate)						   ; Offset_0x010BF2
-				jsr		(Load_Sonic_Dynamic_PLC)			   ; Offset_0x0110D4
+				jsr		(Sonic_Animate).l						   ; Offset_0x010BF2
+				jsr		(Load_Sonic_Dynamic_PLC).l			   ; Offset_0x0110D4
 				bsr.w	S1SS_FixCamera						   ; Offset_0x02C1A6
-				jmp		(DisplaySprite)						   ; Offset_0x00D322
+				jmp		(DisplaySprite).l						   ; Offset_0x00D322
 ;-------------------------------------------------------------------------------
 Player_In_SS_Exit_Test:										   ; Offset_0x02C224
 				subq.w	#$01, Obj_Player_St_Convex(A0)					 ; $0038
 				bne.s	Offset_0x02C230
 				move.b	#gm_PlayMode, (Game_Mode).w				; $0C, $FFFFF600
 Offset_0x02C230:
-				jsr		(Sonic_Animate)						   ; Offset_0x010BF2
-				jsr		(Load_Sonic_Dynamic_PLC)			   ; Offset_0x0110D4
+				jsr		(Sonic_Animate).l						   ; Offset_0x010BF2
+				jsr		(Load_Sonic_Dynamic_PLC).l			   ; Offset_0x0110D4
 				bsr.w	S1SS_FixCamera						   ; Offset_0x02C1A6
-				jmp		(DisplaySprite)						   ; Offset_0x00D322
+				jmp		(DisplaySprite).l						   ; Offset_0x00D322
 ;-------------------------------------------------------------------------------
 Player_In_SS_Fall:											   ; Offset_0x02C246
 				move.l	Obj_Y(A0), D2									 ; $000C
@@ -302,7 +302,7 @@ Offset_0x02C2C4:
 				rts
 ;-------------------------------------------------------------------------------
 Player_In_SS_Sub:											   ; Offset_0x02C2D8
-				lea		(M68K_RAM_Start), A1						 ; $FFFF0000
+				lea		(M68K_RAM_Start).l, A1						 ; $FFFF0000
 				moveq	#$00, D4
 				swap	D2
 				move.w	D2, D4
@@ -347,7 +347,7 @@ Offset_0x02C336:
 				rts
 ;-------------------------------------------------------------------------------
 Player_In_SS_ChkItems: ; Touch_Rings						   ; Offset_0x02C342
-				lea		(M68K_RAM_Start), A1						 ; $FFFF0000
+				lea		(M68K_RAM_Start).l, A1						 ; $FFFF0000
 				moveq	#$00, D4
 				move.w	Obj_Y(A0), D4									 ; $000C
 				addi.w	#$0050, D4
@@ -362,7 +362,7 @@ Player_In_SS_ChkItems: ; Touch_Rings						   ; Offset_0x02C342
 				move.b	(A1), D4
 				bne.s	Offset_0x02C37C
 				tst.b	Obj_Player_Spdsh_Cnt(A0)						 ; $003A
-				bne		Offset_0x02C44C
+				bne.w	Offset_0x02C44C
 				moveq	#$00, D4
 				rts
 Offset_0x02C37C:
@@ -414,7 +414,7 @@ Offset_0x02C3FC:
 				moveq	#$00, D0
 				move.b	(Emerald_Count).w, D0						 ; $FFFFFE57
 				lea		(Emerald_Collected_Flag_List).w, A2			 ; $FFFFFE58
-				move.b	D4, $00(A2, D0)
+				move.b	D4, (A2, D0)
 				addq.b	#$01, (Emerald_Count).w						 ; $FFFFFE57
 Offset_0x02C41A:
 				move.w	#$0093, D0

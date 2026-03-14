@@ -845,7 +845,7 @@ Sonic_Jump:							   ; Offset_0x01051A:
 		addi.b	#$80, D0
 		bsr.w	CalcRoomOverHead			   ; Offset_0x01405E
 		cmpi.w	#$0006, D1
-		blt		Offset_0x0105C8
+		blt.w	Offset_0x0105C8
 		move.w	#$0680, D2
 		tst.b	(Super_Sonic_Flag).w				 ; $FFFFFE19
 		beq.s	Offset_0x01054A

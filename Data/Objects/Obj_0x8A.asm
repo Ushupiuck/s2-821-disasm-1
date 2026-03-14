@@ -34,10 +34,10 @@ Offset_0x02A7DE:
                 bne.s   Offset_0x02A84C
                 move.w  #$0EEE, (Palette_Buffer+$00C0).w             ; $FFFFFBC0
                 move.w  #$0880, (Palette_Buffer+$00C2).w             ; $FFFFFBC2
-                jmp     (DeleteObject)                         ; Offset_0x00D314 
+                jmp     (DeleteObject).l                         ; Offset_0x00D314 
 ;-------------------------------------------------------------------------------  
 Offset_0x02A84C:
-                jmp     (DisplaySprite)                        ; Offset_0x00D322 
+                jmp     (DisplaySprite).l                        ; Offset_0x00D322 
 ;-------------------------------------------------------------------------------    
 S1_Credits_Mappings:                                           ; Offset_0x02A852
                 dc.w    Offset_0x02A868-S1_Credits_Mappings
