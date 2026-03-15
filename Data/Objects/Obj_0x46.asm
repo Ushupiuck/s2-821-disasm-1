@@ -88,7 +88,7 @@ Offset_0x019960:
                 addi.w  #$00E0, D0
                 cmp.w   Obj_Y(A0), D0                                    ; $000C
                 bcs.s   Offset_0x0199EC
-                jsr     (ObjHitFloor)                          ; Offset_0x014204
+                jsr     (ObjHitFloor).l                          ; Offset_0x014204
                 tst.w   D1
                 bpl.w   Offset_0x0199B2
                 add.w   D1, Obj_Y(A0)                                    ; $000C
@@ -101,7 +101,7 @@ Offset_0x019960:
 Offset_0x0199B2:
                 bra.s   Offset_0x0199CC
 Offset_0x0199B4:
-                jsr     (ObjHitFloor)                          ; Offset_0x014204
+                jsr     (ObjHitFloor).l                          ; Offset_0x014204
                 cmpi.w  #$0008, D1
                 blt.s   Offset_0x0199C8
                 bset    #$01, Obj_Status(A0)                             ; $0022
@@ -115,7 +115,7 @@ Offset_0x0199CC:
                 move.w  #$0010, D2
                 move.w  #$0011, D3
                 move.w  (A7)+, D4
-                bsr     Jmp_02_To_SolidObject                  ; Offset_0x019B04
+                bsr.w   Jmp_02_To_SolidObject                  ; Offset_0x019B04
                 bsr.w   Offset_0x019A18
                 bra.w   Jmp_08_To_MarkObjGone                  ; Offset_0x019AF8
 Offset_0x0199EC:

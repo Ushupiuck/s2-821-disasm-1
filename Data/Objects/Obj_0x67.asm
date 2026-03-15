@@ -90,7 +90,7 @@ Offset_0x01C000:
                 move.w  D2, Obj_Y(A1)                                    ; $000C
                 cmpi.b  #$80, $0001(A4) 
                 bne.s   Offset_0x01C032
-                bsr     Offset_0x01C0B0
+                bsr.w   Offset_0x01C0B0
                 addq.b  #$02, (A4)
                 move.w  #$00BC, D0
                 jsr     (Play_Sfx).l                             ; Offset_0x001512
@@ -146,7 +146,7 @@ Offset_0x01C0B0:
                 neg.b   D0
                 andi.w  #$000F, D0
                 add.w   D0, D0
-                lea     (Teleport_From_To_Data), A2            ; Offset_0x01C192
+                lea     (Teleport_From_To_Data).l, A2            ; Offset_0x01C192
                 adda.w  $00(A2, D0), A2
                 move.w  (A2)+, D0
                 subq.w  #$04, D0
@@ -161,7 +161,7 @@ Offset_0x01C0B0:
 Offset_0x01C0E4:
                 andi.w  #$000F, D0
                 add.w   D0, D0
-                lea     (Teleport_From_To_Data), A2            ; Offset_0x01C192
+                lea     (Teleport_From_To_Data).l, A2            ; Offset_0x01C192
                 adda.w  $00(A2, D0), A2
                 move.w  (A2)+, $0004(A4) 
                 subq.w  #$04, $0004(A4) 

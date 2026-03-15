@@ -27156,15 +27156,15 @@ Previous_Build_NGHz_Rng_Act2:				   ; Offset_0x0E9740
 ;===============================================================================
 PBDACSamples_Start:
 Previous_Build_DAC_Sample_01_Overwrite:				   ; Offset_0x0E978C
-		binclude	"misc/leftovers/sound/DAC/PB_DAC01.bin"
+		binclude	"misc/leftovers/sound/DAC/Snare.dpcm"
 Previous_Build_DAC_Sample_02:				   ; Offset_0x0E99B7
-		binclude	"sound/DAC/DAC_02.bin"
+		binclude	"sound/DAC/Timpani.dpcm"
 Previous_Build_DAC_Sample_06: ; Sonic 2 Beta		   ; Offset_0x0EA56C
-		binclude	"misc/leftovers/sound/DAC/PB_DAC06.bin"
+		binclude	"misc/leftovers/sound/DAC/Tom.dpcm"
 Previous_Build_DAC_Sample_03: ; Sonic 2 Beta		   ; Offset_0x0EAA6B
-		binclude	"misc/leftovers/sound/DAC/PB_DAC03.bin"
+		binclude	"misc/leftovers/sound/DAC/Clap.dpcm"
 Previous_Build_DAC_Sample_04: ; Sonic 2 Beta		   ; Offset_0x0EACD3
-		binclude	"misc/leftovers/sound/DAC/PB_DAC04.bin"
+		binclude	"misc/leftovers/sound/DAC/Scratch.dpcm"
 PBDACSamples_End:
 ;-------------------------------------------------------------------------------
 		align	$4000
@@ -27335,25 +27335,25 @@ Snd_Driver_End:
 ; ---------------------------------------------------------------------------
 DACSamples_Start:
 DAC_Sample01:						   ; Offset_0x0ED000
-		binclude	"sound/DAC/DAC_00.bin"
+		binclude	"sound/DAC/Kick.dpcm"
 DAC_Sample01_End:
 DAC_Sample02:						   ; Offset_0x0ED294
-		binclude	"sound/DAC/DAC_01.bin"
+		binclude	"sound/DAC/Snare.dpcm"
 DAC_Sample02_End:
 DAC_Sample03:						   ; Offset_0x0ED9B7
-		binclude	"sound/DAC/DAC_02.bin"
+		binclude	"sound/DAC/Timpani.dpcm"
 DAC_Sample03_End:
 DAC_Sample04:						   ; Offset_0x0EE56C
-		binclude	"sound/DAC/DAC_03.bin"
+		binclude	"sound/DAC/Tom.dpcm"
 DAC_Sample04_End:
 DAC_Sample05:						   ; Offset_0x0EED7A
-		binclude	"sound/DAC/DAC_04.bin"
+		binclude	"sound/DAC/Clap.dpcm"
 DAC_Sample05_End:
 DAC_Sample06:						   ; Offset_0x0EF2F0
-		binclude	"sound/DAC/DAC_05.bin"
+		binclude	"sound/DAC/Scratch.dpcm"
 DAC_Sample06_End:
 DAC_Sample07:						   ; Offset_0x0EFA3C
-		binclude	"sound/DAC/DAC_06.bin"
+		binclude	"sound/DAC/Bongo.dpcm"
 DAC_Sample07_End:
 DACSamples_End:
 

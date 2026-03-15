@@ -3359,10 +3359,10 @@ zDACPtrTbl:
 zDACLenTbl = zDACPtrTbl + 2
 zDACPtr_Kick:	dac_sample_pointer	DAC_Sample01
 zDACPtr_Snare:	dac_sample_pointer	DAC_Sample02
-zDACPtr_Timpani:	dac_sample_pointer	DAC_Sample05
-zDACPtr_Tom:	dac_sample_pointer	DAC_Sample06
-zDACPtr_Clap:	dac_sample_pointer	DAC_Sample03
-zDACPtr_Scratch:	dac_sample_pointer	DAC_Sample04
+zDACPtr_Clap:	dac_sample_pointer	DAC_Sample05
+zDACPtr_Scratch:	dac_sample_pointer	DAC_Sample06
+zDACPtr_Timpani:	dac_sample_pointer	DAC_Sample03
+zDACPtr_Tom:	dac_sample_pointer	DAC_Sample04
 zDACPtr_Bongo:	dac_sample_pointer	DAC_Sample07
 
 	ensure1byteoffset 2*0Eh
@@ -3380,18 +3380,18 @@ dac_sample_metadata macro label,sampleRate
 
 		dac_sample_metadata zDACPtr_Kick,   8250	; 81h
 		dac_sample_metadata zDACPtr_Snare, 24000	; 82h
-		dac_sample_metadata zDACPtr_Timpani,16500	; 83h
-		dac_sample_metadata zDACPtr_Tom,   14750	; 84h
-		dac_sample_metadata zDACPtr_Clap,	7350	; 85h
-		dac_sample_metadata zDACPtr_Scratch,13500	; 86h
+		dac_sample_metadata zDACPtr_Clap,  16500	; 83h
+		dac_sample_metadata zDACPtr_Scratch,14750	; 84h
+		dac_sample_metadata zDACPtr_Timpani,7350	; 85h
+		dac_sample_metadata zDACPtr_Tom,   13500	; 86h
 		dac_sample_metadata	zDACPtr_Bongo,	7375	; 87h
-		dac_sample_metadata zDACPtr_Clap,	9750	; 88h
-		dac_sample_metadata zDACPtr_Clap,	8750	; 89h
-		dac_sample_metadata zDACPtr_Clap,	7150	; 8Ah
-		dac_sample_metadata zDACPtr_Clap,	7000	; 8Bh
-		dac_sample_metadata zDACPtr_Scratch,22000	; 8Ch
-		dac_sample_metadata zDACPtr_Scratch,17500	; 8Dh
-		dac_sample_metadata zDACPtr_Scratch,14750	; 8Eh
+		dac_sample_metadata zDACPtr_Timpani,9750	; 88h
+		dac_sample_metadata zDACPtr_Timpani,8750	; 89h
+		dac_sample_metadata zDACPtr_Timpani,7150	; 8Ah
+		dac_sample_metadata zDACPtr_Timpani,7000	; 8Bh
+		dac_sample_metadata zDACPtr_Tom,   22000	; 8Ch
+		dac_sample_metadata zDACPtr_Tom,   17500	; 8Dh
+		dac_sample_metadata zDACPtr_Tom,   14750	; 8Eh
 		dac_sample_metadata	zDACPtr_Bongo, 14750	; 8Fh
 		dac_sample_metadata	zDACPtr_Bongo, 12906	; 90h
 		dac_sample_metadata	zDACPtr_Bongo,	9587	; 91h

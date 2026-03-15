@@ -43,7 +43,7 @@ Offset_0x018F96:
                 move.b  Obj_Subtype(A0), D0                              ; $0028
                 andi.w  #$0002, D0
                 move.w  Offset_0x018FAA(PC, D0), Obj_Control_Var_04(A0)  ; $0030
-                bsr     Jmp_08_To_ModifySpriteAttr_2P          ; Offset_0x019AFE
+                bsr.w   Jmp_08_To_ModifySpriteAttr_2P          ; Offset_0x019AFE
                 rts               
 ;-------------------------------------------------------------------------------
 Offset_0x018FAA:

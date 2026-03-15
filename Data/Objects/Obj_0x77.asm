@@ -16,7 +16,7 @@ Offset_0x01E076:
                 addq.b  #$02, Obj_Routine(A0)                            ; $0024
                 move.l  #DHz_Bridge_Mappings, Obj_Map(A0) ; Offset_0x01E140, $0004
                 move.w  #$643C, Obj_Art_VRAM(A0)                         ; $0002
-                bsr     Jmp_1D_To_ModifySpriteAttr_2P          ; Offset_0x01E29A
+                bsr.w   Jmp_1D_To_ModifySpriteAttr_2P          ; Offset_0x01E29A
                 ori.b   #$04, Obj_Flags(A0)                              ; $0001
                 move.b  #$80, Obj_Width(A0)                              ; $0019 
 ;-------------------------------------------------------------------------------
@@ -35,8 +35,8 @@ Offset_0x01E098:
                 move.w  #$00BB, D0
                 jsr     (Play_Sfx).l                             ; Offset_0x001512
 Offset_0x01E0CC:
-                lea     (DHz_Bridge_Animate_Data), A1          ; Offset_0x01E12C
-                jsr     (AnimateSprite)                        ; Offset_0x00D372
+                lea     (DHz_Bridge_Animate_Data).l, A1          ; Offset_0x01E12C
+                jsr     (AnimateSprite).l                        ; Offset_0x00D372
                 tst.b   Obj_Map_Id(A0)                                   ; $001A
                 bne.s   Offset_0x01E0F6
                 move.w  #$004B, D1
