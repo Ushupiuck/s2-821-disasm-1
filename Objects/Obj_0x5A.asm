@@ -48,7 +48,7 @@ Offset_0x021BD2:
                 rts     
 ;------------------------------------------------------------------------------- 
 Offset_0x021BD4:
-                lea     (Offset_0x021C7A), A1
+                lea     (Offset_0x021C7A).l, A1
                 bsr.w   Jmp_0E_To_AnimateSprite                ; Offset_0x021DA4
                 bra.w   Jmp_20_To_MarkObjGone                  ; Offset_0x021D9E  
 ;------------------------------------------------------------------------------- 
@@ -76,7 +76,7 @@ Offset_0x021C12:
                 subi.w  #$0001, Obj_Timer(A0)                            ; $002A
                 bmi.s   Offset_0x021C28
 Offset_0x021C1A:
-                lea     (Offset_0x021C7A), A1
+                lea     (Offset_0x021C7A).l, A1
                 bsr.w   Jmp_0E_To_AnimateSprite                ; Offset_0x021DA4
                 bra.w   Jmp_20_To_MarkObjGone                  ; Offset_0x021D9E
 Offset_0x021C28:
@@ -101,7 +101,7 @@ Offset_0x021C52:
                 blt.s   Offset_0x021C6C
                 addi.b  #$01, Obj_Ani_Number(A0)                         ; $001C
 Offset_0x021C6C:
-                lea     (Offset_0x021C7A), A1
+                lea     (Offset_0x021C7A).l, A1
                 bsr.w   Jmp_0E_To_AnimateSprite                ; Offset_0x021DA4
                 bra.w   Jmp_20_To_MarkObjGone                  ; Offset_0x021D9E           
 ;-------------------------------------------------------------------------------  

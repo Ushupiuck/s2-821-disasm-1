@@ -42,7 +42,7 @@ Offset_0x01A498:
 Offset_0x01A4BA:
                 move.b  D2, Obj_Ani_Number(A0)                           ; $001C
 Offset_0x01A4BE:
-                lea     (Arrow_Shooter_Animate_Data), A1       ; Offset_0x01A5A6
+                lea     (Arrow_Shooter_Animate_Data).l, A1       ; Offset_0x01A5A6
                 bsr.w   Jmp_01_To_AnimateSprite                ; Offset_0x01A632
                 bra.w   Jmp_0C_To_MarkObjGone                  ; Offset_0x01A62C
 Offset_0x01A4CC:
@@ -72,7 +72,7 @@ Offset_0x01A4E2:
                 jsr     (Play_Sfx).l                             ; Offset_0x001512
 Offset_0x01A520:
                 subq.b  #$02, Obj_Routine(A0)                            ; $0024
-                lea     (Arrow_Shooter_Animate_Data), A1       ; Offset_0x01A5A6
+                lea     (Arrow_Shooter_Animate_Data).l, A1       ; Offset_0x01A5A6
                 bsr.w   Jmp_01_To_AnimateSprite                ; Offset_0x01A632
                 bra.w   Jmp_0C_To_MarkObjGone                  ; Offset_0x01A62C  
 ;------------------------------------------------------------------------------- 

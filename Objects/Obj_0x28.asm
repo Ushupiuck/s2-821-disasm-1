@@ -132,8 +132,8 @@ Offset_0x00A51A:
                 add.w   D0, D0
                 move.l  Offset_0x00A4D8(PC, D0), Obj_Map(A0)             ; $0004
                 lea     Offset_0x00A4AC(PC), A1
-                move.w  $00(A1, D0), Obj_Control_Var_06(A0)              ; $0032
-                move.w  $00(A1, D0), Obj_Speed(A0)                       ; $0010
+                move.w  (A1, D0), Obj_Control_Var_06(A0)              ; $0032
+                move.w  (A1, D0), Obj_Speed(A0)                       ; $0010
                 move.w  $02(A1, D0), Obj_Control_Var_08(A0)              ; $0034
                 move.w  $02(A1, D0), Obj_Speed_Y(A0)                     ; $0012
                 bsr.w   ModifySpriteAttr_2P                    ; Offset_0x00DBBE
@@ -157,7 +157,7 @@ Offset_0x00A5A2:
                 add.w   D1, D1
                 add.w   D0, D1
                 lea     Offset_0x00A42A(PC), A1
-                move.b  $00(A1, D1), D0
+                move.b  (A1, D1), D0
                 move.b  D0, Obj_Control_Var_04(A0)                       ; $0030
                 lsl.w   #$03, D0
                 lea     Offset_0x00A44C(PC), A1
@@ -197,7 +197,7 @@ Offset_0x00A63A:
                 bsr.w   ObjectFall                             ; Offset_0x00D1AE
                 tst.w   Obj_Speed_Y(A0)                                  ; $0012
                 bmi.s   Offset_0x00A690
-                jsr     (ObjHitFloor)                          ; Offset_0x014204
+                jsr     (ObjHitFloor).l                          ; Offset_0x014204
                 tst.w   D1
                 bpl.s   Offset_0x00A690
                 add.w   D1, Obj_Y(A0)                                    ; $000C
@@ -223,7 +223,7 @@ Offset_0x00A694:
                 tst.w   Obj_Speed_Y(A0)                                  ; $0012
                 bmi.s   Offset_0x00A6BE
                 move.b  #$00, Obj_Map_Id(A0)                             ; $001A
-                jsr     (ObjHitFloor)                          ; Offset_0x014204
+                jsr     (ObjHitFloor).l                          ; Offset_0x014204
                 tst.w   D1
                 bpl.s   Offset_0x00A6BE
                 add.w   D1, Obj_Y(A0)                                    ; $000C
@@ -240,7 +240,7 @@ Offset_0x00A6D0:
                 addi.w  #$0018, Obj_Speed_Y(A0)                          ; $0012
                 tst.w   Obj_Speed_Y(A0)                                  ; $0012
                 bmi.s   Offset_0x00A70C
-                jsr     (ObjHitFloor)                          ; Offset_0x014204
+                jsr     (ObjHitFloor).l                          ; Offset_0x014204
                 tst.w   D1
                 bpl.s   Offset_0x00A70C
                 add.w   D1, Obj_Y(A0)                                    ; $000C
@@ -325,7 +325,7 @@ Offset_0x00A7E6:
                 tst.w   Obj_Speed_Y(A0)                                  ; $0012
                 bmi.s   Offset_0x00A820
                 move.b  #$00, Obj_Map_Id(A0)                             ; $001A
-                jsr     (ObjHitFloor)                          ; Offset_0x014204
+                jsr     (ObjHitFloor).l                          ; Offset_0x014204
                 tst.w   D1
                 bpl.s   Offset_0x00A820
                 not.b   Obj_Player_Flip_Flag(A0)                         ; $0029
@@ -357,7 +357,7 @@ Offset_0x00A842:
                 tst.w   Obj_Speed_Y(A0)                                  ; $0012
                 bmi.s   Offset_0x00A87C
                 move.b  #$00, Obj_Map_Id(A0)                             ; $001A
-                jsr     (ObjHitFloor)                          ; Offset_0x014204
+                jsr     (ObjHitFloor).l                          ; Offset_0x014204
                 tst.w   D1
                 bpl.s   Offset_0x00A87C
                 neg.w   Obj_Speed(A0)                                    ; $0010
@@ -374,7 +374,7 @@ Offset_0x00A880:
                 addi.w  #$0018, Obj_Speed_Y(A0)                          ; $0012
                 tst.w   Obj_Speed_Y(A0)                                  ; $0012
                 bmi.s   Offset_0x00A8BA
-                jsr     (ObjHitFloor)                          ; Offset_0x014204
+                jsr     (ObjHitFloor).l                          ; Offset_0x014204
                 tst.w   D1
                 bpl.s   Offset_0x00A8BA
                 not.b   Obj_Player_Flip_Flag(A0)                         ; $0029
@@ -397,7 +397,7 @@ Offset_0x00A8D4:
                 tst.w   Obj_Speed_Y(A0)                                  ; $0012
                 bmi.s   Offset_0x00A8FA
                 move.b  #$00, Obj_Map_Id(A0)                             ; $001A
-                jsr     (ObjHitFloor)                          ; Offset_0x014204
+                jsr     (ObjHitFloor).l                          ; Offset_0x014204
                 tst.w   D1
                 bpl.s   Offset_0x00A8FA
                 add.w   D1, Obj_Y(A0)                                    ; $000C

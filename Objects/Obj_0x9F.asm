@@ -31,7 +31,7 @@ Offset_0x0295E6:
                 bcs.s   Offset_0x02963E
 Offset_0x0295F8:
                 bsr.w   Jmp_19_To_SpeedToPos                   ; Offset_0x02A7C4
-                jsr     (ObjHitFloor)                          ; Offset_0x014204
+                jsr     (ObjHitFloor).l                          ; Offset_0x014204
                 cmpi.w  #$FFF8, D1
                 blt.s   Offset_0x029626
                 cmpi.w  #$000C, D1
@@ -39,7 +39,7 @@ Offset_0x0295F8:
                 add.w   D1, Obj_Y(A0)                                    ; $000C
                 subq.w  #$01, Obj_Timer(A0)                              ; $002A
                 bmi.s   Offset_0x02962A
-                lea     (Shellcracker_Animate_Data), A1        ; Offset_0x029856
+                lea     (Shellcracker_Animate_Data).l, A1        ; Offset_0x029856
                 bsr.w   Jmp_17_To_AnimateSprite                ; Offset_0x02A7AC
                 bra.w   Jmp_26_To_MarkObjGone                  ; Offset_0x02A7A0
 Offset_0x029626:

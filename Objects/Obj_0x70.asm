@@ -15,7 +15,7 @@ Offset_0x01D6BA:
 Offset_0x01D6BE:
                 moveq   #$07, D1
                 moveq   #$00, D4
-                lea     (Offset_0x01D812), A2
+                lea     (Offset_0x01D812).l, A2
                 move.l  A0, A1
                 move.w  Obj_X(A0), D2                                    ; $0008
                 move.w  Obj_Y(A0), D3                                    ; $000C
@@ -106,9 +106,9 @@ Offset_0x01D7B6:
                 sub.w   ($FFFFF7DA).w, D0
                 cmpi.w  #$0280, D0
                 bhi.s   Offset_0x01D7EC
-                jmp     (DisplaySprite)                        ; Offset_0x00D322
+                jmp     (DisplaySprite).l                        ; Offset_0x00D322
 Offset_0x01D7EC:
-                jmp     (DeleteObject)                         ; Offset_0x00D314
+                jmp     (DeleteObject).l                         ; Offset_0x00D314
 ;-------------------------------------------------------------------------------
 Offset_0x01D7F2:
                 dc.b    $10, $10, $10, $10, $10, $10, $10, $10

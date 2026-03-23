@@ -81,12 +81,12 @@ Offset_0x018D3A:
                 cmpi.w  #$0280, D0
                 bhi.s   Offset_0x018D66
 Offset_0x018D60:
-                jmp     (DisplaySprite)                        ; Offset_0x00D322
+                jmp     (DisplaySprite).l                        ; Offset_0x00D322
 Offset_0x018D66:
                 move.l  Obj_Control_Var_10(A0), A1                       ; $003C
                 cmpa.l  A0, A1
                 beq.s   Offset_0x018D74
-                jsr     (DeleteObject_A1)                      ; Offset_0x00D316
+                jsr     (DeleteObject_A1).l                      ; Offset_0x00D316
 Offset_0x018D74:
                 lea     ($FFFFFC00).w, A2
                 moveq   #$00, D0
@@ -94,12 +94,12 @@ Offset_0x018D74:
                 beq.s   Offset_0x018D86
                 bclr    #$07, $02(A2, D0)
 Offset_0x018D86:
-                jmp     (DeleteObject)                         ; Offset_0x00D314    
+                jmp     (DeleteObject).l                         ; Offset_0x00D314    
 ;-------------------------------------------------------------------------------
 Offset_0x018D8C:
                 bsr.s   Offset_0x018D96
                 bsr.s   Offset_0x018DE0
-                jmp     (DisplaySprite)                        ; Offset_0x00D322
+                jmp     (DisplaySprite).l                        ; Offset_0x00D322
 Offset_0x018D96:
                 tst.b   Obj_Control_Var_0A(A0)                           ; $0036
                 bne.s   Offset_0x018DBE

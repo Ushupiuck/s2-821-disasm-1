@@ -36,7 +36,7 @@ Offset_0x02A046:
                 neg.w   Obj_Speed(A0)                                    ; $0010
 Offset_0x02A056:
                 bsr.w   Jmp_19_To_SpeedToPos                   ; Offset_0x02A7C4
-                lea     (Horizontal_Spiny_Animate_Data), A1    ; Offset_0x02A1D2
+                lea     (Horizontal_Spiny_Animate_Data).l, A1    ; Offset_0x02A1D2
                 bsr.w   Jmp_17_To_AnimateSprite                ; Offset_0x02A7AC
                 bra.w   Jmp_26_To_MarkObjGone                  ; Offset_0x02A7A0
 Offset_0x02A068:

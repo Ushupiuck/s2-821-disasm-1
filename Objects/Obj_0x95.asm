@@ -87,20 +87,20 @@ Offset_0x0287F6:
                 move.b  #$01, Obj_Ani_Number(A0)                         ; $001C
 Offset_0x028808:
                 bsr.w   Jmp_19_To_SpeedToPos                   ; Offset_0x02A7C4
-                lea     (Sol_Animate_Data), A1                 ; Offset_0x0288CE
+                lea     (Sol_Animate_Data).l, A1                 ; Offset_0x0288CE
                 bsr.w   Jmp_17_To_AnimateSprite                ; Offset_0x02A7AC
                 andi.b  #$03, Obj_Map_Id(A0)                             ; $001A
                 bra.w   Jmp_26_To_MarkObjGone                  ; Offset_0x02A7A0 
 ;-------------------------------------------------------------------------------
 Offset_0x028820:
                 bsr.w   Jmp_19_To_SpeedToPos                   ; Offset_0x02A7C4
-                lea     (Sol_Animate_Data_01), A1              ; Offset_0x0288DC
+                lea     (Sol_Animate_Data_01).l, A1              ; Offset_0x0288DC
                 bsr.w   Jmp_17_To_AnimateSprite                ; Offset_0x02A7AC
                 andi.b  #$03, Obj_Map_Id(A0)                             ; $001A
                 bra.w   Jmp_26_To_MarkObjGone                  ; Offset_0x02A7A0
 ;-------------------------------------------------------------------------------
 Offset_0x028838:
-                lea     (Sol_Animate_Data_01), A1              ; Offset_0x0288DC
+                lea     (Sol_Animate_Data_01).l, A1              ; Offset_0x0288DC
                 bsr.w   Jmp_17_To_AnimateSprite                ; Offset_0x02A7AC
                 move.l  Obj_Control_Var_10(A0), A1                       ; $003C
                 _cmpi.b #$95, 0(A1)                                 ; $0000
@@ -138,7 +138,7 @@ Offset_0x0288B4:
                 bsr.w   Jmp_19_To_SpeedToPos                   ; Offset_0x02A7C4
                 tst.b   Obj_Flags(A0)                                    ; $0001
                 bpl.w   Jmp_23_To_DeleteObject                 ; Offset_0x02A794
-                lea     (Sol_Animate_Data_01), A1              ; Offset_0x0288DC
+                lea     (Sol_Animate_Data_01).l, A1              ; Offset_0x0288DC
                 bsr.w   Jmp_17_To_AnimateSprite                ; Offset_0x02A7AC
                 bra.w   Jmp_1F_To_DisplaySprite                ; Offset_0x02A78E   
 ;-------------------------------------------------------------------------------      

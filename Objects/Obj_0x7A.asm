@@ -90,12 +90,12 @@ Offset_0x01E576:
                 cmpi.w  #$0280, D0
                 bhi.s   Offset_0x01E5A0
 Offset_0x01E59A:
-                jmp     (DisplaySprite)                        ; Offset_0x00D322
+                jmp     (DisplaySprite).l                        ; Offset_0x00D322
 Offset_0x01E5A0:
                 move.l  Obj_Control_Var_10(A0), A1                       ; $003C
                 cmpa.l  A0, A1
                 beq.s   Offset_0x01E5AE
-                jsr     (DeleteObject_A1)                      ; Offset_0x00D316
+                jsr     (DeleteObject_A1).l                      ; Offset_0x00D316
 Offset_0x01E5AE:
                 lea     ($FFFFFC00).w, A2
                 moveq   #$00, D0
@@ -103,12 +103,12 @@ Offset_0x01E5AE:
                 beq.s   Offset_0x01E5C0
                 bclr    #$07, $02(A2, D0)
 Offset_0x01E5C0:
-                jmp     (DeleteObject)                         ; Offset_0x00D314 
+                jmp     (DeleteObject).l                         ; Offset_0x00D314 
 ;-------------------------------------------------------------------------------
 Offset_0x01E5C6:
                 bsr.s   Offset_0x01E5D0
                 bsr.s   Offset_0x01E61A
-                jmp     (DisplaySprite)                        ; Offset_0x00D322
+                jmp     (DisplaySprite).l                        ; Offset_0x00D322
 Offset_0x01E5D0:
                 move.w  Obj_X(A0), -(A7)                                 ; $0008
                 tst.b   Obj_Control_Var_0A(A0)                           ; $0036

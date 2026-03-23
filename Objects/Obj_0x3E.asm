@@ -12,9 +12,9 @@
                 sub.w   ($FFFFF7DA).w, D0
                 cmpi.w  #$0280, D0
                 bhi.s   Offset_0x02AF0E
-                jmp     (DisplaySprite)                        ; Offset_0x00D322
+                jmp     (DisplaySprite).l                        ; Offset_0x00D322
 Offset_0x02AF0E:
-                jmp     (DeleteObject)                         ; Offset_0x00D314
+                jmp     (DeleteObject).l                         ; Offset_0x00D314
 ;------------------------------------------------------------------------------- 
 Offset_0x02AF14:
                 dc.w    Offset_0x02AF34-Offset_0x02AF14
@@ -60,7 +60,7 @@ Offset_0x02AF82:
                 move.w  #$0018, D2
                 move.w  #$0018, D3
                 move.w  Obj_X(A0), D4                                    ; $0008
-                jmp     (SolidObject)                          ; Offset_0x00F344
+                jmp     (SolidObject).l                          ; Offset_0x00F344
 Offset_0x02AFA0:
                 tst.b   Obj_Routine_2(A0)                                ; $0025
                 beq.s   Offset_0x02AFB6
@@ -76,9 +76,9 @@ Offset_0x02AFBE:
                 move.w  #$0008, D2
                 move.w  #$0008, D3
                 move.w  Obj_X(A0), D4                                    ; $0008
-                jsr     (SolidObject)                          ; Offset_0x00F344
-                lea     (Egg_Prison_Animate_Data), A1          ; Offset_0x02B130
-                jsr     (AnimateSprite)                        ; Offset_0x00D372
+                jsr     (SolidObject).l                          ; Offset_0x00F344
+                lea     (Egg_Prison_Animate_Data).l, A1          ; Offset_0x02B130
+                jsr     (AnimateSprite).l                        ; Offset_0x00D372
                 move.w  Obj_Control_Var_04(A0), Obj_Y(A0)         ; $000C, $0030
                 move.b  Obj_Status(A0), D0                               ; $0022
                 andi.b  #$18, D0
@@ -100,7 +100,7 @@ Offset_0x02B026:
                 moveq   #$07, D0
                 and.b   ($FFFFFE0F).w, D0
                 bne.s   Offset_0x02B064
-                jsr     (SingleObjectLoad)                     ; Offset_0x00E6FE
+                jsr     (SingleObjectLoad).l                     ; Offset_0x00E6FE
                 bne.s   Offset_0x02B064
                 _move.b #$27, 0(A1)                                 ; $0000
                 move.w  Obj_X(A0), Obj_X(A1)                      ; $0008, $0008
@@ -128,7 +128,7 @@ Offset_0x02B06C:
                 move.w  #$009A, D5
                 moveq   #-$1C, D4
 Offset_0x02B092:
-                jsr     (SingleObjectLoad)                     ; Offset_0x00E6FE
+                jsr     (SingleObjectLoad).l                     ; Offset_0x00E6FE
                 bne.s   Offset_0x02B0BC
                 _move.b #$28, 0(A1)                                 ; $0000
                 move.w  Obj_X(A0), Obj_X(A1)                      ; $0008, $0008
@@ -145,7 +145,7 @@ Offset_0x02B0BE:
                 moveq   #$07, D0
                 and.b   ($FFFFFE0F).w, D0
                 bne.s   Offset_0x02B0FC
-                jsr     (SingleObjectLoad)                     ; Offset_0x00E6FE
+                jsr     (SingleObjectLoad).l                     ; Offset_0x00E6FE
                 bne.s   Offset_0x02B0FC
                 _move.b #$28, 0(A1)                                 ; $0000
                 move.w  Obj_X(A0), Obj_X(A1)                      ; $0008, $0008
@@ -177,8 +177,8 @@ Offset_0x02B118:
                 beq.s   Offset_0x02B12E
                 adda.w  D2, A1
                 dbra    D0, Offset_0x02B118
-                jsr     (Load_Level_Results)                   ; Offset_0x00F1F6
-                jmp     (DeleteObject)                         ; Offset_0x00D314
+                jsr     (Load_Level_Results).l                   ; Offset_0x00F1F6
+                jmp     (DeleteObject).l                         ; Offset_0x00D314
 Offset_0x02B12E:
                 rts   
 ;------------------------------------------------------------------------------- 

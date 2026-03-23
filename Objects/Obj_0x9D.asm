@@ -69,7 +69,7 @@ Offset_0x02928C:
                 subq.b  #$01, Obj_Timer(A0)                              ; $002A
                 beq.s   Offset_0x0292A4
                 bsr.w   Jmp_19_To_SpeedToPos                   ; Offset_0x02A7C4
-                lea     (Coconuts_AnimateData), A1             ; Offset_0x029366
+                lea     (Coconuts_AnimateData).l, A1             ; Offset_0x029366
                 bsr.w   Jmp_17_To_AnimateSprite                ; Offset_0x02A7AC
                 bra.w   Jmp_26_To_MarkObjGone                  ; Offset_0x02A7A0
 Offset_0x0292A4:

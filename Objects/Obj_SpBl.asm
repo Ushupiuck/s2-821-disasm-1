@@ -31,7 +31,7 @@ Offset_0x01F902:
 Offset_0x01F950:
                 bsr.w   Jmp_01_To_ObjectFall                   ; Offset_0x01FA10
                 bsr.w   Offset_0x01F966
-                lea     (Spinning_Ball_Animate_Data), A1       ; Offset_0x01F9C0
+                lea     (Spinning_Ball_Animate_Data).l, A1       ; Offset_0x01F9C0
                 bsr.w   Jmp_05_To_AnimateSprite                ; Offset_0x01F9F2
                 bra.w   Jmp_18_To_MarkObjGone                  ; Offset_0x01F9EC
 Offset_0x01F966:

@@ -90,7 +90,7 @@ Offset_0x029D28:
 Offset_0x029D36:
                 subq.w  #$01, Obj_Control_Var_04(A0)                     ; $0030
                 bmi.s   Offset_0x029D4A
-                lea     (Flasher_Animate_Data_01), A1          ; Offset_0x029DA4
+                lea     (Flasher_Animate_Data_01).l, A1          ; Offset_0x029DA4
                 bsr.w   Jmp_17_To_AnimateSprite                ; Offset_0x02A7AC
                 bra.w   Jmp_26_To_MarkObjGone                  ; Offset_0x02A7A0
 Offset_0x029D4A:
@@ -98,7 +98,7 @@ Offset_0x029D4A:
                 bra.w   Jmp_26_To_MarkObjGone                  ; Offset_0x02A7A0      
 ;-------------------------------------------------------------------------------
 Offset_0x029D52:
-                lea     (Flasher_Animate_Data_02), A1          ; Offset_0x029DAA
+                lea     (Flasher_Animate_Data_02).l, A1          ; Offset_0x029DAA
                 bsr.w   Jmp_17_To_AnimateSprite                ; Offset_0x02A7AC
                 bra.w   Jmp_26_To_MarkObjGone                  ; Offset_0x02A7A0   
 ;-------------------------------------------------------------------------------

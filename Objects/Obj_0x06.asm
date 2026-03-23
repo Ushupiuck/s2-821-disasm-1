@@ -18,7 +18,7 @@ Offset_0x0163BE:
                 bhi.s   Offset_0x0163D2
                 rts
 Offset_0x0163D2:
-                jmp     (DeleteObject)                         ; Offset_0x00D314
+                jmp     (DeleteObject).l                         ; Offset_0x00D314
 ;-------------------------------------------------------------------------------
 Offset_0x0163D8:
                 dc.w    Offset_0x0163DE-Offset_0x0163D8

@@ -26,9 +26,9 @@ Offset_0x01D366:
                 move.b  Obj_Subtype(A0), D0                              ; $0028
                 lsr.w   #$03, D0
                 andi.w  #$000E, D0
-                lea     (Parallelogram_Elevator_Data), A1      ; Offset_0x01D48E
-                move.w  $00(A1, D0), D0
-                lea     $00(A1, D0), A1
+                lea     (Parallelogram_Elevator_Data).l, A1      ; Offset_0x01D48E
+                move.w  (A1, D0), D0
+                lea     (A1, D0), A1
                 move.l  A1, Obj_Control_Var_10(A0)                       ; $003C
                 bsr.w   Offset_0x01D460
                 bset    #$07, Obj_Status(A0)                             ; $0022
@@ -44,14 +44,14 @@ Offset_0x01D3CC:
                 move.w  (A7)+, D4
                 moveq   #$00, D1
                 move.b  Obj_Width(A0), D1                                ; $0019
-                lea     (Parallelogram_Elevator_Solid_Data), A2 ;  Offset_0x01D51A
+                lea     (Parallelogram_Elevator_Solid_Data).l, A2 ;  Offset_0x01D51A
                 bsr.w   Offset_0x01D6A6
                 move.w  Obj_X(A0), D0                                    ; $0008
                 andi.w  #$FF80, D0
                 sub.w   ($FFFFF7DA).w, D0
                 cmpi.w  #$0280, D0
                 bhi.s   Offset_0x01D40A
-                jmp     (DisplaySprite)                        ; Offset_0x00D322
+                jmp     (DisplaySprite).l                        ; Offset_0x00D322
 Offset_0x01D40A:
                 move.w  Obj_Control_Var_06(A0), D0                       ; $0032
                 andi.w  #$FF80, D0
@@ -66,7 +66,7 @@ Offset_0x01D41E:
                 beq.s   Offset_0x01D430
                 bclr    #$07, $02(A2, D0)
 Offset_0x01D430:
-                jmp     (DeleteObject)                         ; Offset_0x00D314  
+                jmp     (DeleteObject).l                         ; Offset_0x00D314  
 ;-------------------------------------------------------------------------------
 Offset_0x01D436:
                 dc.w    Offset_0x01D43C-Offset_0x01D436
@@ -85,7 +85,7 @@ Offset_0x01D44C:
                 rts     
 ;-------------------------------------------------------------------------------
 Offset_0x01D44E:
-                jsr     (SpeedToPos)                           ; Offset_0x00D1DA
+                jsr     (SpeedToPos).l                           ; Offset_0x00D1DA
                 subq.w  #$01, Obj_Control_Var_08(A0)                     ; $0034
                 bne.s   Offset_0x01D45E
                 bsr.w   Offset_0x01D460
@@ -96,7 +96,7 @@ Offset_0x01D460:
                 move.b  Obj_Control_Var_0C(A0), D0                       ; $0038
                 move.l  Obj_Control_Var_10(A0), A1                       ; $003C
                 move.w  (A1)+, D1
-                lea     $00(A1, D0), A1
+                lea     (A1, D0), A1
                 move.w  (A1)+, Obj_Speed(A0)                             ; $0010
                 move.w  (A1)+, Obj_Speed_Y(A0)                           ; $0012
                 move.w  (A1)+, Obj_Control_Var_08(A0)                    ; $0034

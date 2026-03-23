@@ -34,7 +34,7 @@ Offset_0x019B5A:
                 move.b  Obj_Subtype(A0), D0                              ; $0028
                 andi.w  #$000F, D0
                 lea     ($FFFFF7E0).w, A3
-                lea     $00(A3, D0), A3
+                lea     (A3, D0), A3
                 moveq   #$00, D3
                 btst    #$06, Obj_Subtype(A0)                            ; $0028
                 beq.s   Offset_0x019B96

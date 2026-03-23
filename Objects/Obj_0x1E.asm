@@ -94,7 +94,7 @@ Offset_0x0174C6:
                 add.w   D2, D2
                 andi.w  #$001E, D2
                 lea     Offset_0x0177BE(PC), A2
-                adda.w  $00(A2, D2), A2
+                adda.w  (A2, D2), A2
                 move.w  (A2)+, $0004(A4) 
                 subq.w  #$04, $0004(A4) 
                 move.w  (A2)+, D4
@@ -247,12 +247,12 @@ Offset_0x0176D0:
                 neg.b   D0
                 move.b  #$FC, $0001(A4) 
                 add.w   D0, D0
-                lea     (Offset_0x017CC6), A2
-                adda.w  $00(A2, D0), A2
+                lea     (Offset_0x017CC6).l, A2
+                adda.w  (A2, D0), A2
                 move.w  (A2)+, D0
                 subq.w  #$04, D0
                 move.w  D0, $0004(A4) 
-                lea     $00(A2, D0), A2
+                lea     (A2, D0), A2
                 move.w  (A2)+, D4
                 move.w  D4, Obj_X(A1)                                    ; $0008
                 move.w  (A2)+, D5
@@ -261,8 +261,8 @@ Offset_0x0176D0:
                 bra.s   Offset_0x017722
 Offset_0x017702:
                 add.w   D0, D0
-                lea     (Offset_0x017CC6), A2
-                adda.w  $00(A2, D0), A2
+                lea     (Offset_0x017CC6).l, A2
+                adda.w  (A2, D0), A2
                 move.w  (A2)+, $0004(A4) 
                 subq.w  #$04, $0004(A4) 
                 move.w  (A2)+, D4

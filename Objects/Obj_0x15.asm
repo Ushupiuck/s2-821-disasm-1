@@ -285,7 +285,7 @@ Offset_0x008DD8:
                 moveq   #$00, D0
                 move.w  #$000F, D1
 Offset_0x008E14:
-                move.l  $00(A0, D0), $00(A1, D0)
+                move.l  (A0, D0), (A1, D0)
                 addq.w  #$04, D0
                 dbra    D1, Offset_0x008E14
                 move.b  #$0A, Obj_Routine(A1)                            ; $0024

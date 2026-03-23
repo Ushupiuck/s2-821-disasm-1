@@ -53,20 +53,20 @@ Offset_0x0226EA:
 Offset_0x0226F0:
                 bsr.w   Offset_0x022738
                 bsr.w   Jmp_14_To_SpeedToPos                   ; Offset_0x0228E6
-                jsr     (ObjHitFloor)                          ; Offset_0x014204
+                jsr     (ObjHitFloor).l                          ; Offset_0x014204
                 cmpi.w  #$FFF8, D1
                 blt.s   Offset_0x02271C
                 cmpi.w  #$000C, D1
                 bge.s   Offset_0x02271C
                 add.w   D1, Obj_Y(A0)                                    ; $000C
-                lea     (Motobug_Animate_Data), A1             ; Offset_0x02287C
+                lea     (Motobug_Animate_Data).l, A1             ; Offset_0x02287C
                 bsr.w   Jmp_10_To_AnimateSprite                ; Offset_0x0228C8
                 bra.w   Jmp_00_To_MarkObjGone_4                ; Offset_0x0228D4
 Offset_0x02271C:
                 addq.b  #$02, Obj_Routine(A0)                            ; $0024
                 move.w  #$0014, Obj_Control_Var_04(A0)                   ; $0030
                 st      Obj_Control_Var_08(A0)                           ; $0034
-                lea     (Motobug_Animate_Data), A1             ; Offset_0x02287C
+                lea     (Motobug_Animate_Data).l, A1             ; Offset_0x02287C
                 bsr.w   Jmp_10_To_AnimateSprite                ; Offset_0x0228C8
                 bra.w   Jmp_00_To_MarkObjGone_4                ; Offset_0x0228D4
 Offset_0x022738:
@@ -130,7 +130,7 @@ Offset_0x0227DA:
                 neg.w   D0
 Offset_0x02280A:
                 add.w   D0, Obj_X(A0)                                    ; $0008
-                lea     (Buzzer_AnimateData), A1               ; Offset_0x0241CE
+                lea     (Buzzer_AnimateData).l, A1               ; Offset_0x0241CE
                 bsr.w   Jmp_10_To_AnimateSprite                ; Offset_0x0228C8
                 bra.w   Jmp_00_To_MarkObjGone_4                ; Offset_0x0228D4       
 ;-------------------------------------------------------------------------------

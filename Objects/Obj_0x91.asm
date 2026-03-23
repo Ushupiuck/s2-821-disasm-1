@@ -77,7 +77,7 @@ Offset_0x028474:
 Offset_0x028476:
                 bsr.w   Jmp_19_To_SpeedToPos                   ; Offset_0x02A7C4
 Offset_0x02847A:
-                lea     (Chop_Chop_Animate_Data), A1           ; Offset_0x028500
+                lea     (Chop_Chop_Animate_Data).l, A1           ; Offset_0x028500
                 bsr.w   Jmp_17_To_AnimateSprite                ; Offset_0x02A7AC
                 bra.w   Jmp_26_To_MarkObjGone                  ; Offset_0x02A7A0 
 ;-------------------------------------------------------------------------------

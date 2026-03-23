@@ -106,10 +106,10 @@ Offset_0x016926:
                 move.w  D0, Obj_Control_Var_0C(A0)                       ; $0038
 Offset_0x01692A:
                 bsr.w   Offset_0x016956
-                lea     (Offset_0x016B6E), A2
+                lea     (Offset_0x016B6E).l, A2
                 btst    #$00, Obj_Map_Id(A0)                             ; $001A
                 beq.s   Offset_0x016942
-                lea     (Offset_0x016B9F), A2
+                lea     (Offset_0x016B9F).l, A2
 Offset_0x016942:
                 move.w  Obj_X(A0), -(A7)                                 ; $0008
                 moveq   #$00, D1
@@ -186,7 +186,7 @@ Offset_0x016A30:
                 addq.b  #$02, Obj_Routine(A0)                            ; $0024
                 bra.s   Offset_0x016A74
 Offset_0x016A36:
-                lea     (Offset_0x016B3C), A2
+                lea     (Offset_0x016B3C).l, A2
                 moveq   #$00, D0
                 move.b  Obj_Map_Id(A1), D0                               ; $001A
                 move.w  #$0028, D2
@@ -198,7 +198,7 @@ Offset_0x016A36:
 Offset_0x016A54:
                 add.w   D0, D0
                 move.w  Obj_Control_Var_08(A0), D1                       ; $0034
-                add.w   $00(A2, D0), D1
+                add.w   (A2, D0), D1
                 move.w  D1, Obj_Y(A0)                                    ; $000C
                 add.w   Obj_Control_Var_04(A0), D2                       ; $0030
                 move.w  D2, Obj_X(A0)                                    ; $0008
@@ -221,7 +221,7 @@ Offset_0x016A94:
 Offset_0x016A96:
                 bsr.w   Jmp_00_To_ObjectFall                   ; Offset_0x016C80
                 move.l  Obj_Control_Var_10(A0), A1                       ; $003C
-                lea     (Offset_0x016B3C), A2
+                lea     (Offset_0x016B3C).l, A2
                 moveq   #$00, D0
                 move.b  Obj_Map_Id(A1), D0                               ; $001A
                 move.w  Obj_X(A0), D1                                    ; $0008
@@ -231,7 +231,7 @@ Offset_0x016A96:
 Offset_0x016AB6:
                 add.w   D0, D0
                 move.w  Obj_Control_Var_08(A0), D1                       ; $0034
-                add.w   $00(A2, D0), D1
+                add.w   (A2, D0), D1
                 cmp.w   Obj_Y(A0), D1                                    ; $000C
                 bgt.s   Offset_0x016B0A
                 move.l  Obj_Control_Var_10(A0), A1                       ; $003C

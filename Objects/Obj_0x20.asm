@@ -42,7 +42,7 @@ Offset_0x017E50:
                 move.w  D0, Obj_Control_Var_08(A0)                       ; $0034    
 ;-------------------------------------------------------------------------------
 Offset_0x017EB2:
-                lea     (Fireball_Animate_Data), A1            ; Offset_0x018072
+                lea     (Fireball_Animate_Data).l, A1            ; Offset_0x018072
                 bsr.w   Jmp_00_To_AnimateSprite                ; Offset_0x01812A
                 bra.w   Jmp_05_To_MarkObjGone                  ; Offset_0x01811E     
 ;-------------------------------------------------------------------------------
@@ -62,7 +62,7 @@ Offset_0x017EE2:
                 jsr     (Play_Sfx).l                             ; Offset_0x001512
                 addq.b  #$02, Obj_Routine(A0)                            ; $0024
 Offset_0x017EF0:
-                lea     (Fireball_Animate_Data), A1            ; Offset_0x018072
+                lea     (Fireball_Animate_Data).l, A1            ; Offset_0x018072
                 bsr.w   Jmp_00_To_AnimateSprite                ; Offset_0x01812A
                 bra.w   Jmp_05_To_MarkObjGone                  ; Offset_0x01811E
 Offset_0x017EFE:
@@ -90,7 +90,7 @@ Offset_0x017F5A:
                 move.b  #$02, Obj_Routine(A0)                            ; $0024
                 move.w  #$0001, Obj_Ani_Number(A0)                       ; $001C
 Offset_0x017F72:
-                lea     (Fireball_Animate_Data), A1            ; Offset_0x018072
+                lea     (Fireball_Animate_Data).l, A1            ; Offset_0x018072
                 bsr.w   Jmp_00_To_AnimateSprite                ; Offset_0x01812A
                 bra.w   Jmp_05_To_MarkObjGone                  ; Offset_0x01811E   
 ;-------------------------------------------------------------------------------
@@ -141,7 +141,7 @@ Offset_0x01800E:
                 moveq   #$00, D0
                 move.w  #$000F, D1
 Offset_0x01802C:
-                move.l  $00(A0, D0), $00(A1, D0)
+                move.l  (A0, D0), (A1, D0)
                 addq.w  #$04, D0
                 dbra    D1, Offset_0x01802C
                 move.w  #$0009, Obj_Control_Var_06(A1)                   ; $0032
@@ -157,7 +157,7 @@ Offset_0x018050:
                 move.l  (A7)+, A1
                 add.w   D1, Obj_Y(A1)                                    ; $000C
 Offset_0x018060:
-                lea     (Fireball_Animate_Data), A1            ; Offset_0x018072
+                lea     (Fireball_Animate_Data).l, A1            ; Offset_0x018072
                 bsr.w   Jmp_00_To_AnimateSprite                ; Offset_0x01812A
                 bra.w   Jmp_05_To_MarkObjGone                  ; Offset_0x01811E   
 ;-------------------------------------------------------------------------------

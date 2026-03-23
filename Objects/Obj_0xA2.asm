@@ -45,7 +45,7 @@ Offset_0x029A10:
                 move.w  D0, D1
                 bsr.w   Offset_0x027F3E
                 bsr.w   Jmp_19_To_SpeedToPos                   ; Offset_0x02A7C4
-                lea     (Slicer_Pincers_Animate_Data), A1      ; Offset_0x029AD0
+                lea     (Slicer_Pincers_Animate_Data).l, A1      ; Offset_0x029AD0
                 bsr.w   Jmp_17_To_AnimateSprite                ; Offset_0x02A7AC
                 bra.w   Jmp_26_To_MarkObjGone                  ; Offset_0x02A7A0  
 ;-------------------------------------------------------------------------------
@@ -60,7 +60,7 @@ Offset_0x029A5E:
                 subq.w  #$01, Obj_Control_Var_02(A0)                     ; $002E
                 bmi.w   Jmp_23_To_DeleteObject                 ; Offset_0x02A794
                 bsr.w   Jmp_0E_To_ObjectFall                   ; Offset_0x02A7BE
-                lea     (Slicer_Pincers_Animate_Data), A1      ; Offset_0x029AD0
+                lea     (Slicer_Pincers_Animate_Data).l, A1      ; Offset_0x029AD0
                 bsr.w   Jmp_17_To_AnimateSprite                ; Offset_0x02A7AC
                 bra.w   Jmp_26_To_MarkObjGone                  ; Offset_0x02A7A0
 ;-------------------------------------------------------------------------------                  

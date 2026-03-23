@@ -29,7 +29,7 @@ Offset_0x009FCA:
                 andi.w  #$000F, D0
                 lsl.w   #$03, D0
                 lea     Misc_Object_Definitions_List_2(PC), A1 ; Offset_0x009FB2
-                lea     $00(A1, D0), A1
+                lea     (A1, D0), A1
                 move.b  (A1), Obj_Map_Id(A0)                             ; $001A
                 move.l  (A1)+, Obj_Map(A0)                               ; $0004
                 move.w  (A1)+, Obj_Art_VRAM(A0)                          ; $0002
@@ -43,7 +43,7 @@ Offset_0x009FCA:
                 move.b  D0, Obj_Ani_Number(A0)                           ; $001C
 ;-------------------------------------------------------------------------------  
 Offset_0x00A00C:
-                lea     (Mz_Hpz_Misc_Animate_Data), A1         ; Offset_0x00A01A
+                lea     (Mz_Hpz_Misc_Animate_Data).l, A1         ; Offset_0x00A01A
                 bsr.w   AnimateSprite                          ; Offset_0x00D372
                 bra.w   MarkObjGone                            ; Offset_0x00D200  
 ;-------------------------------------------------------------------------------

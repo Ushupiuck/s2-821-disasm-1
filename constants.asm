@@ -215,10 +215,14 @@ MusID_Emerald =		id(zMusIDPtr_Emerald)
 MusID_HPZDup =	id(zMusIDPtr_HPZDup)
 MusID__End =		id(zMusIDPtr__End)
 
+; Leftover Music IDs from Simon Wai
+MusID_Boss_Prev =	$8E
+
 ; Whenever the music references a slot that was its placement in Sonic 1
 S1MusID_LZ =		$82
 S1MusID_Invinc =	$87
 S1MusID_ExtraLife =	$88
+S1MusID_SpecStg =	$89
 S1MusID_Boss =		$8C
 S1MusID_ActClear =	$8E
 S1MusID_Emerald =	$93
@@ -226,13 +230,77 @@ S1SndID_Waterfall =	$D0
 S1MusID_Stop =		$E0
 
 ; Sound IDs
+offset :=	SoundIndex
+ptrsize :=	2
+idstart :=	$A0
+; $80 is reserved for silence, so if you make idstart $80 or less,
+; you may need to insert a dummy SndPtr in the $80 slot
 
-SndID__First =	$A0
-SndID_PushBlock	= $A7
-SndID_RingRight	= $B5
-SndID_RingLeft	= $CE
-SndID_SpindashRev =	$E0
-SndID__End =	$EA
+SndID__First = idstart
+SndID_Jump =		id(SndPtr_Jump)			; A0
+SndID_Checkpoint =	id(SndPtr_Checkpoint)		; A1
+SndID_SpikeSwitch =	id(SndPtr_SpikeSwitch)		; A2
+SndID_Hurt =		id(SndPtr_Hurt)			; A3
+SndID_Skidding =	id(SndPtr_Skidding)		; A4
+SndID_MissileDissolve =	id(SndPtr_MissileDissolve)	; A5
+SndID_HurtBySpikes =	id(SndPtr_HurtBySpikes)		; A6
+SndID_PushBlock =	id(SndPtr_PushBlock)		; A7
+SndID_SSGoal =		id(SndPtr_SSGoal)		; A8
+SndID_Bwoop =		id(SndPtr_Bwoop)		; A9
+SndID_Splash =		id(SndPtr_Splash)		; AA
+SndID_Swish =		id(SndPtr_Swish)		; AB
+SndID_BossHit =		id(SndPtr_BossHit)		; AC
+SndID_InhalingBubble =	id(SndPtr_InhalingBubble)	; AD
+SndID_ArrowFiring =	id(SndPtr_ArrowFiring)		; AE
+SndID_LavaBall =	id(SndPtr_LavaBall)		; AE
+SndID_Shield =		id(SndPtr_Shield)		; AF
+SndID_Saw =		id(SndPtr_Saw)			; B0
+SndID_Electric =	id(SndPtr_Electric)		; B1
+SndID_Drown =		id(SndPtr_Drown)		; B2
+SndID_FireBurn =	id(SndPtr_FireBurn)		; B3
+SndID_Bumper =		id(SndPtr_Bumper)		; B4
+SndID_Ring =		id(SndPtr_Ring)			; B5
+SndID_RingRight =	id(SndPtr_RingRight)		; B5
+SndID_SpikesMove =	id(SndPtr_SpikesMove)		; B6
+SndID_Rumbling =	id(SndPtr_Rumbling)		; B7
+SndID_Smash =		id(SndPtr_Smash)		; B9
+SndID_SSGlass =		id(SndPtr_SSGlass)		; BA
+SndID_DoorSlam =	id(SndPtr_DoorSlam)		; BB
+SndID_SpindashRelease =	id(SndPtr_SpindashRelease)	; BC
+SndID_Hammer =		id(SndPtr_Hammer)		; BD
+SndID_Roll =		id(SndPtr_Roll)			; BE
+SndID_ContinueJingle =	id(SndPtr_ContinueJingle)	; BF
+SndID_BasaranFlap =	id(SndPtr_BasaranFlap)		; C0
+SndID_Explosion =	id(SndPtr_Explosion)		; C1
+SndID_WaterWarning =	id(SndPtr_WaterWarning)		; C2
+SndID_EnterGiantRing =	id(SndPtr_EnterGiantRing)	; C3
+SndID_BossExplosion =	id(SndPtr_BossExplosion)	; C4
+SndID_TallyEnd =	id(SndPtr_TallyEnd)		; C5
+SndID_RingSpill =	id(SndPtr_RingSpill)		; C6
+SndID_Flamethrower =	id(SndPtr_Flamethrower)		; C8
+SndID_Bonus =		id(SndPtr_Bonus)		; C9
+SndID_SpecStageEntry =	id(SndPtr_SpecStageEntry)	; CA
+SndID_SlowSmash =	id(SndPtr_SlowSmash)		; CB
+SndID_Spring =		id(SndPtr_Spring)		; CC
+SndID_Blip =		id(SndPtr_Blip)			; CD
+SndID_RingLeft =	id(SndPtr_RingLeft)		; CE
+SndID_Signpost =	id(SndPtr_Signpost)		; CF
+SndID_CNZBossZap =	id(SndPtr_CNZBossZap)		; D0
+SndID_Signpost2P =	id(SndPtr_Signpost2P)		; D3
+SndID_OOZLidPop =	id(SndPtr_OOZLidPop)		; D4
+SndID_SlidingSpike =	id(SndPtr_SlidingSpike)		; D5
+SndID_CNZElevator =	id(SndPtr_CNZElevator)		; D6
+SndID_PlatformKnock =	id(SndPtr_PlatformKnock)	; D7
+SndID_BonusBumper =	id(SndPtr_BonusBumper)		; D8
+SndID_LargeBumper =	id(SndPtr_LargeBumper)		; D9
+SndID_Gloop =		id(SndPtr_Gloop)		; DA
+SndID_PreArrowFiring =	id(SndPtr_PreArrowFiring)	; DB
+SndID_Fire =		id(SndPtr_Fire)			; DC
+SndID_ArrowStick =	id(SndPtr_ArrowStick)		; DD
+SndID_Helicopter =	id(SndPtr_Helicopter)		; DE
+SndID_SuperTransform =	id(SndPtr_SuperTransform)	; DF
+SndID_SpindashRev =	id(SndPtr_SpindashRev)		; E0
+SndID__End =		id(SndPtr__End)			; EA
 
 ; Sound command IDs
 offset :=	zCommandIndex
@@ -370,38 +438,6 @@ CNz_R_Catcher_Fall_Y		   equ $0034
 CNz_L_Catcher_Fall_Y		   equ $003A
 
 Obj_Page_Size_2P			   equ $000C
-
-; Level Select Text
-_0 = $00
-_1 = $01
-_2 = $02
-_A = $11
-_B = $12
-_C = $13
-_D = $14
-_E = $15
-_F = $16
-_G = $17
-_H = $18
-_I = $19
-_J = $1A
-_K = $1B
-_L = $1C
-_M = $1D
-_N = $1E
-_O = $1F
-_P = $20
-_Q = $21
-_R = $22
-_S = $23
-_T = $24
-_U = $25
-_V = $26
-_W = $27
-_X = $28
-_Y = $0F
-_Z = $10
-__ = $FF
 
 ; Z80
 

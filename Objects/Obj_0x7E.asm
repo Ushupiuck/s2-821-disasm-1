@@ -46,7 +46,7 @@ Offset_0x0135D8:
                 move.w  (Player_One_Position_X).w, Obj_X(A0)         ; $FFFFB008; $0008
                 move.w  (Player_One_Position_Y).w, Obj_Y(A0)         ; $FFFFB00C; $000C
 Offset_0x0135E4:
-                jmp     (DisplaySprite)                        ; Offset_0x00D322
+                jmp     (DisplaySprite).l                        ; Offset_0x00D322
 Offset_0x0135EA:
                 tst.b   ($FFFFB02A).w
                 bne.s   Offset_0x01360C
@@ -64,7 +64,7 @@ Offset_0x01360C:
                 move.b  #$00, Obj_Control_Var_05(A0)                     ; $0031
                 rts
 Offset_0x01361A:
-                jmp     (DeleteObject)                         ; Offset_0x00D314
+                jmp     (DeleteObject).l                         ; Offset_0x00D314
 ;-------------------------------------------------------------------------------
 Super_Sonic_Stars_Mappings:                                    ; Offset_0x013620
                 dc.w    Offset_0x01362C-Super_Sonic_Stars_Mappings

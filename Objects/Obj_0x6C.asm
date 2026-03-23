@@ -37,7 +37,7 @@ Offset_0x01CDF4:
                 lsr.w   #$03, D0
                 andi.w  #$001E, D0
                 lea     Mz_Moving_Platforms_Move_Data(PC), A2  ; Offset_0x01CFE6
-                adda.w  $00(A2, D0), A2
+                adda.w  (A2, D0), A2
                 move.w  (A2)+, Obj_Control_Var_0C(A0)                    ; $0038
                 move.l  A2, Obj_Control_Var_10(A0)                       ; $003C
                 andi.w  #$000F, D1
@@ -61,7 +61,7 @@ Offset_0x01CDF4:
 Offset_0x01CE82:
                 move.b  D1, Obj_Control_Var_0C(A0)                       ; $0038
 Offset_0x01CE86:
-                move.w  $00(A2, D1), D0
+                move.w  (A2, D1), D0
                 add.w   Obj_Control_Var_04(A0), D0                       ; $0030
                 move.w  D0, Obj_Control_Var_08(A0)                       ; $0034
                 move.w  $02(A2, D1), D0
@@ -72,8 +72,8 @@ Offset_0x01CE86:
 Offset_0x01CEA6:
                 andi.w  #$007F, D0
                 add.w   D0, D0
-                lea     (Mz_Moving_Platforms_Move_Data_01), A2 ; Offset_0x01D06A
-                adda.w  $00(A2, D0), A2
+                lea     (Mz_Moving_Platforms_Move_Data_01).l, A2 ; Offset_0x01D06A
+                adda.w  (A2, D0), A2
                 move.w  (A2)+, D1
                 move.l  A0, A1
                 move.w  Obj_X(A0), D2                                    ; $0008
@@ -83,8 +83,7 @@ Offset_0x01CEA6:
 Offset_0x01CEC4:
                 bsr.w   Jmp_05_To_SingleObjectLoad             ; Offset_0x01D128
                 bne.s   Offset_0x01CEF4      
-Offset_0x01CECA:                                      
-;-------------------------------------------------------------------------------
+Offset_0x01CECA:
                 _move.b #$6C, 0(A1)                                 ; $0000
                 move.w  (A2)+, D0
                 add.w   D2, D0

@@ -20,7 +20,7 @@ Offset_0x02171A:
                 rts
 Offset_0x021724:
                 bsr.w   Jmp_05_To_ObjectFall                   ; Offset_0x0219AC
-                lea     (Octus_AnimateData), A1                ; Offset_0x0218F6
+                lea     (Octus_AnimateData).l, A1                ; Offset_0x0218F6
                 bsr.w   Jmp_0C_To_AnimateSprite                ; Offset_0x0219A6
                 bra.w   Jmp_1F_To_MarkObjGone                  ; Offset_0x0219A0      
 ;-------------------------------------------------------------------------------
@@ -39,7 +39,7 @@ Offset_0x021742:
                 move.b  #$10, Obj_Height_2(A0)                           ; $0016
                 move.b  #$08, Obj_Width_2(A0)                            ; $0017
                 bsr.w   Jmp_05_To_ObjectFall                   ; Offset_0x0219AC
-                jsr     (ObjHitFloor)                          ; Offset_0x014204
+                jsr     (ObjHitFloor).l                          ; Offset_0x014204
                 tst.w   D1
                 bpl.s   Offset_0x0217A0
                 add.w   D1, Obj_Y(A0)                                    ; $000C
@@ -58,7 +58,7 @@ Offset_0x0217A8:
                 move.b  Obj_Routine_2(A0), D0                            ; $0025
                 move.w  Offset_0x0217C4(PC, D0), D1
                 jsr     Offset_0x0217C4(PC, D1)
-                lea     (Octus_AnimateData), A1                ; Offset_0x0218F6
+                lea     (Octus_AnimateData).l, A1                ; Offset_0x0218F6
                 bsr.w   Jmp_0C_To_AnimateSprite                ; Offset_0x0219A6
                 bra.w   Jmp_1F_To_MarkObjGone                  ; Offset_0x0219A0     
 ;-------------------------------------------------------------------------------
@@ -96,7 +96,7 @@ Offset_0x02180E:
                 beq.w   Offset_0x0218DA
                 bpl.w   Offset_0x0218D8
                 move.w  #$001E, Obj_Control_Var_00(A0)                   ; $002C
-                jsr     (SingleObjectLoad)                     ; Offset_0x00E6FE
+                jsr     (SingleObjectLoad).l                     ; Offset_0x00E6FE
                 bne.s   Offset_0x021874
                 _move.b #$4A, 0(A1)                                 ; $0000
                 move.b  #$04, Obj_Routine(A1)                            ; $0024
@@ -111,7 +111,7 @@ Offset_0x02180E:
                 move.b  Obj_Flags(A0), Obj_Flags(A1)              ; $0001, $0001
                 move.b  Obj_Status(A0), Obj_Status(A1)            ; $0022, $0022
 Offset_0x021874:
-                jsr     (SingleObjectLoad)                     ; Offset_0x00E6FE
+                jsr     (SingleObjectLoad).l                     ; Offset_0x00E6FE
                 bne.s   Offset_0x0218D8
                 _move.b #$4A, 0(A1)                                 ; $0000
                 move.b  #$06, Obj_Routine(A1)                            ; $0024

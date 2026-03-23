@@ -27,7 +27,7 @@ Offset_0x020110:
                 move.w  Obj_X(A0), Obj_Control_Var_04(A0)         ; $0008, $0030
                 move.w  Obj_Y(A0), Obj_Control_Var_0C(A0)         ; $000C, $0038
                 bsr.w   Jmp_27_To_ModifySpriteAttr_2P          ; Offset_0x02050E
-                jsr     (SingleObjectLoad_2)                   ; Offset_0x00E714
+                jsr     (SingleObjectLoad_2).l                   ; Offset_0x00E714
                 bne.w   Offset_0x020200
                 _move.b #$56, 0(A1)                                 ; $0000
                 move.l  A0, Obj_Control_Var_08(A1)                       ; $0034
@@ -45,7 +45,7 @@ Offset_0x020110:
                 bsr.w   Jmp_03_To_ModifySpriteAttr_2P_A1       ; Offset_0x020508
                 tst.b   Obj_Subtype(A0)                                  ; $0028
                 bmi.s   Offset_0x020200
-                jsr     (SingleObjectLoad_2)                   ; Offset_0x00E714
+                jsr     (SingleObjectLoad_2).l                   ; Offset_0x00E714
                 bne.s   Offset_0x020200
                 _move.b #$56, 0(A1)                                 ; $0000
                 move.l  A0, Obj_Control_Var_08(A1)                       ; $0034
@@ -79,13 +79,13 @@ Offset_0x02021A:
                 add.w   D0, D0
                 move.l  Offset_0x020250(PC, D0), A1
                 jsr     (A1)
-                lea     (GHz_Boss_Animate_Data), A1            ; Offset_0x020484
-                jsr     (AnimateSprite)                        ; Offset_0x00D372
+                lea     (GHz_Boss_Animate_Data).l, A1            ; Offset_0x020484
+                jsr     (AnimateSprite).l                        ; Offset_0x00D372
                 move.b  Obj_Status(A0), D0                               ; $0022
                 andi.b  #$03, D0
                 andi.b  #$FC, Obj_Flags(A0)                              ; $0001
                 or.b    D0, Obj_Flags(A0)                                ; $0001
-                jmp     (DisplaySprite)                        ; Offset_0x00D322
+                jmp     (DisplaySprite).l                        ; Offset_0x00D322
 ;-------------------------------------------------------------------------------
 Offset_0x020250:
                 dc.l    Offset_0x02393E
@@ -98,8 +98,8 @@ Offset_0x020258:
                 move.b  Obj_Status(A1), Obj_Status(A0)            ; $0022, $0022
                 move.b  Obj_Flags(A1), Obj_Flags(A0)              ; $0001, $0001
                 move.l  #GHz_Boss_Animate_Data, A1             ; Offset_0x020484
-                jsr     (AnimateSprite)                        ; Offset_0x00D372
-                jmp     (DisplaySprite)                        ; Offset_0x00D322
+                jsr     (AnimateSprite).l                        ; Offset_0x00D372
+                jmp     (DisplaySprite).l                        ; Offset_0x00D322
 ;-------------------------------------------------------------------------------
 Offset_0x020286:
                 dc.b    $00, $FF, $01, $00                                    

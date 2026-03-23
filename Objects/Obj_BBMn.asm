@@ -44,7 +44,7 @@ Offset_0x020F12:
                 bne.s   Offset_0x020F20
                 subi.w  #$0004, Obj_Y(A0)                                ; $000C
 Offset_0x020F20:
-                lea     (Bubble_Monster_Animate_Data), A1      ; Offset_0x02100C
+                lea     (Bubble_Monster_Animate_Data).l, A1      ; Offset_0x02100C
                 bsr.w   Jmp_09_To_AnimateSprite                ; Offset_0x02114E
                 bra.w   Jmp_1C_To_MarkObjGone                  ; Offset_0x021148
 Offset_0x020F2E:

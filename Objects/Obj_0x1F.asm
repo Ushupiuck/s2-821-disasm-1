@@ -21,10 +21,10 @@ Offset_0x00973C:
                 move.b  #$04, Obj_Priority(A0)                           ; $0018
                 move.b  #$07, Obj_Control_Var_0C(A0)                     ; $0038
                 move.b  #$44, Obj_Width(A0)                              ; $0019
-                lea     (Collapsing_Platforms_2_Data), A4      ; Offset_0x009937
+                lea     (Collapsing_Platforms_2_Data).l, A4      ; Offset_0x009937
                 btst    #$00, Obj_Subtype(A0)                            ; $0028
                 beq.s   Offset_0x00977A
-                lea     (Collapsing_Platforms_2_Data_2), A4    ; Offset_0x00993F
+                lea     (Collapsing_Platforms_2_Data_2).l, A4    ; Offset_0x00993F
 Offset_0x00977A:
                 move.l  A4, Obj_Control_Var_08(A0)                       ; $0034
                 cmpi.b  #$0A, (Level_Id).w                           ; $FFFFFE10
@@ -108,7 +108,7 @@ Offset_0x00988C:
                 move.b  Obj_Map_Id(A0), D0                               ; $001A
                 add.w   D0, D0
                 move.l  Obj_Map(A0), A3                                  ; $0004
-                adda.w  $00(A3, D0), A3
+                adda.w  (A3, D0), A3
                 move.w  (A3)+, D1
                 subq.w  #$01, D1
                 bset    #$05, Obj_Flags(A0)                              ; $0001

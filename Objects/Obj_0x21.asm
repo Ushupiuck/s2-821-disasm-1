@@ -33,7 +33,7 @@ Offset_0x02D140:
                 addq.w  #$02, D0
 Offset_0x02D15A:
                 move.b  D0, Obj_Map_Id(A0)                               ; $001A
-                jmp     (DisplaySprite)                        ; Offset_0x00D322
+                jmp     (DisplaySprite).l                        ; Offset_0x00D322
 Offset_0x02D164:
                 moveq   #$00, D0
                 btst    #$03, ($FFFFFE05).w
@@ -44,7 +44,7 @@ Offset_0x02D164:
                 addq.w  #$02, D0
 Offset_0x02D17A:
                 move.b  D0, Obj_Map_Id(A0)                               ; $001A
-                jmp     (DisplaySprite)                        ; Offset_0x00D322   
+                jmp     (DisplaySprite).l                        ; Offset_0x00D322   
 ;-------------------------------------------------------------------------------  
 Head_Up_Display_Mappings:                                      ; Offset_0x02D184
                 dc.w    Offset_0x02D18C-Head_Up_Display_Mappings

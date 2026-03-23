@@ -52,7 +52,7 @@ Offset_0x01602A:
 Offset_0x016044:
                 tst.w   (Debug_Mode_Flag_Index).w                    ; $FFFFFE08
                 beq.s   Offset_0x016050
-                jmp     (DisplaySprite)                        ; Offset_0x00D322
+                jmp     (DisplaySprite).l                        ; Offset_0x00D322
 Offset_0x016050:
                 rts                 
 ;-------------------------------------------------------------------------------

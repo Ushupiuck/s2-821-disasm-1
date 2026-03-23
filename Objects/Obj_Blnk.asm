@@ -64,7 +64,7 @@ Offset_0x021516:
                 neg.w   D0
 Offset_0x021546:
                 add.w   D0, Obj_X(A0)                                    ; $0008
-                lea     (Blink_Animate_Data), A1               ; Offset_0x02166A
+                lea     (Blink_Animate_Data).l, A1               ; Offset_0x02166A
                 bsr.w   Jmp_0B_To_AnimateSprite                ; Offset_0x0216DE
                 bra.w   Jmp_1E_To_MarkObjGone                  ; Offset_0x0216D8 
 ;-------------------------------------------------------------------------------
@@ -142,7 +142,7 @@ Offset_0x02163A:
                 move.b  #$00, Obj_Routine(A0)                            ; $0024
                 move.b  #$00, Obj_Routine(A0)                            ; $0024
 Offset_0x02165C:
-                lea     (Blink_Animate_Data), A1               ; Offset_0x02166A
+                lea     (Blink_Animate_Data).l, A1               ; Offset_0x02166A
                 bsr.w   Jmp_0B_To_AnimateSprite                ; Offset_0x0216DE
                 bra.w   Jmp_1E_To_MarkObjGone                  ; Offset_0x0216D8       
 ;-------------------------------------------------------------------------------

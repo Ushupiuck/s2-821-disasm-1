@@ -78,7 +78,7 @@ Offset_0x01D1F6:
                 sub.w   ($FFFFF7DA).w, D0
                 cmpi.w  #$0280, D0
                 bhi.s   Offset_0x01D238
-                jmp     (DisplaySprite)                        ; Offset_0x00D322
+                jmp     (DisplaySprite).l                        ; Offset_0x00D322
 Offset_0x01D238:
                 lea     ($FFFFFC00).w, A2
                 moveq   #$00, D0
@@ -86,7 +86,7 @@ Offset_0x01D238:
                 beq.s   Offset_0x01D24A
                 bclr    #$07, $02(A2, D0)
 Offset_0x01D24A:
-                jmp     (DeleteObject)                         ; Offset_0x00D314  
+                jmp     (DeleteObject).l                         ; Offset_0x00D314  
 ;-------------------------------------------------------------------------------  
 Offset_0x01D250:
                 move.b  ($FFFFFE80).w, D1
@@ -116,7 +116,7 @@ Offset_0x01D280:
                 sub.w   ($FFFFF7DA).w, D0
                 cmpi.w  #$0280, D0
                 bhi.s   Offset_0x01D2A8
-                jmp     (DisplaySprite)                        ; Offset_0x00D322
+                jmp     (DisplaySprite).l                        ; Offset_0x00D322
 Offset_0x01D2A8:
                 lea     ($FFFFFC00).w, A2
                 moveq   #$00, D0
@@ -124,7 +124,7 @@ Offset_0x01D2A8:
                 beq.s   Offset_0x01D2BA
                 bclr    #$07, $02(A2, D0)
 Offset_0x01D2BA:
-                jmp     (DeleteObject)                         ; Offset_0x00D314   
+                jmp     (DeleteObject).l                         ; Offset_0x00D314   
 ;-------------------------------------------------------------------------------   
 Machine_Mappings:                                              ; Offset_0x01D2C0
                 dc.w    Offset_0x01D2C8-Machine_Mappings

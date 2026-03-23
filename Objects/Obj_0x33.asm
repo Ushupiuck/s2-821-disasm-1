@@ -204,8 +204,8 @@ Offset_0x018BCA:
                 cmpi.w  #$0014, D0
                 blt.s   Offset_0x018BF2
                 move.b  #$9B, Obj_Col_Flags(A0)                          ; $0020
-                lea     (Touch_Booster_Animate_Data), A1       ; Offset_0x018C00
-                jsr     (AnimateSprite)                        ; Offset_0x00D372
+                lea     (Touch_Booster_Animate_Data).l, A1       ; Offset_0x018C00
+                jsr     (AnimateSprite).l                        ; Offset_0x00D372
                 bra.w   Jmp_07_To_MarkObjGone                  ; Offset_0x018C5C
 Offset_0x018BF2:
                 move.b  #$00, Obj_Col_Flags(A0)                          ; $0020

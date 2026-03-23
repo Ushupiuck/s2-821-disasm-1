@@ -99,7 +99,7 @@ Offset_0x02596A:
 Offset_0x0259B6:
                 bsr.w   Boss_Hit                               ; Offset_0x02459E
                 bsr.w   Offset_0x025AE2
-                lea     (HTz_Boss_Animate_Data), A1            ; Offset_0x025E08
+                lea     (HTz_Boss_Animate_Data).l, A1            ; Offset_0x025E08
                 bsr.w   Boss_AnimateSprite                     ; Offset_0x026312
                 bra.w   Jmp_1A_To_DisplaySprite                ; Offset_0x025FB0
 Offset_0x0259CC:
@@ -221,7 +221,7 @@ Offset_0x025B4A:
 Offset_0x025B54:
                 move.w  HTz_Robotnik_Pos_X(A0), D1                       ; $0010
                 add.w   D1, Obj_X(A0)                                    ; $0008
-                lea     (HTz_Boss_Animate_Data), A1            ; Offset_0x025E08
+                lea     (HTz_Boss_Animate_Data).l, A1            ; Offset_0x025E08
                 bsr.w   Jmp_14_To_AnimateSprite                ; Offset_0x025FC8
                 bra.w   Jmp_25_To_MarkObjGone                  ; Offset_0x025FC2         
 ;-------------------------------------------------------------------------------
@@ -296,7 +296,7 @@ Offset_0x025C0A:
                 move.b  #$03, Obj_Control_Var_0A(A0)                     ; $0036
                 bra.w   Jmp_00_To_Obj_0x20_HTz_Boss_FireBall   ; Offset_0x025FD4
 Offset_0x025C5E:
-                lea     (HTz_Boss_Animate_Data), A1            ; Offset_0x025E08
+                lea     (HTz_Boss_Animate_Data).l, A1            ; Offset_0x025E08
                 bsr.w   Jmp_14_To_AnimateSprite                ; Offset_0x025FC8
                 bra.w   Jmp_25_To_MarkObjGone                  ; Offset_0x025FC2
 Offset_0x025C6C:

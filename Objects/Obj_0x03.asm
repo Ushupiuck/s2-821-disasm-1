@@ -9,7 +9,7 @@
                 jsr     Offset_0x014DE4(PC, D1)
                 tst.w   (Debug_Mode_Active_Flag).w                   ; $FFFFFFFA
                 beq.w   MarkObjGone_3                          ; Offset_0x00D26C
-                jmp     (MarkObjGone)                          ; Offset_0x00D200
+                jmp     (MarkObjGone).l                          ; Offset_0x00D200
 ;-------------------------------------------------------------------------------  
 Offset_0x014DE4:
                 dc.w    Offset_0x014DEA-Offset_0x014DE4

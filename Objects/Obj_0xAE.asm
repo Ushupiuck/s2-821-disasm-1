@@ -21,7 +21,7 @@ Offset_0x02A4EA:
 ;-------------------------------------------------------------------------------
 Offset_0x02A4EE:
                 move.b  Obj_Routine(A0), D2                              ; $0024
-                lea     (Clucker_Animate_Data), A1             ; Offset_0x02A5F2
+                lea     (Clucker_Animate_Data).l, A1             ; Offset_0x02A5F2
                 bsr.w   Jmp_17_To_AnimateSprite                ; Offset_0x02A7AC
                 cmp.b   Obj_Routine(A0), D2                              ; $0024
                 bne.s   Offset_0x02A506
@@ -35,7 +35,7 @@ Offset_0x02A506:
                 bra.w   Jmp_26_To_MarkObjGone                  ; Offset_0x02A7A0   
 ;-------------------------------------------------------------------------------
 Offset_0x02A51E:
-                lea     (Clucker_Animate_Data_01), A1          ; Offset_0x02A5FE
+                lea     (Clucker_Animate_Data_01).l, A1          ; Offset_0x02A5FE
                 bsr.w   Jmp_17_To_AnimateSprite                ; Offset_0x02A7AC
                 bra.w   Jmp_26_To_MarkObjGone                  ; Offset_0x02A7A0  
 ;-------------------------------------------------------------------------------
@@ -54,7 +54,7 @@ Offset_0x02A53A:
                 bra.w   Jmp_26_To_MarkObjGone                  ; Offset_0x02A7A0  
 ;-------------------------------------------------------------------------------
 Offset_0x02A554:
-                lea     (Clucker_Animate_Data_02), A1          ; Offset_0x02A60A
+                lea     (Clucker_Animate_Data_02).l, A1          ; Offset_0x02A60A
                 bsr.w   Jmp_17_To_AnimateSprite                ; Offset_0x02A7AC
                 bra.w   Jmp_26_To_MarkObjGone                  ; Offset_0x02A7A0  
 ;-------------------------------------------------------------------------------

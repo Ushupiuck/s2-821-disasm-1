@@ -31,13 +31,13 @@ Offset_0x029936:
                 bcs.s   Offset_0x02997E
 Offset_0x029948:
                 bsr.w   Jmp_19_To_SpeedToPos                   ; Offset_0x02A7C4
-                jsr     (ObjHitFloor)                          ; Offset_0x014204
+                jsr     (ObjHitFloor).l                          ; Offset_0x014204
                 cmpi.w  #$FFF8, D1
                 blt.s   Offset_0x029970
                 cmpi.w  #$000C, D1
                 bge.s   Offset_0x029970
                 add.w   D1, Obj_Y(A0)                                    ; $000C
-                lea     (Slicer_Animate_Data), A1              ; Offset_0x029ACA
+                lea     (Slicer_Animate_Data).l, A1              ; Offset_0x029ACA
                 bsr.w   Jmp_17_To_AnimateSprite                ; Offset_0x02A7AC
                 bra.w   Jmp_26_To_MarkObjGone                  ; Offset_0x02A7A0
 Offset_0x029970:

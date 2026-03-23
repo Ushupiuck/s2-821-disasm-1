@@ -44,7 +44,7 @@ Offset_0x01CB4E:
                 bcs.s   Offset_0x01CBA8
                 lsl.w   #$02, D0
                 lea     ($FFFFFE8A).w, A2
-                lea     $00(A2, D0), A2
+                lea     (A2, D0), A2
                 tst.w   (A2)
                 bpl.s   Offset_0x01CBA8
                 bchg    #00, Obj_Status(A0)                              ; $0022  

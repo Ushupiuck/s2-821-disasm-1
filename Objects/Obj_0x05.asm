@@ -37,10 +37,10 @@ Offset_0x0124A4:
                 move.b  D0, Obj_P_Invunerblt_Time(A0)                    ; $0030
                 move.b  Offset_0x0124CA(PC, D0), Obj_Ani_Number(A0)      ; $001C
 Offset_0x0124B4:
-                lea     (Offset_0x0124EC), A1
+                lea     (Offset_0x0124EC).l, A1
                 bsr.w   Miles_Animate_A1                       ; Offset_0x012016
                 bsr.w   Load_Miles_Tail_Dynamic_PLC            ; Offset_0x0123C6
-                jsr     (DisplaySprite)                        ; Offset_0x00D322
+                jsr     (DisplaySprite).l                        ; Offset_0x00D322
                 rts              
 ;-------------------------------------------------------------------------------
 Offset_0x0124CA:

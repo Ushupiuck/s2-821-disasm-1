@@ -94,8 +94,8 @@ Offset_0x01B236:
                 bpl.s   Offset_0x01B23C
                 moveq   #$00, D0
 Offset_0x01B23C:
-                lea     (Offset_0x01B306), A3
-                move.b  $00(A3, D0), D0
+                lea     (Offset_0x01B306).l, A3
+                move.b  (A3, D0), D0
                 move.w  #$FC00, Obj_Speed_Y(A1)                          ; $0012
                 sub.b   D0, Obj_Speed_Y(A1)                              ; $0012
                 bset    #$00, Obj_Status(A1)                             ; $0022

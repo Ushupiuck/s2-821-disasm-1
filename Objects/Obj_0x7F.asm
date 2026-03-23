@@ -47,7 +47,7 @@ Offset_0x01E920:
                 move.b  Obj_Subtype(A0), D0                              ; $0028
                 andi.w  #$000F, D0
                 lea     ($FFFFF7E0).w, A3
-                lea     $00(A3, D0), A3
+                lea     (A3, D0), A3
                 bclr    #$00, (A3)
                 move.b  #$00, Obj_Map_Id(A0)                             ; $001A
                 tst.w   Obj_Control_Var_04(A0)                           ; $0030
@@ -85,7 +85,7 @@ Offset_0x01E95E:
                 move.b  Obj_Subtype(A0), D0                              ; $0028
                 andi.w  #$000F, D0
                 lea     ($FFFFF7E0).w, A3
-                bset    #$00, $00(A3, D0)
+                bset    #$00, (A3, D0)
                 move.w  #$00CD, D0
                 jsr     (Play_Sfx).l                             ; Offset_0x001512
                 move.b  #$00, Obj_Map_Id(A0)                             ; $001A

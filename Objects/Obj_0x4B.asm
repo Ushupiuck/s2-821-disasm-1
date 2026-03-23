@@ -16,7 +16,7 @@ Offset_0x023F86:
 ;-------------------------------------------------------------------------------
 Offset_0x023F8E:
                 bsr.w   Jmp_16_To_SpeedToPos                   ; Offset_0x02428C
-                lea     (Buzzer_AnimateData), A1               ; Offset_0x0241CE
+                lea     (Buzzer_AnimateData).l, A1               ; Offset_0x0241CE
                 bsr.w   Jmp_12_To_AnimateSprite                ; Offset_0x024274
                 bra.w   Jmp_01_To_MarkObjGone_4                ; Offset_0x024280   
 ;-------------------------------------------------------------------------------

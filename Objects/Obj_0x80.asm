@@ -102,7 +102,7 @@ Offset_0x01EB50:
                 move.b  Obj_Subtype(A0), D0                              ; $0028
                 andi.w  #$000F, D0
                 lea     ($FFFFF7E0).w, A3
-                lea     $00(A3, D0), A3
+                lea     (A3, D0), A3
                 bclr    #$00, (A3)
 Offset_0x01EB76:
                 bra.w   Offset_0x01EC12
@@ -140,7 +140,7 @@ Offset_0x01EB98:
                 move.b  Obj_Subtype(A0), D0                              ; $0028
                 andi.w  #$000F, D0
                 lea     ($FFFFF7E0).w, A3
-                bset    #$00, $00(A3, D0)
+                bset    #$00, (A3, D0)
                 move.w  #$00CD, D0
                 jsr     (Play_Sfx).l                             ; Offset_0x001512
 Offset_0x01EC12:

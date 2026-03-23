@@ -29,7 +29,7 @@ Offset_0x012BB2:
                 move.w  Obj_X(A1), Obj_X(A0)                      ; $0008, $0008
                 move.w  Obj_Y(A1), Obj_Y(A0)                      ; $000C, $000C
                 move.b  Obj_Status(A1), D6                               ; $0022
-                lea     (Offset_0x012CD4), A2
+                lea     (Offset_0x012CD4).l, A2
                 move.b  Obj_Angle(A1), D1                                ; $0026
                 btst    #$01, D6
                 beq.s   Offset_0x012BE4
@@ -51,9 +51,9 @@ Offset_0x012BEC:
 Offset_0x012C06:
                 move.b  ($FFFFFE05).w, D0
                 andi.b  #$01, D0
-                lea     (Offset_0x012CF4), A3
+                lea     (Offset_0x012CF4).l, A3
                 beq.s   Offset_0x012C1E
-                lea     (Offset_0x012E5C), A3
+                lea     (Offset_0x012E5C).l, A3
                 addq.w  #$02, A2
 Offset_0x012C1E:
                 move.w  Obj_X(A1), D4                                    ; $0008
@@ -79,7 +79,7 @@ Offset_0x012C4A:
                 move.w  D0, D1
                 add.w   D0, D0
                 add.w   D1, D0
-                lea     $00(A3, D0), A3
+                lea     (A3, D0), A3
                 lea     Obj_Speed(A0), A2                                ; $0010
                 moveq   #$00, D0
                 moveq   #$05, D1
@@ -110,8 +110,8 @@ Offset_0x012C6E:
                 moveq   #$00, D0
 Offset_0x012C9A:
                 move.b  D0, Obj_Map(A0)                                  ; $0004
-                lea     (Offset_0x012FC4), A3
-                lea     $00(A3, D0), A3
+                lea     (Offset_0x012FC4).l, A3
+                lea     (A3, D0), A3
                 moveq   #$01, D1
 Offset_0x012CAA:
                 move.b  (A3)+, D0

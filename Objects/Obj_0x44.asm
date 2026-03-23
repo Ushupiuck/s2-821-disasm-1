@@ -69,7 +69,7 @@ Offset_0x0148D8:
                 addq.b  #$01, $02(A2, D0)
 Offset_0x014950:
                 moveq   #$01, D0
-                jsr     (AddPoints)                            ; Offset_0x02D2D4
+                jsr     (AddPoints).l                            ; Offset_0x02D2D4
                 bsr.w   SingleObjectLoad                       ; Offset_0x00E6FE
                 bne.s   Offset_0x014976
                 _move.b #$29, 0(A1)                                 ; $0000
@@ -79,7 +79,7 @@ Offset_0x014950:
 Offset_0x014976:
                 rts
 Offset_0x014978:
-                lea     (Red_Ball_Bumper_Animate_Data), A1     ; Offset_0x014986
+                lea     (Red_Ball_Bumper_Animate_Data).l, A1     ; Offset_0x014986
                 bsr.w   AnimateSprite                          ; Offset_0x00D372
                 bra.w   MarkObjGone                            ; Offset_0x00D200   
 ;-------------------------------------------------------------------------------

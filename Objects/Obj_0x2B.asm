@@ -40,8 +40,8 @@ Offset_0x01A854:
                 bne.w   Offset_0x01A886
                 bra.w   Jmp_0D_To_MarkObjGone                  ; Offset_0x01AE98
 Offset_0x01A886:
-                lea     (Offset_0x01A974), A4
-                lea     (Offset_0x01A966), A2
+                lea     (Offset_0x01A974).l, A4
+                lea     (Offset_0x01A966).l, A2
                 addq.b  #$07, Obj_Map_Id(A0)                             ; $001A
                 bsr.w   Offset_0x01A9AC
                 lea     (Player_One).w, A1                           ; $FFFFB000
@@ -133,7 +133,7 @@ Offset_0x01A9AC:
                 move.b  Obj_Map_Id(A0), D0                               ; $001A
                 add.w   D0, D0
                 move.l  Obj_Map(A0), A3                                  ; $0004
-                adda.w  $00(A3, D0), A3
+                adda.w  (A3, D0), A3
                 move.w  (A3)+, D1
                 subq.w  #$01, D1
                 bset    #$05, Obj_Flags(A0)                              ; $0001

@@ -102,7 +102,7 @@ Offset_0x01C9C8:
                 move.b  D0, Obj_Control_Var_10(A0)                       ; $003C
                 bra.s   Offset_0x01C9DE
 Offset_0x01C9CE:
-                jsr     (SpeedToPos)                           ; Offset_0x00D1DA
+                jsr     (SpeedToPos).l                           ; Offset_0x00D1DA
                 subq.w  #$01, Obj_Control_Var_08(A0)                     ; $0034
                 bne.s   Offset_0x01C9DE
                 bsr.w   Offset_0x01CA42
@@ -124,7 +124,7 @@ Offset_0x01C9FE:
 ;-------------------------------------------------------------------------------  
 Offset_0x01CA06:
                 move.w  Obj_X(A0), -(A7)                                 ; $0008
-                jsr     (SpeedToPos)                           ; Offset_0x00D1DA
+                jsr     (SpeedToPos).l                           ; Offset_0x00D1DA
                 subq.w  #$01, Obj_Control_Var_08(A0)                     ; $0034
                 bne.s   Offset_0x01CA1A
                 bsr.w   Offset_0x01CA42
@@ -147,7 +147,7 @@ Offset_0x01CA42:
                 moveq   #$00, D0
                 move.b  Obj_Control_Var_0C(A0), D0                       ; $0038
                 move.l  Obj_Control_Var_00(A0), A1                       ; $002C
-                lea     $00(A1, D0), A1
+                lea     (A1, D0), A1
                 move.w  (A1)+, Obj_Speed(A0)                             ; $0010
                 move.w  (A1)+, Obj_Speed_Y(A0)                           ; $0012
                 move.w  (A1)+, Obj_Control_Var_08(A0)                    ; $0034

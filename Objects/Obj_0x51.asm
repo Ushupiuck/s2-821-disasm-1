@@ -140,7 +140,7 @@ Offset_0x0273A0:
                 bsr.w   Offset_0x024580
                 bsr.w   Offset_0x0275B6
                 bsr.w   Offset_0x02768E
-                lea     (CNz_Boss_Animate_Data), A1            ; Offset_0x0278EA
+                lea     (CNz_Boss_Animate_Data).l, A1            ; Offset_0x0278EA
                 bsr.w   Boss_AnimateSprite                     ; Offset_0x026312
                 bra.w   Jmp_1D_To_DisplaySprite                ; Offset_0x027A78
 ;-------------------------------------------------------------------------------
@@ -287,7 +287,7 @@ Offset_0x0275A2:
                 move.b  #$01, (Boss_Defeated_Flag).w                 ; $FFFFF7A7
 Offset_0x0275AE:
                 addq.l  #$04, A7
-                jmp     (DeleteObject)                         ; Offset_0x00D314
+                jmp     (DeleteObject).l                         ; Offset_0x00D314
 Offset_0x0275B6:
                 moveq   #$00, D0
                 move.b  Obj_Control_Var_0C(A0), D0                       ; $0038
@@ -454,7 +454,7 @@ Offset_0x0277CE:
 Offset_0x0277EE:
                 bsr.w   Offset_0x0278B8
                 subi.w  #$0008, CNz_R_Catcher_Pos_X(A0)                  ; $0010
-                jsr     (ObjHitFloor)                          ; Offset_0x014204
+                jsr     (ObjHitFloor).l                          ; Offset_0x014204
                 tst.w   D1
                 bpl.w   Jmp_1D_To_DisplaySprite                ; Offset_0x027A78
                 add.w   D1, Obj_Y(A0)                                    ; $000C
@@ -495,7 +495,7 @@ Offset_0x02786A:
 Offset_0x027876:
                 bsr.w   Offset_0x0278B8
                 bsr.w   Offset_0x02789C
-                jsr     (ObjHitFloor)                          ; Offset_0x014204
+                jsr     (ObjHitFloor).l                          ; Offset_0x014204
                 tst.w   D1
                 bpl.w   Jmp_1D_To_DisplaySprite                ; Offset_0x027A78
                 add.w   D1, Obj_Y(A0)                                    ; $000C

@@ -373,7 +373,7 @@ Offset_0x02C37C:
 				move.b	#$01, (A2)
 				move.l	A1, Obj_Map(A2)									 ; $0004
 Offset_0x02C390:
-				jsr		(Add_Rings)							   ; Offset_0x00AB92
+				jsr		(Add_Rings).l							   ; Offset_0x00AB92
 				cmpi.w	#$0032, (Ring_Count).w						 ; $FFFFFE20
 				bcs.s	Offset_0x02C3B4
 				bset	#$00, (Ring_Life_Flag).w					 ; $FFFFFE1B

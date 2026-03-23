@@ -85,7 +85,7 @@ Offset_0x01AF9C:
                 cmpi.w  #$0200, D0
                 bcs.s   Offset_0x01AF80
 Offset_0x01AFA2:
-                lea     (Offset_0x01B044), A3
+                lea     (Offset_0x01B044).l, A3
                 moveq   #$03, D6
 Offset_0x01AFAA:
                 bsr.w   Jmp_03_To_SingleObjectLoad             ; Offset_0x01B118

@@ -137,7 +137,7 @@ Offset_0x0182D4:
                 move.l  D0, D1
                 add.w   D0, D0
                 add.w   D0, D0
-                lea     $00(A4, D0), A4
+                lea     (A4, D0), A4
                 neg.w   D1
                 addi.w  #$0009, D1
                 move.w  #$0018, D2

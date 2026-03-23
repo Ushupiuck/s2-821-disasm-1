@@ -27,7 +27,7 @@ Offset_0x00B2E6:
                 move.b  D0, Obj_Map_Id(A0)                               ; $001A
                 move.l  #Monitors_Mappings, A1                 ; Offset_0x00B580
                 add.b   D0, D0
-                adda.w  $00(A1, D0), A1
+                adda.w  (A1, D0), A1
                 addq.w  #$02, A1
                 move.l  A1, Obj_Map(A0)                                  ; $0004
 ;-------------------------------------------------------------------------------  

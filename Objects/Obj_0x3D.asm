@@ -100,12 +100,12 @@ Offset_0x019D2C:
                 moveq   #$00, D0
                 move.w  #$000A, D1
 Offset_0x019D3E:
-                move.l  $00(A0, D0), $00(A1, D0)
+                move.l  (A0, D0), (A1, D0)
                 addq.w  #$04, D0
                 dbra    D1, Offset_0x019D3E
                 move.b  #$06, Obj_Routine(A1)                            ; $0024
 Offset_0x019D50:
-                lea     (Break_Boost_Data), A4                 ; Offset_0x019E74
+                lea     (Break_Boost_Data).l, A4                 ; Offset_0x019E74
                 addq.b  #$01, Obj_Map_Id(A0)                             ; $001A
                 moveq   #$0F, D1
                 move.w  #$0018, D2

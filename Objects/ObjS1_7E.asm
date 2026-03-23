@@ -27,7 +27,7 @@ Offset_0x00BF62:
                 rts
 Offset_0x00BF6A:
                 move.l  A0, A1
-                lea     (Special_Stage_Results_Screen_Pos), A2 ; Offset_0x00C0BC
+                lea     (Special_Stage_Results_Screen_Pos).l, A2 ; Offset_0x00C0BC
                 moveq   #$03, D1
                 cmpi.w  #$0032, (Ring_Count).w                       ; $FFFFFE20
                 bcs.s   Offset_0x00BF7E
@@ -94,7 +94,7 @@ Offset_0x00C020:
                 beq.s   Offset_0x00C052
                 subi.w  #$000A, ($FFFFF7D4).w
                 moveq   #$0A, D0
-                jsr     (AddPoints)                            ; Offset_0x02D2D4
+                jsr     (AddPoints).l                            ; Offset_0x02D2D4
                 move.b  ($FFFFFE0F).w, D0
                 andi.b  #$03, D0
                 bne.s   Offset_0x00C078

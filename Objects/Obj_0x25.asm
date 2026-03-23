@@ -74,7 +74,7 @@ Offset_0x00AB5A:
                 bset    D1, $02(A2, D0)   
 ;------------------------------------------------------------------------------- 
 Offset_0x00AB80:
-                lea     (Rings_Animate_Data), A1               ; Offset_0x00AE98
+                lea     (Rings_Animate_Data).l, A1               ; Offset_0x00AE98
                 bsr.w   AnimateSprite                          ; Offset_0x00D372
                 bra.w   DisplaySprite                          ; Offset_0x00D322  
 ;------------------------------------------------------------------------------- 

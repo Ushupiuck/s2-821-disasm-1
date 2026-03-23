@@ -28,7 +28,7 @@ Offset_0x00C116:
                 move.w  (A2)+, Obj_X(A1)                                 ; $0008
                 move.w  #$00F0, Obj_Sub_Y(A1)                            ; $000A
                 lea     (Emerald_Collected_Flag_List).w, A3          ; $FFFFFE58
-                move.b  $00(A3, D2), D3
+                move.b  (A3, D2), D3
                 move.b  D3, Obj_Map_Id(A1)                               ; $001A
                 move.b  D3, Obj_Ani_Number(A1)                           ; $001C
                 addq.b  #$01, D2

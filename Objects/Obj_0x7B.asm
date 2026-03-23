@@ -91,7 +91,7 @@ Offset_0x01E758:
                 bcc.s   Offset_0x01E776
                 move.b  #$03, Obj_Ani_Number(A0)                         ; $001C
 Offset_0x01E776:
-                lea     (Spring_Tube_Animate_Data), A1         ; Offset_0x01E828
+                lea     (Spring_Tube_Animate_Data).l, A1         ; Offset_0x01E828
                 bra.w   Jmp_04_To_AnimateSprite                ; Offset_0x01E890
 ;-------------------------------------------------------------------------------
 ; Offset_0x01E780:

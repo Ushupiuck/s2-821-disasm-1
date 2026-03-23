@@ -213,7 +213,7 @@ Offset_0x0086A8:
                 rts
 Offset_0x0086B6:
                 lsr.w   #$04, D0
-                move.b  D0, $00(A0, D5)
+                move.b  D0, (A0, D5)
                 move.l  Obj_Control_Var_04(A0), A2                       ; $0030
                 cmpi.w  #$0008, D0
                 bcs.s   Offset_0x0086CE
@@ -243,7 +243,7 @@ Offset_0x0086EC:
                 sub.w   Obj_X(A0), D0                                    ; $0008
                 add.w   D1, D0
                 lsr.w   #$04, D0
-                move.b  D0, $00(A0, D5)
+                move.b  D0, (A0, D5)
 Offset_0x00870C:
                 rts
 Offset_0x00870E:
@@ -345,7 +345,7 @@ Offset_0x0087E4:
                 move.b  Obj_Control_Var_12(A0), D0                       ; $003E
                 bsr.w   CalcSine                               ; Offset_0x003282
                 move.w  D0, D4
-                lea     (Offset_0x008924), A4
+                lea     (Offset_0x008924).l, A4
                 moveq   #$00, D0
                 move.b  Obj_Subtype(A0), D0                              ; $0028
                 lsl.w   #$04, D0
@@ -354,11 +354,11 @@ Offset_0x0087E4:
                 move.w  D3, D2
                 add.w   D0, D3
                 moveq   #$00, D5
-                lea     (Offset_0x008894-$80), A5
-                move.b  $00(A5, D3), D5
+                lea     (Offset_0x008894-$80).l, A5
+                move.b  (A5, D3), D5
                 andi.w  #$000F, D3
                 lsl.w   #$04, D3
-                lea     $00(A4, D3), A3
+                lea     (A4, D3), A3
                 move.l  Obj_Control_Var_04(A0), A1                       ; $0030
                 lea     $0042(A1), A2
                 lea     Obj_Speed_Y(A1), A1                              ; $0012
@@ -388,7 +388,7 @@ Offset_0x008848:
                 bmi.s   Offset_0x008892
                 move.w  D3, D2
                 lsl.w   #$04, D3
-                lea     $00(A4, D3), A3
+                lea     (A4, D3), A3
                 adda.w  D2, A3
                 subq.w  #$01, D2
                 bcs.s   Offset_0x008892

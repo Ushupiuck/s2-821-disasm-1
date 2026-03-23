@@ -62,7 +62,7 @@ Offset_0x027B48:
                 bne.s   Offset_0x027B5C
                 st      Obj_Control_Var_0C(A0)                           ; $0038
 Offset_0x027B5C:
-                lea     (Mz_Boss_Animate_Data), A1             ; Offset_0x027D88
+                lea     (Mz_Boss_Animate_Data).l, A1             ; Offset_0x027D88
                 bsr.w   Boss_AnimateSprite                     ; Offset_0x026312
                 bsr.w   Offset_0x027B6E
                 bra.w   Jmp_1E_To_DisplaySprite                ; Offset_0x027E8C

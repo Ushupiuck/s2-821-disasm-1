@@ -36,7 +36,7 @@ Offset_0x0154BC:
                 addi.w  #$0098, Obj_Y(A1)                                ; $000C
                 bra.s   Offset_0x015568
 Offset_0x015524:
-                jsr     (SingleObjectLoad_2)                   ; Offset_0x00E714
+                jsr     (SingleObjectLoad_2).l                   ; Offset_0x00E714
                 bne.s   Offset_0x015566
                 _move.b #$13, 0(A1)                                 ; $0000
                 addq.b  #$04, Obj_Routine(A1)                            ; $0024

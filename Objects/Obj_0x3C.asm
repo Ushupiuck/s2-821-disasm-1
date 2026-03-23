@@ -47,12 +47,12 @@ Offset_0x00CCCE:
                 bcs.s   Offset_0x00CCB8
                 move.w  Obj_Control_Var_04(A0), Obj_Speed(A1)     ; $0010, $0030
                 addq.w  #$04, Obj_X(A1)                                  ; $0008
-                lea     (Offset_0x00CD98), A4
+                lea     (Offset_0x00CD98).l, A4
                 move.w  Obj_X(A0), D0                                    ; $0008
                 cmp.w   Obj_X(A1), D0                                    ; $0008
                 bcs.s   Offset_0x00CCFA
                 subi.w  #$0008, Obj_X(A1)                                ; $0008
-                lea     (Offset_0x00CDB8), A4
+                lea     (Offset_0x00CDB8).l, A4
 Offset_0x00CCFA:
                 move.w  Obj_Speed(A1), Obj_Inertia(A1)            ; $0010, $0014
                 bclr    #$05, Obj_Status(A0)                             ; $0022
@@ -71,7 +71,7 @@ Smash_Object:                                                  ; Offset_0x00CD24
                 move.b  Obj_Map_Id(A0), D0                               ; $001A
                 add.w   D0, D0
                 move.l  Obj_Map(A0), A3                                  ; $0004
-                adda.w  $00(A3, D0), A3
+                adda.w  (A3, D0), A3
                 move.w  (A3)+, D1
                 subq.w  #$01, D1
                 bset    #$05, Obj_Flags(A0)                              ; $0001

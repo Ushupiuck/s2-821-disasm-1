@@ -20,7 +20,7 @@ Offset_0x00BD1C:
                 rts
 Offset_0x00BD24:
                 move.l  A0, A1
-                lea     (Level_Results_Screen_Pos), A2         ; Offset_0x00BF06
+                lea     (Level_Results_Screen_Pos).l, A2         ; Offset_0x00BF06
                 moveq   #$06, D1
 Offset_0x00BD2E:
                 _move.b #$3A, 0(A1)                                 ; $0000
@@ -108,7 +108,7 @@ Offset_0x00BE00:
 Offset_0x00BE18:
                 rts
 Offset_0x00BE1A:
-                jsr     (AddPoints)                            ; Offset_0x02D2D4
+                jsr     (AddPoints).l                            ; Offset_0x02D2D4
                 move.b  ($FFFFFE0F).w, D0
                 andi.b  #$03, D0
                 bne.s   Offset_0x00BE18

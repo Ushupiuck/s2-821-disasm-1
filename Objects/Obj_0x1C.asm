@@ -62,7 +62,7 @@ Offset_0x009F6A:
                 move.b  Obj_Subtype(A0), D0                              ; $0028
                 lsl.w   #$03, D0
                 lea     Misc_Object_Definitions_List(PC), A1   ; Offset_0x009EFA
-                lea     $00(A1, D0), A1
+                lea     (A1, D0), A1
                 move.b  (A1), Obj_Map_Id(A0)                             ; $001A
                 move.l  (A1)+, Obj_Map(A0)                               ; $0004
                 move.w  (A1)+, Obj_Art_VRAM(A0)                          ; $0002

@@ -43,7 +43,7 @@ Offset_0x015A42:
                 move.b  #$00, Obj_Control_Var_06(A0)                     ; $0032
                 subq.b  #$03, Obj_Map_Id(A0)                             ; $001A
 Offset_0x015A52:
-                lea     (Water_Surface_Data), A1               ; Offset_0x015A72
+                lea     (Water_Surface_Data).l, A1               ; Offset_0x015A72
                 moveq   #$00, D1
                 move.b  Obj_Ani_Frame(A0), D1                            ; $001B
                 move.b  $00(A1, D1), Obj_Map_Id(A0)                      ; $001A

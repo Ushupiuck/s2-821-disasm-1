@@ -27,7 +27,7 @@ Offset_0x028DC2:
                 bsr.w   Offset_0x028DE6
 Offset_0x028DD4:
                 bsr.w   Jmp_19_To_SpeedToPos                   ; Offset_0x02A7C4
-                lea     (Nebula_Animate_Data), A1              ; Offset_0x028E64
+                lea     (Nebula_Animate_Data).l, A1              ; Offset_0x028E64
                 bsr.w   Jmp_17_To_AnimateSprite                ; Offset_0x02A7AC
                 bra.w   Jmp_26_To_MarkObjGone                  ; Offset_0x02A7A0
 Offset_0x028DE6:
@@ -46,7 +46,7 @@ Offset_0x028DF2:
 Offset_0x028E0A:
                 addi.w  #$0001, Obj_Speed_Y(A0)                          ; $0012
                 bsr.w   Jmp_19_To_SpeedToPos                   ; Offset_0x02A7C4
-                lea     (Nebula_Animate_Data), A1              ; Offset_0x028E64
+                lea     (Nebula_Animate_Data).l, A1              ; Offset_0x028E64
                 bsr.w   Jmp_17_To_AnimateSprite                ; Offset_0x02A7AC
                 bra.w   Jmp_26_To_MarkObjGone                  ; Offset_0x02A7A0
 Offset_0x028E22:

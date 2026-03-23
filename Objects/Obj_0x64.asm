@@ -66,9 +66,9 @@ Offset_0x01B78A:
                 sub.w   ($FFFFF7DA).w, D0
                 cmpi.w  #$0280, D0
                 bhi.s   Offset_0x01B7A2
-                jmp     (DisplaySprite)                        ; Offset_0x00D322
+                jmp     (DisplaySprite).l                        ; Offset_0x00D322
 Offset_0x01B7A2:
-                jmp     (DeleteObject)                         ; Offset_0x00D314
+                jmp     (DeleteObject).l                         ; Offset_0x00D314
 ;------------------------------------------------------------------------------- 
 Offset_0x01B7A8:
                 dc.w    Offset_0x01B7AC-Offset_0x01B7A8

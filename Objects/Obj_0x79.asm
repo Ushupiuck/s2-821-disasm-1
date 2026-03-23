@@ -7,7 +7,7 @@
                 move.b  Obj_Routine(A0), D0                              ; $0024
                 move.w  Offset_0x0144D4(PC, D0), D1
                 jsr     Offset_0x0144D4(PC, D1)
-                jmp     (MarkObjGone)                          ; Offset_0x00D200
+                jmp     (MarkObjGone).l                          ; Offset_0x00D200
 ;-------------------------------------------------------------------------------
 Offset_0x0144D4:
                 dc.w    Offset_0x0144DA-Offset_0x0144D4

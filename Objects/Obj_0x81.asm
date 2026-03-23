@@ -74,7 +74,7 @@ Offset_0x01EE8A:
                 lea     ($FFFFF7E0).w, A2
                 moveq   #$00, D0
                 move.b  Obj_Subtype(A0), D0                              ; $0028
-                btst    #$00, $00(A2, D0)
+                btst    #$00, (A2, D0)
                 beq.s   Offset_0x01EEC2
                 move.b  #$01, Obj_Control_Var_0A(A0)                     ; $0036
                 bne.s   Offset_0x01EEC2

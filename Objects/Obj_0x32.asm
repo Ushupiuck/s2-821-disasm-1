@@ -131,7 +131,7 @@ Offset_0x018500:
                 move.w  #$03E8, D0
                 moveq   #$0A, D2
 Offset_0x018514:
-                jsr     (AddPoints)                            ; Offset_0x02D2D4
+                jsr     (AddPoints).l                            ; Offset_0x02D2D4
                 lsr.w   #$01, D2
                 move.b  D2, Obj_Map_Id(A1)                               ; $001A
 Offset_0x018520:

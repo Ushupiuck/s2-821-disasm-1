@@ -51,8 +51,6 @@
 ; 0x0C0F7A -> Gráficos de inicialização para os tiles dinâmicos da fase Chemical Plant, não usado ( Arte no formato Nemesis ).
 ; 0x0CA426 -> Gráficos de inicialização para os tiles dinâmicos da fase Neo Green Hill, não usado ( Arte no formato Nemesis ).
 ;-------------------------------------------------------------------------------
-Offset_0x000040 equ $0040 ; Referencia incorreta no crawton ( Obj_0x9E.asm )
-;-------------------------------------------------------------------------------
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; ASSEMBLY OPTIONS:
@@ -154,28 +152,22 @@ SonicDriverVer = 2 ; Tell SMPS2ASM that we are targetting Sonic 2's sound driver
 		dc.l	ErrorTrap		; Unused (reserved)
 		dc.l	ErrorTrap		; Unused (reserved)
 		dc.l	ErrorTrap		; Unused (reserved)
-Console:
 		dc.b	"SEGA MEGA DRIVE "
-Date:
 		dc.b	"(C)SEGA 1991.APR"
-Title_Local:
 		dc.b	"SONIC THE             HEDGEHOG 2                "
-Title_International:
 		dc.b	"SONIC THE             HEDGEHOG 2                "
-ROM_Serial:
 		dc.b	"GM 00004049-01"
 ROM_Checksum:
 		dc.w	$AFC7
-IOSupport:
 		dc.b	"J               "
 ROM_Start:
-		dc.l	$00000000
+		dc.l	0
 ROM_End:
-		dc.l	$0007FFFF
+		dc.l	$7FFFF
 RAMStart:
-		dc.l	$00FF0000
+		dc.l	$FF0000
 RAMEnd:
-		dc.l	$00FFFFFF
+		dc.l	$FFFFFF
 SRAMSupport:
 		dc.b	"                "
 Notes:
@@ -307,7 +299,7 @@ ClearRemainingRAMLoop:						   ; Offset_0x000376
 		move.l	D7, (A6)+
 		dbf	D6, ClearRemainingRAMLoop			   ; Offset_0x000376
 		bsr.w	VDPRegSetup					   ; Offset_0x001368
-		bsr.w	Jmp_00_To_SoundDriverLoad			   ; Offset_0x0014B8
+		bsr.w	Jmp_To_SoundDriverLoad			   ; Offset_0x0014B8
 		bsr.w	Control_Ports_Init			   ; Offset_0x0012FC
 		move.b	#gm_TitleScreen, (Game_Mode).w			; $00, $FFFFF600
 MainGameLoop:						   ; Offset_0x00038E
@@ -529,7 +521,7 @@ Art_Menu_Text:						   ; Offset_0x0005E8
 ; ->>>
 ;===============================================================================
 VBlank:								   ; Offset_0x000B08
-		movem.l D0-D7/A0-A6, -(A7)
+		movem.l D0-A6, -(A7)
 		tst.b	(VBlank_Index).w					 ; $FFFFF62A
 		beq.w	Default_VBlank				   ; Offset_0x000B82
 Offset_0x000B14:
@@ -552,7 +544,7 @@ Offset_0x000B42:
 		jsr	VBlank_List(PC, D0)			   ; Offset_0x000B68
 Offset_0x000B5E:
 		addq.l	#$01, ($FFFFFE0C).w
-		movem.l (A7)+, D0-D7/A0-A6
+		movem.l (A7)+, D0-A6
 		rte
 ;-------------------------------------------------------------------------------
 VBlank_List:						   ; Offset_0x000B68
@@ -1004,9 +996,9 @@ Pal_To_ColorRAM:							   ; Offset_0x001228
 		rte
 Offset_0x00129A:
 		clr.b	($FFFFF64F).w
-		movem.l D0-D7/A0-A6, -(A7)
+		movem.l D0-A6, -(A7)
 		bsr.w	DemoTime					   ; Offset_0x000E56
-		movem.l (A7)+, D0-D7/A0-A6
+		movem.l (A7)+, D0-A6
 		rte
 ;-------------------------------------------------------------------------------
 ; Rotina para transferir a paleta de cores para a CRAM durante a interrupção
@@ -1206,25 +1198,25 @@ ClearScreen_ClearBuffer2:					   ; Offset_0x0014A8
 ; <<<-
 ;===============================================================================
 
-Jmp_00_To_SoundDriverLoad					   ; Offset_0x0014B8
+Jmp_To_SoundDriverLoad					   ; Offset_0x0014B8
 		nop
 		jmp	(SoundDriverLoad).l			   ; Offset_0x0EC000
 ;-------------------------------------------------------------------------------
 ; Z80_Init:	  ; Inicialização do z80 não usado		   ; Offset_0x0014C0
-		move.w	#$0100,(Z80_Bus_Request)			 ; $00A11100
-		move.w	#$0100,(Z80_Reset)					 ; $00A11200
+		move.w	#$0100,(Z80_Bus_Request).l			 ; $00A11100
+		move.w	#$0100,(Z80_Reset).l					 ; $00A11200
 		lea	(Z80_RAM_Start).l, A1					 ; $00A00000
 		move.b	#$F3,(A1)+
 		move.b	#$F3,(A1)+
 		move.b	#$C3,(A1)+
 		move.b	#$00,(A1)+
 		move.b	#$00,(A1)+
-		move.w	#$0000,(Z80_Reset)					 ; $00A11200
+		move.w	#$0000,(Z80_Reset).l					 ; $00A11200
 		nop
 		nop
 		nop
 		nop
-		move.w	#$0100,(Z80_Reset)					 ; $00A11200
+		move.w	#$0100,(Z80_Reset).l					 ; $00A11200
 		startZ80
 		rts
 ;-------------------------------------------------------------------------------
@@ -1392,13 +1384,13 @@ Process_DMA_End:							   ; Offset_0x001644
 ; ->>>
 ;===============================================================================
 NemesisDec:							   ; Offset_0x001654
-		movem.l D0-D7/A0-A1/A3-A5, -(A7)
+		movem.l D0-A1/A3-A5, -(A7)
 		lea	(NemesisDec_Output).l, A3		   ; Offset_0x001716
 		lea	(VDP_Data_Port).l, A4					 ; $00C00000
 		bra.s	NemesisDec_Main				   ; Offset_0x001670
 ;-------------------------------------------------------------------------------
 NemesisDecToRAM:							   ; Offset_0x001666
-		movem.l D0-D7/A0-A1/A3-A5, -(A7)
+		movem.l D0-A1/A3-A5, -(A7)
 		lea	(NemesisDec_OutputToRAM).l, A3		   ; Offset_0x00172C
 NemesisDec_Main:							   ; Offset_0x001670
 		lea	($FFFFAA00).w, A1
@@ -1420,7 +1412,7 @@ Offset_0x00167E:
 		move.b	(A0)+, D5
 		move.w	#$0010, D6
 		bsr.s	NemesisDec_2				   ; Offset_0x00169E
-		movem.l (A7)+, D0-D7/A0-A1/A3-A5
+		movem.l (A7)+, D0-A1/A3-A5
 		rts
 ;-------------------------------------------------------------------------------
 NemesisDec_2:						   ; Offset_0x00169E
@@ -3036,7 +3028,7 @@ PalCycle_SuperSonic:						   ; Offset_0x0024CE
 		move.b	#$00, ($FFFFB02A).w
 Offset_0x002504:
 		lea	($FFFFFB04).w, A1
-		move.l	$00(A0, D0), (A1)+
+		move.l	(A0, D0), (A1)+
 		move.l	$04(A0, D0), (A1)
 Offset_0x002510:
 		rts
@@ -3052,7 +3044,7 @@ Offset_0x002512:
 		move.w	#$0030, ($FFFFF65C).w
 Offset_0x00253A:
 		lea	($FFFFFB04).w, A1
-		move.l	$00(A0, D0), (A1)+
+		move.l	(A0, D0), (A1)+
 		move.l	$04(A0, D0), (A1)
 		rts
 ;-------------------------------------------------------------------------------
@@ -3790,7 +3782,7 @@ Angle_Table:						   ; Offset_0x003580
 ; ->>>
 ;===============================================================================
 Sega_Screen:						   ; Offset_0x003684
-		move.b	#$FD, D0
+		move.b	#MusID_Stop, D0
 		bsr.w	Play_Music					   ; Offset_0x00150C
 		bsr.w	ClearPLC					   ; Offset_0x0017F2
 		bsr.w	Pal_FadeFrom				   ; Offset_0x00266C
@@ -3847,7 +3839,7 @@ Offset_0x003768:
 		bsr.w	Wait_For_VSync				   ; Offset_0x003250
 		bsr.w	PalCycle_Sega				   ; Offset_0x002822
 		bne.s	Offset_0x003768
-		move.b	#$FA, D0
+		move.b	#SndID_SegaSound, D0
 		bsr.w	Play_Sfx					   ; Offset_0x001512
 		move.b	#$02, (VBlank_Index).w				 ; $FFFFF62A
 		bsr.w	Wait_For_VSync				   ; Offset_0x003250
@@ -3872,7 +3864,7 @@ Offset_0x0037A8:
 ; ->>>
 ;===============================================================================
 Title_Screen:						   ; Offset_0x0037B0
-		move.b	#$FD, D0
+		move.b	#MusID_Stop, D0
 		bsr.w	Play_Music					   ; Offset_0x00150C
 		bsr.w	ClearPLC					   ; Offset_0x0017F2
 		bsr.w	Pal_FadeFrom				   ; Offset_0x00266C
@@ -3973,7 +3965,7 @@ Offset_0x003890:
 		bsr.w	ShowVDPGraphics				   ; Offset_0x0015A4
 		moveq	#$01, D0
 		bsr.w	PalLoad1					   ; Offset_0x002914
-		move.b	#$99, D0
+		move.b	#MusID_Title, D0
 		bsr.w	Play_Music					   ; Offset_0x00150C
 		move.b	#$00, (Debug_Mode_Active_Flag).w			 ; $FFFFFFFA
 		move.w	#$0000, (Two_Player_Flag).w			 ; $FFFFFFD8
@@ -4033,7 +4025,7 @@ Level_Select_Cheat_Test:					   ; Offset_0x0039F2
 		moveq	#$01, D1
 		move.b	D1, $01(A0, D1)
 Title_Cheat_PlayRing:						   ; Offset_0x003A28
-		move.b	#$01, $00(A0, D1)
+		move.b	#$01, (A0, D1)
 		move.b	#$B5, D0
 		bsr.w	Play_Sfx					   ; Offset_0x001512
 		bra.s	Title_Cheat_CountC			   ; Offset_0x003A4A
@@ -4058,7 +4050,7 @@ Offset_0x003A6A:
 		beq.w	Offset_0x003B8A
 		cmpi.b	#$C0, (Control_Ports_Buffer_Data).w			 ; $FFFFF604
 		bne.w	Offset_0x003B8A
-		move.b	#$91, D0
+		move.b	#MusID_LevelSel, D0
 		bsr.w	Play_Music					   ; Offset_0x00150C
 		moveq	#$02, D0
 		bsr.w	PalLoad2					   ; Offset_0x002930
@@ -4148,7 +4140,7 @@ Offset_0x003B8A:
 		move.l	D0, (Emerald_Collected_Flag_List+$0004).w	 ; $FFFFFE5C
 		move.b	D0, ($FFFFFE18).w
 		move.l	#$00001388, ($FFFFFFC0).w
-		move.b	#$E0, D0
+		move.b	#S1MusID_Stop, D0
 		bsr.w	Play_Sfx					   ; Offset_0x001512
 		rts
 ;-------------------------------------------------------------------------------
@@ -4175,7 +4167,7 @@ Offset_0x003C06:
 		bne.w	Offset_0x003A6A
 		tst.w	(Timer_Count_Down).w				 ; $FFFFF614
 		bne.w	Offset_0x003BE0
-		move.b	#$E0, D0
+		move.b	#S1MusID_Stop, D0
 		bsr.w	Play_Sfx					   ; Offset_0x001512
 		move.w	($FFFFFFF2).w, D0
 		andi.w	#$0007, D0
@@ -4273,7 +4265,7 @@ Offset_0x003D3C:
 		lea	(VDP_Data_Port).l, A6					 ; $00C00000
 		move.l	#$608C0003, D4
 		move.w	#$8680, D3
-		moveq	#$1A, D1
+		moveq	#27-1, D1
 Offset_0x003D54:
 		move.l	D4, $0004(A6)
 		bsr.w	Offset_0x003DD8
@@ -4287,7 +4279,7 @@ Offset_0x003D54:
 		swap	D0
 		add.l	D0, D4
 		lea	(Level_Select_Text).l, A1		   ; Offset_0x003DF4
-		mulu.w	#$001B, D1
+		mulu.w	#27, D1
 		adda.w	D1, A1
 		move.w	#$C680, D3
 		move.l	D4, $0004(A6)
@@ -4316,7 +4308,7 @@ Offset_0x003DD2:
 		move.w	D0, (A6)
 		rts
 Offset_0x003DD8:
-		moveq	#$1A, D2
+		moveq	#27-1, D2
 Offset_0x003DDA:
 		moveq	#$00, D0
 		move.b	(A1)+, D0
@@ -4331,33 +4323,45 @@ Offset_0x003DEA:
 		rts
 ;-------------------------------------------------------------------------------
 Level_Select_Text:							   ; Offset_0x003DF4
-		dc.b	_G,_R,_E,_E,_N,__,_H,_I,_L,_L,__,_Z,_O,_N,_E,__,__,__,__,__,_S,_T,_A,_G,_E,__,_0
-		dc.b	__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,_S,_T,_A,_G,_E,__,_1
-		dc.b	_W,_O,_O,_D,__,_Z,_O,_N,_E,__,__,__,__,__,__,__,__,__,__,__,_S,_T,_A,_G,_E,__,_0
-		dc.b	__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,_S,_T,_A,_G,_E,__,_1
-		dc.b	_M,_E,_T,_R,_O,_P,_O,_L,_I,_S,__,_Z,_O,_N,_E,__,__,__,__,__,_S,_T,_A,_G,_E,__,_0
-		dc.b	__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,_S,_T,_A,_G,_E,__,_1
-		dc.b	__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,_S,_T,_A,_G,_E,__,_2
-		dc.b	_H,_I,_L,_L,__,_T,_O,_P,__,_Z,_O,_N,_E,__,__,__,__,__,__,__,_S,_T,_A,_G,_E,__,_0
-		dc.b	__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,_S,_T,_A,_G,_E,__,_1
-		dc.b	_H,_I,_D,_D,_E,_N,__,_P,_A,_L,_A,_C,_E,__,_Z,_O,_N,_E,__,__,_S,_T,_A,_G,_E,__,_0
-		dc.b	__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,_S,_T,_A,_G,_E,__,_1
-		dc.b	_O,_I,_L,__,_O,_C,_E,_A,_N,__,_Z,_O,_N,_E,__,__,__,__,__,__,_S,_T,_A,_G,_E,__,_0
-		dc.b	__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,_S,_T,_A,_G,_E,__,_1
-		dc.b	_D,_U,_S,_T,__,_H,_I,_L,_L,__,_Z,_O,_N,_E,__,__,__,__,__,__,_S,_T,_A,_G,_E,__,_0
-		dc.b	__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,_S,_T,_A,_G,_E,__,_1
-		dc.b	_C,_A,_S,_I,_N,_O,__,_N,_I,_G,_H,_T,__,_Z,_O,_N,_E,__,__,__,_S,_T,_A,_G,_E,__,_0
-		dc.b	__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,_S,_T,_A,_G,_E,__,_1
-		dc.b	_C,_H,_E,_M,_I,_C,_A,_L,__,_P,_L,_A,_N,_T,__,_Z,_O,_N,_E,__,_S,_T,_A,_G,_E,__,_0
-		dc.b	__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,_S,_T,_A,_G,_E,__,_1
-		dc.b	_G,_E,_N,_O,_C,_I,_D,_E,__,_C,_I,_T,_Y,__,_Z,_O,_N,_E,__,__,_S,_T,_A,_G,_E,__,_0
-		dc.b	__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,_S,_T,_A,_G,_E,__,_1
-		dc.b	_N,_E,_O,__,_G,_R,_E,_E,_N,__,_H,_I,_L,_L,__,_Z,_O,_N,_E,__,_S,_T,_A,_G,_E,__,_0
-		dc.b	__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,_S,_T,_A,_G,_E,__,_1
-		dc.b	_D,_E,_A,_T,_H,__,_E,_G,_G,__,_Z,_O,_N,_E,__,__,__,__,__,__,_S,_T,_A,_G,_E,__,_0
-		dc.b	__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,_S,_T,_A,_G,_E,__,_1
-		dc.b	_S,_P,_E,_C,_I,_A,_L,__,_S,_T,_A,_G,_E,__,__,__,__,__,__,__,__,__,__,__,__,__,__
-		dc.b	_S,_O,_U,_N,_D,__,_S,_E,_L,_E,_C,_T,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__
+		charset ' ', $FF
+		charset '0','9',$00
+		charset '$', $0A
+		charset '-', $0B
+		charset '=', $0C
+		charset '>', $0D
+		;charset '>', $0E ; there are two right arrows in the font for some reason
+		charset 'Y','Z',$0F ; Y and Z come before A-X
+		charset 'A','X',$11
+
+		dc.b	"GREEN HILL ZONE     STAGE 0"
+		dc.b	"                    STAGE 1"
+		dc.b	"WOOD ZONE           STAGE 0"
+		dc.b	"                    STAGE 1"
+		dc.b	"METROPOLIS ZONE     STAGE 0"
+		dc.b	"                    STAGE 1"
+		dc.b	"                    STAGE 2"
+		dc.b	"HILL TOP ZONE       STAGE 0"
+		dc.b	"                    STAGE 1"
+		dc.b	"HIDDEN PALACE ZONE  STAGE 0"
+		dc.b	"                    STAGE 1"
+		dc.b	"OIL OCEAN ZONE      STAGE 0"
+		dc.b	"                    STAGE 1"
+		dc.b	"DUST HILL ZONE      STAGE 0"
+		dc.b	"                    STAGE 1"
+		dc.b	"CASINO NIGHT ZONE   STAGE 0"
+		dc.b	"                    STAGE 1"
+		dc.b	"CHEMICAL PLANT ZONE STAGE 0"
+		dc.b	"                    STAGE 1"
+		dc.b	"GENOCIDE CITY ZONE  STAGE 0"
+		dc.b	"                    STAGE 1"
+		dc.b	"NEO GREEN HILL ZONE STAGE 0"
+		dc.b	"                    STAGE 1"
+		dc.b	"DEATH EGG ZONE      STAGE 0"
+		dc.b	"                    STAGE 1"
+		dc.b	"SPECIAL STAGE              "
+		dc.b	"SOUND SELECT               "
+
+		charset
 		even
 ;-------------------------------------------------------------------------------
 ; Offset_0x0040CE:
@@ -4375,15 +4379,15 @@ Offset_0x0040D8:
 		rts
 ;-------------------------------------------------------------------------------
 ; Offset_0x0040F0:
-		lea	($00FE0000).l, A1
-		lea	($00FE0080).l, A2
+		lea	($FE0000).l, A1
+		lea	($FE0080).l, A2
 		lea	(M68K_RAM_Start).l, A3				 ; $FFFF0000
 		move.w	#$003F, D1
 Offset_0x004106:
 		bsr.w	Offset_0x004198
 		bsr.w	Offset_0x004198
 		dbf	D1, Offset_0x004106
-		lea	($00FE0000).l, A1
+		lea	($FE0000).l, A1
 		lea	(M68K_RAM_Start&$FFFFFF).l, A2		 ; $00FF0000
 		move.w	#$003F, D1
 Offset_0x004122:
@@ -4396,14 +4400,14 @@ Offset_0x00412E:
 		rts
 ;-------------------------------------------------------------------------------
 ; Offset_0x004136:
-		lea	($00FE0000).l, A1
+		lea	($FE0000).l, A1
 		lea	(M68K_RAM_Start).l, A3				 ; $FFFF0000
 		moveq	#$1F, D0
 Offset_0x004144:
 		move.l	(A1)+, (A3)+
 		dbf	D0, Offset_0x004144
 		moveq	#$00, D7
-		lea	($00FE0000).l, A1
+		lea	($FE0000).l, A1
 		move.w	#$00FF, D5
 Offset_0x004156:
 		lea	(M68K_RAM_Start).l, A3				 ; $FFFF0000
@@ -4457,28 +4461,29 @@ Offset_0x00419A:
 ; ->>>
 ;===============================================================================
 PlayList:							   ; Offset_0x0041B8
-		dc.b	$82	  ; GHz
-		dc.b	$82
-		dc.b	$85	  ; Wz
-		dc.b	$84
-		dc.b	$85	  ; Mz
-		dc.b	$85	  ; Mz
-		dc.b	$8C
-		dc.b	$86	  ; HTz
-		dc.b	$83	  ; HPz
-		dc.b	$8D
-		dc.b	$88	  ; OOz
-		dc.b	$8B	  ; DHz
-		dc.b	$89	  ; CNz
-		dc.b	$8E	  ; CPz
-		dc.b	$8E	  ; GCz
-		dc.b	$87	  ; NGHz
+		dc.b	MusID_GHZ	; GHz
+		dc.b	MusID_GHZ
+		dc.b	MusID_MTZ	; Wz
+		dc.b	MusID_OOZ2
+		dc.b	MusID_MTZ	; Mz
+		dc.b	MusID_MTZ	; Mz
+		dc.b	MusID_GHZ2P
+		dc.b	MusID_HTZ	; HTz
+		dc.b	MusID_DHZ2P	; HPz
+		dc.b	MusID_SCZ
+		dc.b	MusID_OOZ	; OOz
+		dc.b	MusID_DHZ	; DHz
+		dc.b	MusID_CNZ	; CNz
+		dc.b	MusID_CPZ	; CPz
+		dc.b	MusID_CPZ	; GCz
+		dc.b	MusID_NGHZ	; NGHz
+		even
 ;-------------------------------------------------------------------------------
 Level:								   ; Offset_0x0041C8
 		bset	#$07, (Game_Mode).w					 ; $FFFFF600
 		tst.w	(Auto_Control_Player_Flag).w		 ; $FFFFFFF0
 		bmi.s	Level_Init					   ; Offset_0x0041DC
-		move.b	#$F9, D0
+		move.b	#MusID_FadeOut, D0
 		bsr.w	Play_Sfx					   ; Offset_0x001512
 Level_Init:							   ; Offset_0x0041DC
 		bsr.w	ClearPLC					   ; Offset_0x0017F2
@@ -4496,7 +4501,7 @@ Level_Init:							   ; Offset_0x0041DC
 		move.w	D0, D1
 		add.w	D0, D0
 		add.w	D1, D0
-		lea	(TilesMainTable), A2		   ; Offset_0x02E708
+		lea	(TilesMainTable).l, A2		   ; Offset_0x02E708
 		lea	(A2, D0), A2
 		moveq	#$00, D0
 		move.b	(A2), D0
@@ -4976,7 +4981,7 @@ Offset_0x0047E4:
 		move.b	($FFFFFE0F).w, D0
 		andi.b	#$3F, D0
 		bne.s	Offset_0x00481C
-		move.w	#$00D0, D0
+		move.w	#S1SndID_Waterfall, D0
 		jsr	(Play_Sfx).l					   ; Offset_0x001512
 Offset_0x00481C:
 		tst.b	($FFFFF7C9).w
@@ -5067,7 +5072,7 @@ Offset_0x004926:
 		move.b	($FFFFFE0F).w, D0
 		andi.b	#$1F, D0
 		bne.s	Offset_0x00494A
-		move.w	#$00D0, D0
+		move.w	#S1SndID_Waterfall, D0
 		jsr	(Play_Sfx).l					   ; Offset_0x001512
 Offset_0x00494A:
 		rts
@@ -5085,7 +5090,7 @@ Init_Demo_Control:							   ; Offset_0x00495C
 		rts
 ;-------------------------------------------------------------------------------
 ; Demo_Record: ; Não usado					  ;	 Offset_0x004964
-		lea	($00FE8000).l, A1
+		lea	($FE8000).l, A1
 		move.w	($FFFFF790).w, D0
 		adda.w	D0, A1
 		move.b	(Control_Ports_Buffer_Data).w, D0			 ; $FFFFF604
@@ -5103,7 +5108,7 @@ Offset_0x004986:
 Offset_0x00499A:
 		cmpi.b	#$00, (Level_Id).w					 ; $FFFFFE10
 		bne.s	Offset_0x0049D8
-		lea	($00FEC000).l, A1
+		lea	($FEC000).l, A1
 		move.w	($FFFFF732).w, D0
 		adda.w	D0, A1
 		move.b	($FFFFF606).w, D0
@@ -5136,7 +5141,7 @@ Offset_0x0049EC:
 		moveq	#$06, D0
 Offset_0x004A02:
 		lsl.w	#$02, D0
-		move.l	$00(A1, D0), A1
+		move.l	(A1, D0), A1
 		move.w	($FFFFF790).w, D0
 		adda.w	D0, A1
 		move.b	(A1), D0
@@ -5505,7 +5510,7 @@ Offset_0x00536C:
 		bsr.w	Special_Stage_Pal_Cycle		   ; Offset_0x005626
 		clr.w	($FFFFF750).w
 		move.w	#$0040, ($FFFFF752).w
-		move.w	#$0089, D0
+		move.w	#S1MusID_SpecStg, D0
 		bsr.w	Play_Music					   ; Offset_0x00150C
 		move.w	#$0000, ($FFFFF790).w
 		lea	(Demo_Index).l, A1			   ; Offset_0x004A70
@@ -5590,7 +5595,7 @@ Offset_0x0054B4:
 		move.w	(Ring_Count).w, D0					 ; $FFFFFE20
 		mulu.w	#$000A, D0
 		move.w	D0, ($FFFFF7D4).w
-		move.w	#$008E, D0
+		move.w	#S1MusID_ActClear, D0
 		jsr	(Play_Sfx).l					   ; Offset_0x001512
 		lea	(Obj_Memory_Address).w, A1			 ; $FFFFB000
 		moveq	#$00, D0
@@ -9244,7 +9249,7 @@ Offset_0x007B78:
 		move.w	#$29D0, Obj_X(A1)				 ; $0008
 		move.w	#$0426, Obj_Y(A1)				 ; $000C
 Offset_0x007BAC:
-		move.w	#$008E, D0
+		move.w	#MusID_Boss_Prev, D0
 		bsr.w	Play_Music					   ; Offset_0x00150C
 		move.b	#$02, (Boss_Flag).w					 ; $FFFFF7AA
 		moveq	#$29, D0
@@ -9432,7 +9437,7 @@ Offset_0x007D9C:
 		move.l	D0, ($FFFFEEE2).w
 		move.b	D0, ($FFFFEEE8).w
 		subq.b	#$02, (Dyn_Resize_Routine).w		 ; $FFFFEEDF
-		move.w	#$00F8, D0
+		move.w	#MusID_StopSFX, D0
 		jsr	(Play_Sfx).l					   ; Offset_0x001512
 		rts
 Offset_0x007DC2:
@@ -9442,7 +9447,7 @@ Offset_0x007DC2:
 		move.l	D0, ($FFFFEEE2).w
 		move.b	D0, ($FFFFEEE8).w
 		addq.b	#$02, (Dyn_Resize_Routine).w		 ; $FFFFEEDF
-		move.w	#$00F8, D0
+		move.w	#MusID_StopSFX, D0
 		jsr	(Play_Sfx).l					   ; Offset_0x001512
 		rts
 ;-------------------------------------------------------------------------------
@@ -9631,7 +9636,7 @@ Offset_0x00801C:
 		move.l	D0, ($FFFFEEE2).w
 		move.b	D0, ($FFFFEEE8).w
 		subq.b	#$02, (Dyn_Resize_Routine).w		 ; $FFFFEEDF
-		move.w	#$00F8, D0
+		move.w	#MusID_StopSFX, D0
 		jsr	(Play_Sfx).l					   ; Offset_0x001512
 		rts
 Offset_0x008042:
@@ -9641,7 +9646,7 @@ Offset_0x008042:
 		move.l	D0, ($FFFFEEE2).w
 		move.b	D0, ($FFFFEEE8).w
 		addq.b	#$02, (Dyn_Resize_Routine).w		 ; $FFFFEEDF
-		move.w	#$00F8, D0
+		move.w	#MusID_StopSFX, D0
 		jsr	(Play_Sfx).l					   ; Offset_0x001512
 		rts
 ;-------------------------------------------------------------------------------
@@ -9730,7 +9735,7 @@ Offset_0x00817E:
 		move.l	D0, ($FFFFEEE2).w
 		move.b	D0, ($FFFFEEE8).w
 		subq.b	#$06, (Dyn_Resize_Routine).w		 ; $FFFFEEDF
-		move.w	#$00F8, D0
+		move.w	#MusID_StopSFX, D0
 		jsr	(Play_Sfx).l					   ; Offset_0x001512
 		rts
 Offset_0x0081A4:
@@ -9740,7 +9745,7 @@ Offset_0x0081A4:
 		move.l	D0, ($FFFFEEE2).w
 		move.b	D0, ($FFFFEEE8).w
 		addq.b	#$02, (Dyn_Resize_Routine).w		 ; $FFFFEEDF
-		move.w	#$00F8, D0
+		move.w	#MusID_StopSFX, D0
 		jsr	(Play_Sfx).l					   ; Offset_0x001512
 		rts
 ;-------------------------------------------------------------------------------
@@ -10013,8 +10018,8 @@ Obj_0x11_Bridge:							   ; Offset_0x008468
 		include "objects/obj_0x11.asm"
 Obj_0x15_Bridge:							   ; Offset_0x008A84
 		include "objects/obj_0x15.asm"
-Jmp_00_To_Object_HitWall_Right:				   ; Offset_0x00903C
 ;-------------------------------------------------------------------------------
+Jmp_00_To_Object_HitWall_Right:				   ; Offset_0x00903C
 		jmp	(Object_HitWall_Right).l		   ; Offset_0x01430A
 		dc.w	$0000
 ;-------------------------------------------------------------------------------
@@ -10519,7 +10524,7 @@ Add_Rings:							   ; Offset_0x00AB92
 Offset_0x00ABC0:
 		addq.b	#$01, (Life_Count).w				 ; $FFFFFE12
 		addq.b	#$01, (HUD_Life_Refresh_Flag).w		 ; $FFFFFE1C
-		move.w	#$0088, D0
+		move.w	#S1MusID_ExtraLife, D0
 Offset_0x00ABCC:
 		jmp	(Play_Sfx).l					   ; Offset_0x001512
 ;-------------------------------------------------------------------------------
@@ -12322,7 +12327,7 @@ Offset_0x00D99A:
 		bne.s	Offset_0x00D9B6
 		move.b	Obj_Map_Id(A0), D1				 ; $001A
 		add.w	D1, D1
-		adda.w	$00(A1, D1), A1
+		adda.w	(A1, D1), A1
 		move.w	(A1)+, D1
 		subq.w	#$01, D1
 		bmi.s	Offset_0x00D9BA
@@ -12367,7 +12372,7 @@ Offset_0x00D9EA:
 		moveq	#$00, D0
 		move.b	Obj_Inertia(A0), D0				 ; $0014
 		move.w	Obj_Y(A0), D2					 ; $000C
-		sub.w	Obj_Map(A4), D2					 ; $0004
+		sub.w	4(A4), D2					 ; $0004
 		move.w	D2, D1
 		add.w	D0, D1
 		bmi.w	Offset_0x00DACE
@@ -12379,7 +12384,7 @@ Offset_0x00D9EA:
 		bra.s	Offset_0x00DA66
 Offset_0x00DA4A:
 		move.w	Obj_Y(A0), D2					 ; $000C
-		sub.w	Obj_Map(A4), D2					 ; $0004
+		sub.w	4(A4), D2					 ; $0004
 		addi.w	#$0080, D2
 		cmpi.w	#$0060, D2
 		bcs.s	Offset_0x00DACE
@@ -12392,7 +12397,7 @@ Offset_0x00DA66:
 		beq.s	Offset_0x00DA84
 		add.w	D1, D1
 		move.l	A5, A1
-		adda.w	$00(A1, D1), A1
+		adda.w	(A1, D1), A1
 		move.w	(A1)+, D1
 		subq.w	#$01, D1
 		bmi.s	Offset_0x00DA84
@@ -12412,7 +12417,7 @@ Offset_0x00DA98:
 		sub.w	(A4), D3
 		addi.w	#$0080, D3
 		move.w	(A6)+, D2
-		sub.w	Obj_Map(A4), D2					 ; $0004
+		sub.w	4(A4), D2					 ; $0004
 		addi.w	#$0100, D2
 		addq.w	#$01, A6
 		moveq	#$00, D1
@@ -12454,7 +12459,7 @@ Offset_0x00DAD4:
 		moveq	#$00, D0
 		move.b	Obj_Inertia(A0), D0				 ; $0014
 		move.w	Obj_Y(A0), D2					 ; $000C
-		sub.w	Obj_Map(A4), D2					 ; $0004
+		sub.w	4(A4), D2					 ; $0004
 		move.w	D2, D1
 		add.w	D0, D1
 		bmi.w	Offset_0x00DBB8
@@ -12466,7 +12471,7 @@ Offset_0x00DAD4:
 		bra.s	Offset_0x00DB50
 Offset_0x00DB34:
 		move.w	Obj_Y(A0), D2					 ; $000C
-		sub.w	Obj_Map(A4), D2					 ; $0004
+		sub.w	4(A4), D2					 ; $0004
 		addi.w	#$0080, D2
 		cmpi.w	#$0060, D2
 		bcs.s	Offset_0x00DBB8
@@ -12479,7 +12484,7 @@ Offset_0x00DB50:
 		beq.s	Offset_0x00DB6E
 		add.w	D1, D1
 		move.l	A5, A1
-		adda.w	$00(A1, D1), A1
+		adda.w	(A1, D1), A1
 		move.w	(A1)+, D1
 		subq.w	#$01, D1
 		bmi.s	Offset_0x00DB6E
@@ -12506,7 +12511,7 @@ Offset_0x00DB82:
 		move.b	(A6)+, D1
 		add.w	D1, D1
 		move.l	A5, A1
-		adda.w	$00(A1, D1), A1
+		adda.w	(A1, D1), A1
 		move.w	(A1)+, D1
 		subq.w	#$01, D1
 		bmi.s	Offset_0x00DBB2
@@ -20437,7 +20442,7 @@ Offset_0x02D2EC:
 		bmi.s	Offset_0x02D314
 		addq.b	#$01, (Life_Count).w				 ; $FFFFFE12
 		addq.b	#$01, (HUD_Life_Refresh_Flag).w		 ; $FFFFFE1C
-		move.w	#$0088, D0
+		move.w	#S1MusID_ExtraLife, D0
 		jmp	(Play_Music).l				   ; Offset_0x00150C
 Offset_0x02D314:
 		rts
@@ -22952,7 +22957,7 @@ Previous_Build_Art_Big_Ring_Overwrite:				   ; Offset_0x04A87A
 ; ->>>
 ;-------------------------------------------------------------------------------
 Star_Light_Tiles_Overwrite:					   ; Offset_0x04A87C
-		binclude	"slz/tiles.dat"
+		binclude	"misc/leftovers/art/nemesis/8x8 - SLZ.nem"
 ;-------------------------------------------------------------------------------
 ; Dados no formato nemesis sobrescritos.
 ; Tiles 8x8 da fase Star Light do Sonic 1.
@@ -23063,7 +23068,7 @@ DEz_Obj_Act2:						   ; Offset_0x04ED20
 ; ->>>
 ;-------------------------------------------------------------------------------
 Star_Light_Chunks_Overwrite:				   ; Offset_0x04ED28
-		binclude	"slz/chunks.dat"
+		binclude	"misc/leftovers/mappings/256x256/SLZ.kos"
 ;-------------------------------------------------------------------------------
 ; Dados no formato kosinski sobrescritos.
 ; Tiles 8x8 da fase Star Light do Sonic 1.
@@ -26484,13 +26489,13 @@ Offset_0x074870:
 Art_SEGA:							   ; Offset_0x074876
 		binclude	"art/sega.nem"
 Sega_Mappings:						   ; Offset_0x074CE6
-		binclude	"all/sega.eni"
+		binclude	"tilemaps/sega.eni"
 TS_Wings_Sonic_Mappings:					   ; Offset_0x074DE2
-		binclude	"mappings/titlescr.eni"
+		binclude	"tilemaps/titlescr.eni"
 Title_Screen_Bg_Mappings:					   ; Offset_0x074F3A
-		binclude	"mappings/titscrbg.eni"
+		binclude	"tilemaps/titscrbg.eni"
 Title_Screen_R_Bg_Mappings:					   ; Offset_0x0751EE
-		binclude	"mappings/titscrb2.eni"
+		binclude	"tilemaps/titscrb2.eni"
 Art_Title_Screen_Bg_Wings:					   ; Offset_0x075436
 		binclude	"art/titlescr.nem" ; Title Screen Wings and background
 Art_Title_Screen_Sonic_Miles:				   ; Offset_0x076D98
@@ -26803,14 +26808,12 @@ Art_Hill_Top_Dynamic_Init:					   ; Offset_0x091224
 		binclude	"htz/dyn_init.nem"
 Green_Hill_Chunks:							   ; Offset_0x09152C
 		binclude	"ghz/chunks.kos"
-		dc.w	$0000, $0000
 Wood_Blocks:						   ; Offset_0x09478C
 		binclude	"wz/blocks.dat"
 Wood_Tiles:							   ; Offset_0x09572C
 		binclude	"wz/tiles.nem"
 Wood_Chunks:						   ; Offset_0x099424
-		binclude	"wz/chunks.kos"
-		dc.w	$0000, $0000, $0000, $0000, $0000, $0000
+		binclude	"mappings/128x128/WZ.kos"
 Metropolis_Blocks:							   ; Offset_0x09B054
 		binclude	"mz/blocks.dat"
 Metropolis_Tiles:							   ; Offset_0x09C314
@@ -26827,7 +26830,6 @@ Art_Hidden_Palace_Dynamic_Init:				   ; Offset_0x0A67C2
 		binclude	"hpz/dyn_init.nem"
 Hidden_Palace_Chunks:						   ; Offset_0x0A6936
 		binclude	"hpz/chunks.kos"
-		dc.w	$0000, $0000, $0000
 Oil_Ocean_Blocks:							   ; Offset_0x0A86B6
 		binclude	"ooz/blocks.dat"
 Oil_Ocean_Tiles:							   ; Offset_0x0A9C96
@@ -26842,7 +26844,6 @@ Dust_Hill_Tiles:							   ; Offset_0x0B0146
 		binclude	"dhz/tiles.nem"
 Dust_Hill_Chunks:							   ; Offset_0x0B3A68
 		binclude	"dhz/chunks.kos"
-		dc.w	$0000, $0000, $0000
 Casino_Night_Blocks:						   ; Offset_0x0B65B8
 		binclude	"cnz/blocks.dat"
 Casino_Night_Tiles:							   ; Offset_0x0B6F18
@@ -26851,7 +26852,6 @@ Art_Casino_Night_Dynamic_Init:				   ; Offset_0x0B9E78
 		binclude	"cnz/dyn_init.nem"
 Casino_Night_Chunks:						   ; Offset_0x0B9F62
 		binclude	"cnz/chunks.kos"
-		dc.w	$0000, $0000, $0000
 Chemical_Plant_Blocks:						   ; Offset_0x0BBE72
 		binclude	"cpz/blocks.dat"
 Chemical_Plant_Tiles:						   ; Offset_0x0BD452
@@ -26860,7 +26860,6 @@ Art_Chemical_Plant_Dynamic_Init:					   ; Offset_0x0C0F7A
 		binclude	"cpz/dyn_init.nem"
 Chemical_Plant_Chunks:						   ; Offset_0x0C0FA4
 		binclude	"cpz/chunks.kos"
-		dc.w	$0000, $0000, $0000
 Neo_Green_Hill_Blocks:						   ; Offset_0x0C34A4
 		binclude	"nghz/blocks.dat"
 Neo_Green_Hill_Tiles:						   ; Offset_0x0C4DA4
@@ -26891,7 +26890,7 @@ Previous_Build_Neo_Green_Hill_Tiles_Overwrite:		   ; Offset_0x0E504C
 Previous_Build_Art_Neo_Green_Hill_Dynamic_Init_2:			   ; Offset_0x0E57E6
 		binclude	"nghz/dyn_init.nem"
 Uncompiled_Asm:						   ; Offset_0x0E5946
-		binclude	"misc/leftovers/code.txt"
+		binclude	"misc/leftovers/data.txt"
 ;===============================================================================
 ; Leiaute dos anéis nas fases
 ; ->>>
@@ -27349,71 +27348,74 @@ Mus_HTZ:						   ; Offset_0x0FE4B6
 		cnop	0,$FEE00
 ;-------------------------------------------------------------------------------
 SoundIndex:						   ; Offset_0x0FEE00
-		rom_ptr_z80 Sfx_A0
-		rom_ptr_z80 Sfx_A1
-		rom_ptr_z80 Sfx_A2
-		rom_ptr_z80 Sfx_A3
-		rom_ptr_z80 Sfx_A4
-		rom_ptr_z80 Sfx_A5
-		rom_ptr_z80 Sfx_A6
-		rom_ptr_z80 Sfx_A7
-		rom_ptr_z80 Sfx_A8
-		rom_ptr_z80 Sfx_A9
-		rom_ptr_z80 Sfx_AA
-		rom_ptr_z80 Sfx_AB
-		rom_ptr_z80 Sfx_AC
-		rom_ptr_z80 Sfx_AD
-		rom_ptr_z80 Sfx_AE
-		rom_ptr_z80 Sfx_AF
-		rom_ptr_z80 Sfx_B0
-		rom_ptr_z80 Sfx_B1
-		rom_ptr_z80 Sfx_B2
-		rom_ptr_z80 Sfx_B3
-		rom_ptr_z80 Sfx_B4
-		rom_ptr_z80 Sfx_B5
-		rom_ptr_z80 Sfx_B6
-		rom_ptr_z80 Sfx_B7
-		rom_ptr_z80 Sfx_B8
-		rom_ptr_z80 Sfx_B9
-		rom_ptr_z80 Sfx_BA
-		rom_ptr_z80 Sfx_BB
-		rom_ptr_z80 Sfx_BC
-		rom_ptr_z80 Sfx_BD
-		rom_ptr_z80 Sfx_BE
-		rom_ptr_z80 Sfx_BF
-		rom_ptr_z80 Sfx_C0
-		rom_ptr_z80 Sfx_C1
-		rom_ptr_z80 Sfx_C2
-		rom_ptr_z80 Sfx_C3
-		rom_ptr_z80 Sfx_C4
-		rom_ptr_z80 Sfx_C5
-		rom_ptr_z80 Sfx_C6
-		rom_ptr_z80 Sfx_C7
-		rom_ptr_z80 Sfx_C8
-		rom_ptr_z80 Sfx_C9
-		rom_ptr_z80 Sfx_CA
-		rom_ptr_z80 Sfx_CB
-		rom_ptr_z80 Sfx_CC
-		rom_ptr_z80 Sfx_CD
-		rom_ptr_z80 Sfx_CE
-		rom_ptr_z80 Sfx_CF
-		rom_ptr_z80 Sfx_D0
-		rom_ptr_z80 Sfx_D1
-		rom_ptr_z80 Sfx_D2
-		rom_ptr_z80 Sfx_D3
-		rom_ptr_z80 Sfx_D4
-		rom_ptr_z80 Sfx_D5
-		rom_ptr_z80 Sfx_D6
-		rom_ptr_z80 Sfx_D7
-		rom_ptr_z80 Sfx_D8
-		rom_ptr_z80 Sfx_D9
-		rom_ptr_z80 Sfx_DA
-		rom_ptr_z80 Sfx_DB
-		rom_ptr_z80 Sfx_DC
-		rom_ptr_z80 Sfx_DD
-		rom_ptr_z80 Sfx_DE
-		rom_ptr_z80 Sfx_DF
-		rom_ptr_z80 Sfx_E0
+SndPtr_Jump:		rom_ptr_z80	Sfx_A0
+SndPtr_Checkpoint:	rom_ptr_z80	Sfx_A1
+SndPtr_SpikeSwitch:	rom_ptr_z80	Sfx_A2
+SndPtr_Hurt:		rom_ptr_z80	Sfx_A3
+SndPtr_Skidding:	rom_ptr_z80	Sfx_A4
+SndPtr_MissileDissolve:	rom_ptr_z80	Sfx_A5
+SndPtr_HurtBySpikes:	rom_ptr_z80	Sfx_A6
+SndPtr_PushBlock:	rom_ptr_z80	Sfx_A7
+SndPtr_SSGoal:		rom_ptr_z80	Sfx_A8
+SndPtr_Bwoop:		rom_ptr_z80	Sfx_A9
+SndPtr_Splash:		rom_ptr_z80	Sfx_AA
+SndPtr_Swish:		rom_ptr_z80	Sfx_AB
+SndPtr_BossHit:		rom_ptr_z80	Sfx_AC
+SndPtr_InhalingBubble:	rom_ptr_z80	Sfx_AD
+SndPtr_ArrowFiring:
+SndPtr_LavaBall:	rom_ptr_z80	Sfx_AE
+SndPtr_Shield:		rom_ptr_z80	Sfx_AF
+SndPtr_Saw:		rom_ptr_z80	Sfx_B0
+SndPtr_Electric:	rom_ptr_z80	Sfx_B1
+SndPtr_Drown:		rom_ptr_z80	Sfx_B2
+SndPtr_FireBurn:	rom_ptr_z80	Sfx_B3
+SndPtr_Bumper:		rom_ptr_z80	Sfx_B4
+SndPtr_Ring:
+SndPtr_RingRight:	rom_ptr_z80	Sfx_B5
+SndPtr_SpikesMove:	rom_ptr_z80	Sfx_B6
+SndPtr_Rumbling:	rom_ptr_z80	Sfx_B7
+			rom_ptr_z80	Sfx_B8
+SndPtr_Smash:		rom_ptr_z80	Sfx_B9
+SndPtr_SSGlass:		rom_ptr_z80	Sfx_BA
+SndPtr_DoorSlam:	rom_ptr_z80	Sfx_BB
+SndPtr_SpindashRelease:	rom_ptr_z80	Sfx_BC
+SndPtr_Hammer:		rom_ptr_z80	Sfx_BD
+SndPtr_Roll:		rom_ptr_z80	Sfx_BE
+SndPtr_ContinueJingle:	rom_ptr_z80	Sfx_BF
+SndPtr_BasaranFlap:	rom_ptr_z80	Sfx_C0
+SndPtr_Explosion:	rom_ptr_z80	Sfx_C1
+SndPtr_WaterWarning:	rom_ptr_z80	Sfx_C2
+SndPtr_EnterGiantRing:	rom_ptr_z80	Sfx_C3
+SndPtr_BossExplosion:	rom_ptr_z80	Sfx_C4
+SndPtr_TallyEnd:	rom_ptr_z80	Sfx_C5
+SndPtr_RingSpill:	rom_ptr_z80	Sfx_C6
+			rom_ptr_z80	Sfx_C7
+SndPtr_Flamethrower:	rom_ptr_z80	Sfx_C8
+SndPtr_Bonus:		rom_ptr_z80	Sfx_C9
+SndPtr_SpecStageEntry:	rom_ptr_z80	Sfx_CA
+SndPtr_SlowSmash:	rom_ptr_z80	Sfx_CB
+SndPtr_Spring:		rom_ptr_z80	Sfx_CC
+SndPtr_Blip:		rom_ptr_z80	Sfx_CD
+SndPtr_RingLeft:	rom_ptr_z80	Sfx_CE
+SndPtr_Signpost:	rom_ptr_z80	Sfx_CF
+SndPtr_CNZBossZap:	rom_ptr_z80	Sfx_D0
+			rom_ptr_z80	Sfx_D1
+			rom_ptr_z80	Sfx_D2
+SndPtr_Signpost2P:	rom_ptr_z80	Sfx_D3
+SndPtr_OOZLidPop:	rom_ptr_z80	Sfx_D4
+SndPtr_SlidingSpike:	rom_ptr_z80	Sfx_D5
+SndPtr_CNZElevator:	rom_ptr_z80	Sfx_D6
+SndPtr_PlatformKnock:	rom_ptr_z80	Sfx_D7
+SndPtr_BonusBumper:	rom_ptr_z80	Sfx_D8
+SndPtr_LargeBumper:	rom_ptr_z80	Sfx_D9
+SndPtr_Gloop:		rom_ptr_z80	Sfx_DA
+SndPtr_PreArrowFiring:	rom_ptr_z80	Sfx_DB
+SndPtr_Fire:		rom_ptr_z80	Sfx_DC
+SndPtr_ArrowStick:	rom_ptr_z80	Sfx_DD
+SndPtr_Helicopter:
+SndPtr_WingFortress:	rom_ptr_z80	Sfx_DE
+SndPtr_SuperTransform:	rom_ptr_z80	Sfx_DF
+SndPtr_SpindashRev:	rom_ptr_z80	Sfx_E0
 		rom_ptr_z80 Sfx_E1
 		rom_ptr_z80 Sfx_E2
 		rom_ptr_z80 Sfx_E3
@@ -27423,6 +27425,8 @@ SoundIndex:						   ; Offset_0x0FEE00
 		rom_ptr_z80 Sfx_E7
 		rom_ptr_z80 Sfx_E8
 		rom_ptr_z80 Sfx_E9
+SndPtr__End:
+
 Sfx_A0:		include	"sound/SFX/A0 - Jump.asm"
 Sfx_A1:		include	"sound/SFX/A1 - Lamppost.asm"
 Sfx_A2:		include	"sound/SFX/A2 - Spike Switch.asm"

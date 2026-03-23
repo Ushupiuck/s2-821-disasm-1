@@ -20,7 +20,7 @@ Offset_0x02079E:
                 subi.w  #$0001, Obj_Timer(A0)                            ; $002A
                 bpl.w   Jmp_14_To_DisplaySprite                ; Offset_0x020E58
                 move.b  #$00, Obj_Routine(A0)                            ; $0024
-                lea     (GHz_Boss_Animate_Data_01), A1         ; Offset_0x020CAA
+                lea     (GHz_Boss_Animate_Data_01).l, A1         ; Offset_0x020CAA
                 bsr.w   Jmp_08_To_AnimateSprite                ; Offset_0x020E70
                 bra.w   Jmp_14_To_DisplaySprite                ; Offset_0x020E58      
 ;-------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ Offset_0x0207F8:
                 move.w  Obj_Y(A1), Obj_Y(A0)                      ; $000C, $000C
                 move.b  Obj_Status(A1), Obj_Status(A0)            ; $0022, $0022
                 move.b  Obj_Flags(A1), Obj_Flags(A0)              ; $0001, $0001
-                lea     (GHz_Boss_Animate_Data_01), A1         ; Offset_0x020CAA
+                lea     (GHz_Boss_Animate_Data_01).l, A1         ; Offset_0x020CAA
                 bsr.w   Jmp_08_To_AnimateSprite                ; Offset_0x020E70
                 bra.w   Jmp_14_To_DisplaySprite                ; Offset_0x020E58        
 ;-------------------------------------------------------------------------------
@@ -60,7 +60,7 @@ Offset_0x02081E:
                 addi.w  #$0001, Obj_Y(A0)                                ; $000C
                 bra.w   Jmp_14_To_DisplaySprite                ; Offset_0x020E58
 Offset_0x02083A:
-                lea     (GHz_Boss_Animate_Data_01), A1         ; Offset_0x020CAA
+                lea     (GHz_Boss_Animate_Data_01).l, A1         ; Offset_0x020CAA
                 bsr.w   Jmp_08_To_AnimateSprite                ; Offset_0x020E70
                 bra.w   Jmp_14_To_DisplaySprite                ; Offset_0x020E58     
 ;-------------------------------------------------------------------------------
@@ -116,7 +116,7 @@ Offset_0x0208CE:
 Offset_0x0208F0:
                 bsr.w   Offset_0x020702
                 bsr.w   Jmp_02_To_ObjectFall                   ; Offset_0x020E88
-                jsr     (ObjHitFloor)                          ; Offset_0x014204
+                jsr     (ObjHitFloor).l                          ; Offset_0x014204
                 tst.w   D1
                 bpl.s   Offset_0x020906
                 add.w   D1, Obj_Y(A0)                                    ; $000C
@@ -128,7 +128,7 @@ Offset_0x020906:
                 move.l  Obj_Control_Var_08(A0), A1                       ; $0034
                 add.w   D0, Obj_Control_Var_02(A1)                       ; $002E
 Offset_0x020920:
-                lea     (GHz_Boss_Animate_Data_02), A1         ; Offset_0x020DB8
+                lea     (GHz_Boss_Animate_Data_02).l, A1         ; Offset_0x020DB8
                 bsr.w   Jmp_08_To_AnimateSprite                ; Offset_0x020E70
                 bra.w   Jmp_14_To_DisplaySprite                ; Offset_0x020E58     
 ;-------------------------------------------------------------------------------
@@ -176,7 +176,7 @@ Offset_0x02097C:
                 neg.w   D0
 Offset_0x0209D0:
                 add.w   D0, Obj_X(A0)                                    ; $0008
-                lea     (GHz_Boss_Animate_Data_02), A1         ; Offset_0x020DB8
+                lea     (GHz_Boss_Animate_Data_02).l, A1         ; Offset_0x020DB8
                 bsr.w   Jmp_08_To_AnimateSprite                ; Offset_0x020E70
                 bra.w   Jmp_14_To_DisplaySprite                ; Offset_0x020E58
 Offset_0x0209E2:
@@ -186,7 +186,7 @@ Offset_0x0209E2:
                 neg.w   D0
 Offset_0x0209F0:
                 add.w   D0, Obj_X(A0)                                    ; $0008
-                lea     (GHz_Boss_Animate_Data_02), A1         ; Offset_0x020DB8
+                lea     (GHz_Boss_Animate_Data_02).l, A1         ; Offset_0x020DB8
                 bsr.w   Jmp_08_To_AnimateSprite                ; Offset_0x020E70
                 bra.w   Jmp_14_To_DisplaySprite                ; Offset_0x020E58
 Offset_0x020A02:

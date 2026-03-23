@@ -71,7 +71,7 @@ Offset_0x01FF5A:
 ;-------------------------------------------------------------------------------
 Offset_0x01FF9C:
                 move.w  #$0390, (Water_Level).w                      ; $FFFFF646
-                lea     (Piranha_Animate_Data), A1             ; Offset_0x02009A
+                lea     (Piranha_Animate_Data).l, A1             ; Offset_0x02009A
                 bsr.w   Jmp_07_To_AnimateSprite                ; Offset_0x0200EA
                 move.w  Obj_Control_Var_12(A0), D0                       ; $003E
                 sub.w   D0, Obj_Control_Var_04(A0)                       ; $0030

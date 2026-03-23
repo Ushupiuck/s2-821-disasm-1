@@ -132,7 +132,7 @@ Load_Dust_Water_Splash_Dynamic_PLC:                            ; Offset_0x013346
                 move.b  D0, Obj_Control_Var_04(A0)                       ; $0030
                 lea     (Dust_Water_Splash_Dyn_Script).l, A2     ; Offset_0x0134D6
                 add.w   D0, D0
-                adda.w  $00(A2, D0), A2
+                adda.w  (A2, D0), A2
                 move.w  (A2)+, D5
                 subq.w  #$01, D5
                 bmi.s   Offset_0x013398

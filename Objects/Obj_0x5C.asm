@@ -26,7 +26,7 @@ Offset_0x0242AA:
                 move.w  Obj_Y(A0), Obj_Control_Var_04(A0)         ; $000C, $0030  
 ;------------------------------------------------------------------------------- 
 Offset_0x0242E4:
-                lea     (Masher_Animate_Data), A1              ; Offset_0x024330
+                lea     (Masher_Animate_Data).l, A1              ; Offset_0x024330
                 bsr.w   Jmp_13_To_AnimateSprite                ; Offset_0x024382
                 bsr.w   Jmp_17_To_SpeedToPos                   ; Offset_0x02438E
                 addi.w  #$0018, Obj_Speed_Y(A0)                          ; $0012

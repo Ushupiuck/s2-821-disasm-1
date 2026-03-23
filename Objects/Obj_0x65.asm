@@ -109,7 +109,7 @@ Offset_0x01B9D0:
                 sub.w   ($FFFFF7DA).w, D0
                 cmpi.w  #$0280, D0
                 bhi.s   Offset_0x01BA16
-                jmp     (DisplaySprite)                        ; Offset_0x00D322
+                jmp     (DisplaySprite).l                        ; Offset_0x00D322
 Offset_0x01BA16:
                 lea     ($FFFFFC00).w, A2
                 moveq   #$00, D0
@@ -117,7 +117,7 @@ Offset_0x01BA16:
                 beq.s   Offset_0x01BA28
                 bclr    #$07, $02(A2, D0)
 Offset_0x01BA28:
-                jmp     (DeleteObject)                         ; Offset_0x00D314    
+                jmp     (DeleteObject).l                         ; Offset_0x00D314    
 ;-------------------------------------------------------------------------------
 Offset_0x01BA2E:
                 dc.w    Offset_0x01BA3E-Offset_0x01BA2E

@@ -110,7 +110,7 @@ Offset_0x00E880:
                 beq.s   Offset_0x00E898
                 bsr.s   Offset_0x00E8A4
 Offset_0x00E898:
-                lea     (Springs_Animate_Data), A1             ; Offset_0x00EEC2
+                lea     (Springs_Animate_Data).l, A1             ; Offset_0x00EEC2
                 bra.w   AnimateSprite                          ; Offset_0x00D372 
 ;-------------------------------------------------------------------------------
 ; Offset_0x00E8A2:
@@ -196,7 +196,7 @@ Offset_0x00E9B2:
                 bsr.s   Offset_0x00E9CA
 Offset_0x00E9BA:
                 bsr.w   Offset_0x00EAA2
-                lea     (Springs_Animate_Data), A1             ; Offset_0x00EEC2
+                lea     (Springs_Animate_Data).l, A1             ; Offset_0x00EEC2
                 bra.w   AnimateSprite                          ; Offset_0x00D372
 ;-------------------------------------------------------------------------------
 ; Offset_0x00E9C8:
@@ -339,7 +339,7 @@ Offset_0x00EB82:
                 bne.s   Offset_0x00EB98
                 bsr.s   Offset_0x00EBA4
 Offset_0x00EB98:
-                lea     (Springs_Animate_Data), A1             ; Offset_0x00EEC2
+                lea     (Springs_Animate_Data).l, A1             ; Offset_0x00EEC2
                 bra.w   AnimateSprite                          ; Offset_0x00D372      
 ;-------------------------------------------------------------------------------
 ; Offset_0x00EBA2:
@@ -408,7 +408,7 @@ Offset_0x00EC70:
                 beq.s   Offset_0x00EC88
                 bsr.s   Offset_0x00EC94
 Offset_0x00EC88:
-                lea     (Springs_Animate_Data), A1             ; Offset_0x00EEC2
+                lea     (Springs_Animate_Data).l, A1             ; Offset_0x00EEC2
                 bra.w   AnimateSprite                          ; Offset_0x00D372    
 ;-------------------------------------------------------------------------------
 ; Offset_0x00EC92:
@@ -497,7 +497,7 @@ Offset_0x00EDA4:
                 bne.s   Offset_0x00EDBA
                 bsr.s   Offset_0x00EDC6
 Offset_0x00EDBA:
-                lea     (Springs_Animate_Data), A1             ; Offset_0x00EEC2
+                lea     (Springs_Animate_Data).l, A1             ; Offset_0x00EEC2
                 bra.w   AnimateSprite                          ; Offset_0x00D372   
 ;-------------------------------------------------------------------------------
 ; Offset_0x00EDC4:

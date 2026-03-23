@@ -129,7 +129,7 @@ Rexon_Load_Weapon:                                             ; Offset_0x028B2E
                 move.b  #$10, Obj_Subtype(A1)                            ; $0028
                 move.w  Obj_X(A0), Obj_X(A1)                      ; $0008, $0008
                 move.w  Obj_Y(A0), Obj_Y(A1)                      ; $000C, $000C
-                lea     (SpeedToPos), A2                       ; Offset_0x00D1DA
+                lea     (SpeedToPos).l, A2                       ; Offset_0x00D1DA
                 move.l  A2, Obj_Timer(A1)                                ; $002A
                 moveq   #$01, D0
                 moveq   #$10, D1
@@ -196,7 +196,7 @@ Offset_0x028C00:
                 move.w  D0, D1
                 andi.w  #$001F, D0
                 add.w   D0, D0
-                move.b  $00(A2, D0), D2
+                move.b  (A2, D0), D2
                 ext.w   D2
                 move.b  $01(A2, D0), D3
                 ext.w   D3

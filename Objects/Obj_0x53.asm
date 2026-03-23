@@ -143,7 +143,7 @@ Offset_0x027D36:
                 move.w  #$01AC, Obj_Y(A0)                                ; $000C
                 addq.b  #$02, Obj_Routine(A0)                            ; $0024
 Offset_0x027D48:
-                lea     (Mz_Boss_Animate_Data), A1             ; Offset_0x027D88
+                lea     (Mz_Boss_Animate_Data).l, A1             ; Offset_0x027D88
                 bsr.w   Jmp_16_To_AnimateSprite                ; Offset_0x027E98
                 bra.w   Jmp_1E_To_DisplaySprite                ; Offset_0x027E8C   
 ;-------------------------------------------------------------------------------

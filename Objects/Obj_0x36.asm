@@ -153,7 +153,7 @@ Hurt_Player_A1:                                                ; Offset_0x00C9A4
                 move.l  D3, Obj_Y(A1)                                    ; $000C
                 move.l  A0, A2
                 move.l  A1, A0
-                jsr     (Hurt_Player)                          ; Offset_0x02B4DE
+                jsr     (Hurt_Player).l                          ; Offset_0x02B4DE
                 move.l  A2, A0
 Exit_Hurt_Player_A1:                                           ; Offset_0x00C9D0
                 rts                                                             

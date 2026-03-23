@@ -44,8 +44,8 @@ Offset_0x01C348:
                 andi.w  #$0003, D1
                 move.b  D1, Obj_Routine_2(A1)                            ; $0025
                 move.b  D1, Obj_Map_Id(A1)                               ; $001A
-                lea     (Offset_0x01C4EC), A2
-                move.b  $00(A2, D1), Obj_Col_Flags(A1)                   ; $0020
+                lea     (Offset_0x01C4EC).l, A2
+                move.b  (A2, D1), Obj_Col_Flags(A1)                   ; $0020
 Offset_0x01C3E4:
                 move.b  #$04, Obj_Map_Id(A0)                             ; $001A  
 ;-------------------------------------------------------------------------------

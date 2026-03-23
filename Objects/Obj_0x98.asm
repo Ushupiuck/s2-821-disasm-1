@@ -28,7 +28,7 @@ Nebula_Weapon:                                                 ; Offset_0x028D0C
 ;-------------------------------------------------------------------------------
 Turtloid_Weapon:                                               ; Offset_0x028D16
                 bsr.w   Jmp_19_To_SpeedToPos                   ; Offset_0x02A7C4
-                lea     (Turtloid_Weapon_Animate_Data), A1     ; Offset_0x02912E
+                lea     (Turtloid_Weapon_Animate_Data).l, A1     ; Offset_0x02912E
                 bra.w   Jmp_17_To_AnimateSprite                ; Offset_0x02A7AC  
 ;-------------------------------------------------------------------------------   
 Coconuts_Weapon:                                               ; Offset_0x028D24
@@ -38,13 +38,13 @@ Coconuts_Weapon:                                               ; Offset_0x028D24
 ;-------------------------------------------------------------------------------
 Clucker_Weapon:                                                ; Offset_0x028D30
                 bsr.w   Jmp_19_To_SpeedToPos                   ; Offset_0x02A7C4
-                lea     (Clucker_Weapon_Animate_Data), A1      ; Offset_0x02A610
+                lea     (Clucker_Weapon_Animate_Data).l, A1      ; Offset_0x02A610
                 bra.w   Jmp_17_To_AnimateSprite                ; Offset_0x02A7AC    
 ;-------------------------------------------------------------------------------                
 Spiny_Weapon:                                                  ; Offset_0x028D3E
                 addi.w  #$0020, Obj_Speed_Y(A0)                          ; $0012
                 bsr.w   Jmp_19_To_SpeedToPos                   ; Offset_0x02A7C4
-                lea     (Spiny_Weapon_Animate_Data), A1        ; Offset_0x02A1DE
+                lea     (Spiny_Weapon_Animate_Data).l, A1        ; Offset_0x02A1DE
                 bra.w   Jmp_17_To_AnimateSprite                ; Offset_0x02A7AC  
 ;-------------------------------------------------------------------------------  
 Rexon_Fireball_Map_Ptr:                                        ; Offset_0x028D52

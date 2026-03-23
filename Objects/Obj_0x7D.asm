@@ -46,7 +46,7 @@ Offset_0x01477A:
                 move.b  Obj_Subtype(A0), D0                              ; $0028
                 add.w   D0, D0
                 move.w  Hidden_Bonus_Points(PC, D0), D0        ; Offset_0x014816
-                jsr     (AddPoints)                            ; Offset_0x02D2D4
+                jsr     (AddPoints).l                            ; Offset_0x02D2D4
 Offset_0x0147FC:
                 move.w  Obj_X(A0), D0                                    ; $0008
                 andi.w  #$FF80, D0
@@ -55,7 +55,7 @@ Offset_0x0147FC:
                 bhi.s   Offset_0x014810
                 rts
 Offset_0x014810:
-                jmp     (DeleteObject)                         ; Offset_0x00D314      
+                jmp     (DeleteObject).l                         ; Offset_0x00D314      
 ;------------------------------------------------------------------------------- 
 Hidden_Bonus_Points:                                           ; Offset_0x014816
                 dc.w    $0000
@@ -71,9 +71,9 @@ Offset_0x01481E:
                 sub.w   ($FFFFF7DA).w, D0
                 cmpi.w  #$0280, D0
                 bhi.s   Offset_0x01483C
-                jmp     (DisplaySprite)                        ; Offset_0x00D322
+                jmp     (DisplaySprite).l                        ; Offset_0x00D322
 Offset_0x01483C:
-                jmp     (DeleteObject)                         ; Offset_0x00D314  
+                jmp     (DeleteObject).l                         ; Offset_0x00D314  
 ;-------------------------------------------------------------------------------
 Hidden_Bonus_Mappings:                                         ; Offset_0x014842
                 dc.w    Offset_0x01484A-Hidden_Bonus_Mappings

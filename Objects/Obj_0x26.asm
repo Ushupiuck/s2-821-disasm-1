@@ -58,7 +58,7 @@ Offset_0x00B1AC:
                 bra.w   Offset_0x00B266
 Offset_0x00B1BC:
                 bsr.w   ObjectFall                             ; Offset_0x00D1AE
-                jsr     (ObjHitFloor)                          ; Offset_0x014204
+                jsr     (ObjHitFloor).l                          ; Offset_0x014204
                 tst.w   D1
                 bpl.w   Offset_0x00B266
                 add.w   D1, Obj_Y(A0)                                    ; $000C
@@ -110,7 +110,7 @@ Offset_0x00B25A:
                 bclr    #$05, Obj_Status(A1)                             ; $0022       
 ;-------------------------------------------------------------------------------  
 Offset_0x00B266:
-                lea     (Monitors_Animate_Data), A1            ; Offset_0x00B518
+                lea     (Monitors_Animate_Data).l, A1            ; Offset_0x00B518
                 bsr.w   AnimateSprite                          ; Offset_0x00D372  
 ;-------------------------------------------------------------------------------  
 Offset_0x00B270:

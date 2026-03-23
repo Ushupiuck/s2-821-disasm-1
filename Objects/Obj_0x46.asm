@@ -61,7 +61,7 @@ Offset_0x019912:
                 moveq   #$00, D0
                 move.b  Obj_Subtype(A0), D0                              ; $0028
                 lsr.w   #$04, D0
-                tst.b   $00(A2, D0)
+                tst.b   (A2, D0)
                 beq.s   Offset_0x019958
 Offset_0x01992C:
                 addq.b  #$02, Obj_Routine(A0)                            ; $0024

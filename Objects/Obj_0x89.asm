@@ -110,7 +110,7 @@ Offset_0x02616E:
                 move.w  #$FF9C, (Boss_Move_Buffer+$08).w             ; $FFFFF758
                 st      Obj_Control_Var_0C(A0)                           ; $0038
 Offset_0x02619E:
-                lea     (NGHz_Boss_Animate_Data), A1           ; Offset_0x0267E6
+                lea     (NGHz_Boss_Animate_Data).l, A1           ; Offset_0x0267E6
                 bsr.w   Boss_AnimateSprite                     ; Offset_0x026312
                 bra.w   Jmp_1B_To_DisplaySprite                ; Offset_0x02696C  
 ;-------------------------------------------------------------------------------  
@@ -135,7 +135,7 @@ Offset_0x0261E8:
                 andi.b  #$F0, $0002(A1) 
                 ori.b   #$05, $0002(A1) 
 Offset_0x0261F8:
-                lea     (NGHz_Boss_Animate_Data), A1           ; Offset_0x0267E6
+                lea     (NGHz_Boss_Animate_Data).l, A1           ; Offset_0x0267E6
                 bsr.w   Boss_AnimateSprite                     ; Offset_0x026312
                 bra.w   Jmp_1B_To_DisplaySprite                ; Offset_0x02696C  
 ;-------------------------------------------------------------------------------  
@@ -150,7 +150,7 @@ Offset_0x026206:
                 andi.b  #$F0, $0004(A1) 
                 ori.b   #$03, $0004(A1) 
 Offset_0x02622C:
-                lea     (NGHz_Boss_Animate_Data), A1           ; Offset_0x0267E6
+                lea     (NGHz_Boss_Animate_Data).l, A1           ; Offset_0x0267E6
                 bsr.w   Boss_AnimateSprite                     ; Offset_0x026312
                 bra.w   Jmp_1B_To_DisplaySprite                ; Offset_0x02696C 
 ;-------------------------------------------------------------------------------  
@@ -171,7 +171,7 @@ Offset_0x026272:
                 bsr.w   Boss_Move                              ; Offset_0x0245FA
                 bsr.w   Offset_0x02628C
                 bsr.w   Offset_0x0262AA
-                lea     (NGHz_Boss_Animate_Data), A1           ; Offset_0x0267E6
+                lea     (NGHz_Boss_Animate_Data).l, A1           ; Offset_0x0267E6
                 bsr.w   Boss_AnimateSprite                     ; Offset_0x026312
                 bra.w   Jmp_1B_To_DisplaySprite                ; Offset_0x02696C
 Offset_0x02628C:
@@ -264,7 +264,7 @@ Offset_0x026368:
                 subi.b  #$01, D0
                 bpl.s   Offset_0x02638A
                 add.w   D2, D2
-                adda.w  $00(A1, D2), A1
+                adda.w  (A1, D2), A1
                 move.b  (A1), D0
                 move.b  $01(A1, D1), D2
                 bmi.s   Offset_0x0263A0
@@ -384,7 +384,7 @@ Offset_0x0264B4:
                 move.b  #$01, (Boss_Defeated_Flag).w                 ; $FFFFF7A7
 Offset_0x0264C0:
                 addq.l  #$04, A7
-                jmp     (DeleteObject)                         ; Offset_0x00D314 
+                jmp     (DeleteObject).l                         ; Offset_0x00D314 
 ;-------------------------------------------------------------------------------  
 Offset_0x0264C8:
                 moveq   #$00, D0
@@ -557,7 +557,7 @@ Offset_0x0266DE:
                 beq.s   Offset_0x0266EC
                 addi.b  #$02, Obj_Timer(A0)                              ; $002A
 Offset_0x0266EC:
-                lea     (Pillars_Animate_Data), A1             ; Offset_0x026716
+                lea     (Pillars_Animate_Data).l, A1             ; Offset_0x026716
                 bsr.w   Jmp_15_To_AnimateSprite                ; Offset_0x02697E
                 bra.w   Jmp_1B_To_DisplaySprite                ; Offset_0x02696C 
 ;-------------------------------------------------------------------------------  

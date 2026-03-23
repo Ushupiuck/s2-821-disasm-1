@@ -83,7 +83,7 @@ Offset_0x00ACAE:
                 add.b   D7, D0
                 andi.b  #$03, D0
                 bne.s   Offset_0x00ACE8
-                jsr     (Ring_FindFloor)                       ; Offset_0x014260
+                jsr     (Ring_FindFloor).l                       ; Offset_0x014260
                 tst.w   D1
                 bpl.s   Offset_0x00ACE8
                 add.w   D1, Obj_Y(A0)                                    ; $000C
@@ -107,7 +107,7 @@ Offset_0x00AD00:
                 bsr.w   Add_Rings                              ; Offset_0x00AB92   
 ;-------------------------------------------------------------------------------
 Offset_0x00AD14:
-                lea     (Rings_Animate_Data), A1               ; Offset_0x00AE98
+                lea     (Rings_Animate_Data).l, A1               ; Offset_0x00AE98
                 bsr.w   AnimateSprite                          ; Offset_0x00D372
                 bra.w   DisplaySprite                          ; Offset_0x00D322 
 ;-------------------------------------------------------------------------------

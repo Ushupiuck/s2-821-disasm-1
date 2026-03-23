@@ -124,7 +124,7 @@ Offset_0x029526:
                 move.w  Obj_Art_VRAM(A0), Obj_Art_VRAM(A1)        ; $0002, $0002
                 move.b  #$0A, Obj_Control_Var_0F(A1)                     ; $003B
                 move.b  #$00, Obj_Boss_Ani_Map(A1)                       ; $000B
-                move.b  (Offset_0x000040).w, $000E(A1)
+                move.b  $40, $000E(A1)
                 move.b  #$07, Obj_Ani_Boss_Cnt(A1)                       ; $000F
                 move.w  A0, Obj_Control_Var_12(A1)                       ; $003E
                 move.w  Obj_X(A0), D2                                    ; $0008
